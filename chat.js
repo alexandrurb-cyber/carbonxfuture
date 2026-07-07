@@ -1,13 +1,4 @@
 export default async function handler(req, res) {
-  // CORS headers
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -18,7 +9,11 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { messages, system } = req.body;
+    const { messages, system } = req.body || {};
+
+    if (!Array.isArray(messages) || messages.length === 0 || messages.length > 40) {
+      return res.status(400).json({ error: 'Invalid messages' });
+    }
 
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',

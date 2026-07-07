@@ -1,36 +1,46 @@
 # CarbonXFuture Website
 
-## Deploy pe Vercel în 5 pași
-
-### Pas 1 — Creează cont GitHub
-Mergi la [github.com](https://github.com) și creează un cont gratuit dacă nu ai.
-
-### Pas 2 — Creează un repository nou
-1. Click pe **"New repository"**
-2. Nume: `carbonxfuture-website`
-3. Lasă-l **Public**
-4. Click **"Create repository"**
-
-### Pas 3 — Uploadează fișierele
-1. În repository-ul nou, click **"uploading an existing file"**
-2. Trage fișierele `index.html` și `vercel.json` în browser
-3. Click **"Commit changes"**
-
-### Pas 4 — Deploy pe Vercel
-1. Mergi la [vercel.com](https://vercel.com) și login cu GitHub
-2. Click **"Add New Project"**
-3. Selectează repository-ul `carbonxfuture-website`
-4. Click **"Deploy"** — gata în ~30 secunde!
-
-### Pas 5 — (Opțional) Conectează domeniul carbonxfuture.com
-1. În Vercel, mergi la **Settings → Domains**
-2. Adaugă `carbonxfuture.com`
-3. Vercel îți va da DNS records de adăugat la registrar-ul tău
-
-## Structura proiectului
+## Project structure
 ```
 carbonxfuture/
-├── index.html      # Site-ul complet (single page)
-├── vercel.json     # Configurare Vercel
-└── README.md       # Aceste instrucțiuni
+├── index.html      # Full site (single page)
+├── prices.json     # Displayed prices + "last updated" date (edit daily)
+├── vercel.json     # Vercel config (SPA rewrite)
+├── api/chat.js     # Serverless proxy for Agent CXF (Claude API)
+└── README.md       # These instructions
 ```
+
+## Deploy on Vercel
+
+1. Create a free account at [github.com](https://github.com) if you don't have one.
+2. Create a new **public** repository, e.g. `carbonxfuture-website`.
+3. Upload ALL project files (keep the `api/` folder structure).
+4. Go to [vercel.com](https://vercel.com), log in with GitHub, click **Add New Project**, select the repo, and **Deploy**.
+
+## Required setup after deploy
+
+### 1. Claude API key (Agent CXF chat)
+The chat widget will NOT work without this:
+1. Get an API key from [platform.claude.com](https://platform.claude.com).
+2. In Vercel: **Settings → Environment Variables** → add `ANTHROPIC_API_KEY` with your key.
+3. Redeploy.
+
+### 2. Access-request form (FormSubmit)
+The KYC form emails submissions to `info@carbonxfuture.com` via FormSubmit.
+The **first submission** triggers an activation email to that inbox — click the
+confirmation link once and all later submissions arrive normally.
+
+### 3. Donations (Stripe or PayPal)
+Donations are disabled until you add a payment link:
+1. **Stripe:** Dashboard → Payment Links → create a link with "Customers choose what to pay". Or **PayPal:** create a Donate button link.
+2. Paste the URL into `DONATION_LINK` near the bottom of `index.html`.
+
+Until then, the donate button tells visitors online donations aren't open yet.
+
+### 4. Daily prices
+Edit `prices.json`: change the numbers and set `lastUpdated` to today's date
+(format `YYYY-MM-DD`), then commit. The site shows the date from this file.
+
+### 5. Custom domain (optional)
+In Vercel: **Settings → Domains** → add `carbonxfuture.com` and follow the DNS
+instructions for your registrar.

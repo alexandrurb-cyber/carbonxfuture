@@ -954,7 +954,7 @@ footer{background:var(--slate-900);padding:3.5rem 2rem 2rem;}
       <div>
         <div class="eyebrow">Live market prices</div>
         <h2>Carbon credit prices</h2>
-        <p class="prices-note">Indicative prices updated daily. Source: MSCI Carbon Markets, Xpansiv CBL, CarbonXFuture desk.</p>
+        <p class="prices-note">Indicative mid prices. Source: CarbonXFuture trading desk.</p>
       </div>
     </div>
     <div class="prices-grid">
@@ -965,7 +965,7 @@ footer{background:var(--slate-900);padding:3.5rem 2rem 2rem;}
         </div>
         <div class="price-type">Waste oil recycling</div>
         <div class="price-name">CXF Used Oil — US Gulf</div>
-        <div class="price-val">$21.50</div>
+        <div class="price-val" data-price="cxf-usgulf">$21.50</div>
         <div class="price-sub">per tCO₂e · Vintage 2025</div>
         <div class="price-bar-wrap"><div class="price-bar" style="width:68%"></div></div>
         <div class="price-range"><span>52w low $14.20</span><span>52w high $26.80</span></div>
@@ -977,7 +977,7 @@ footer{background:var(--slate-900);padding:3.5rem 2rem 2rem;}
         </div>
         <div class="price-type">Nature-based / REDD+</div>
         <div class="price-name">REDD+ Tropical Forest</div>
-        <div class="price-val">$18.40</div>
+        <div class="price-val" data-price="verra-redd">$18.40</div>
         <div class="price-sub">per tCO₂e · Vintage 2023–24</div>
         <div class="price-bar-wrap"><div class="price-bar" style="width:55%;background:rgba(93,202,165,0.5)"></div></div>
         <div class="price-range"><span>52w low $10.50</span><span>52w high $31.00</span></div>
@@ -989,7 +989,7 @@ footer{background:var(--slate-900);padding:3.5rem 2rem 2rem;}
         </div>
         <div class="price-type">Renewable energy</div>
         <div class="price-name">Solar / Wind — Africa</div>
-        <div class="price-val">$22.10</div>
+        <div class="price-val" data-price="gold-solar">$22.10</div>
         <div class="price-sub">per tCO₂e · Vintage 2024</div>
         <div class="price-bar-wrap"><div class="price-bar" style="width:62%;background:rgba(250,199,117,0.5)"></div></div>
         <div class="price-range"><span>52w low $14.00</span><span>52w high $29.50</span></div>
@@ -1001,7 +1001,7 @@ footer{background:var(--slate-900);padding:3.5rem 2rem 2rem;}
         </div>
         <div class="price-type">Methane / Forestry</div>
         <div class="price-name">US Compliance-grade</div>
-        <div class="price-val">$15.20</div>
+        <div class="price-val" data-price="acr-car">$15.20</div>
         <div class="price-sub">per tCO₂e · Vintage 2023–24</div>
         <div class="price-bar-wrap"><div class="price-bar" style="width:42%;background:rgba(133,183,235,0.5)"></div></div>
         <div class="price-range"><span>52w low $9.80</span><span>52w high $22.00</span></div>
@@ -1013,7 +1013,7 @@ footer{background:var(--slate-900);padding:3.5rem 2rem 2rem;}
         </div>
         <div class="price-type">Blue carbon</div>
         <div class="price-name">Mangrove / Coastal</div>
-        <div class="price-val">$31.50</div>
+        <div class="price-val" data-price="verra-blue">$31.50</div>
         <div class="price-sub">per tCO₂e · Vintage 2023</div>
         <div class="price-bar-wrap"><div class="price-bar" style="width:82%;background:rgba(93,202,165,0.5)"></div></div>
         <div class="price-range"><span>52w low $18.00</span><span>52w high $44.00</span></div>
@@ -1025,7 +1025,7 @@ footer{background:var(--slate-900);padding:3.5rem 2rem 2rem;}
         </div>
         <div class="price-type">Energy efficiency</div>
         <div class="price-name">Clean Cookstoves — Africa</div>
-        <div class="price-val">$16.80</div>
+        <div class="price-val" data-price="gold-cookstoves">$16.80</div>
         <div class="price-sub">per tCO₂e · Vintage 2024</div>
         <div class="price-bar-wrap"><div class="price-bar" style="width:48%;background:rgba(250,199,117,0.5)"></div></div>
         <div class="price-range"><span>52w low $11.00</span><span>52w high $25.00</span></div>
@@ -1037,7 +1037,7 @@ footer{background:var(--slate-900);padding:3.5rem 2rem 2rem;}
         </div>
         <div class="price-type">Waste oil recycling</div>
         <div class="price-name">CXF Industrial Re-refining</div>
-        <div class="price-val">$19.80</div>
+        <div class="price-val" data-price="cxf-rerefining">$19.80</div>
         <div class="price-sub">per tCO₂e · Vintage 2025</div>
         <div class="price-bar-wrap"><div class="price-bar" style="width:58%"></div></div>
         <div class="price-range"><span>52w low $13.50</span><span>52w high $24.00</span></div>
@@ -1049,7 +1049,7 @@ footer{background:var(--slate-900);padding:3.5rem 2rem 2rem;}
         </div>
         <div class="price-type">Agroforestry</div>
         <div class="price-name">Community Land — Africa</div>
-        <div class="price-val">$24.00</div>
+        <div class="price-val" data-price="planvivo-agro">$24.00</div>
         <div class="price-sub">per tCO₂e · Vintage 2024</div>
         <div class="price-bar-wrap"><div class="price-bar" style="width:60%;background:rgba(192,221,151,0.5)"></div></div>
         <div class="price-range"><span>52w low $15.00</span><span>52w high $32.00</span></div>
@@ -1077,19 +1077,19 @@ footer{background:var(--slate-900);padding:3.5rem 2rem 2rem;}
       <div class="kyc-form">
         <div class="form-row">
           <label>Full name</label>
-          <input type="text" placeholder="John Smith"/>
+          <input type="text" id="kycName" placeholder="John Smith"/>
         </div>
         <div class="form-row">
           <label>Company / Organisation</label>
-          <input type="text" placeholder="Acme Recycling LLC"/>
+          <input type="text" id="kycCompany" placeholder="Acme Recycling LLC"/>
         </div>
         <div class="form-row">
           <label>Business email</label>
-          <input type="email" placeholder="j.smith@company.com"/>
+          <input type="email" id="kycEmail" placeholder="j.smith@company.com"/>
         </div>
         <div class="form-row">
           <label>I am a</label>
-          <select>
+          <select id="kycRole">
             <option value="">Select your role</option>
             <option>Waste oil collector / recycler</option>
             <option>Corporate buyer</option>
@@ -1102,7 +1102,7 @@ footer{background:var(--slate-900);padding:3.5rem 2rem 2rem;}
         </div>
         <div class="form-row">
           <label>Annual waste oil volume (litres) or credit volume (tCO₂e)</label>
-          <select>
+          <select id="kycVolume">
             <option value="">Select range</option>
             <option>Under 100,000 L / 1,000 tCO₂e</option>
             <option>100,000–500,000 L / 1,000–10,000 tCO₂e</option>
@@ -1237,24 +1237,59 @@ function selectAmount(el, val) {
   }
 }
 
+/* Donation — paste your Stripe Payment Link (use a "customer chooses
+   amount" link) or PayPal donate URL below. Until set, the button
+   honestly tells visitors donations aren't open online yet. */
+const DONATION_LINK = ''; // e.g. 'https://buy.stripe.com/xxxx' or 'https://www.paypal.com/donate/?hosted_button_id=xxxx'
+
 function handleDonate() {
   const btn = document.getElementById('donateBtn');
-  btn.innerHTML = '<i class="ti ti-check"></i> Thank you! CXF certificate will be emailed within 48h.';
-  btn.style.background = 'var(--forest-light)';
-  btn.disabled = true;
-  setTimeout(() => {
-    btn.innerHTML = '<i class="ti ti-heart"></i> Donate & claim your CXF credit';
-    btn.style.background = '';
-    btn.disabled = false;
-  }, 4000);
+  if (!DONATION_LINK) {
+    btn.innerHTML = '<i class="ti ti-mail"></i> Online donations open soon — email info@carbonxfuture.com';
+    btn.disabled = true;
+    setTimeout(() => {
+      btn.innerHTML = '<i class="ti ti-heart"></i> Donate & claim your CXF credit';
+      btn.disabled = false;
+    }, 5000);
+    return;
+  }
+  window.open(DONATION_LINK, '_blank', 'noopener');
 }
 
-function handleKYC() {
+async function handleKYC() {
   const btn = document.getElementById('kycBtn');
-  btn.innerHTML = '<i class="ti ti-check"></i> Request submitted — we\'ll contact you within 48h';
-  btn.style.background = 'var(--forest-pale)';
-  btn.style.color = 'var(--forest)';
+  const name = document.getElementById('kycName').value.trim();
+  const company = document.getElementById('kycCompany').value.trim();
+  const email = document.getElementById('kycEmail').value.trim();
+  const role = document.getElementById('kycRole').value;
+  const volume = document.getElementById('kycVolume').value;
+
+  if (!name || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    btn.innerHTML = '<i class="ti ti-alert-circle"></i> Please enter your name and a valid email';
+    setTimeout(() => { btn.innerHTML = '<i class="ti ti-arrow-right"></i> Submit access request'; }, 3000);
+    return;
+  }
+
   btn.disabled = true;
+  btn.innerHTML = 'Submitting…';
+  try {
+    const res = await fetch('https://formsubmit.co/ajax/info@carbonxfuture.com', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
+      body: JSON.stringify({
+        _subject: 'CarbonXFuture — access request from ' + name,
+        name, company, email, role, volume
+      })
+    });
+    if (!res.ok) throw new Error('submit failed');
+    btn.innerHTML = '<i class="ti ti-check"></i> Request submitted — we\'ll contact you within 24–48h';
+    btn.style.background = 'var(--forest-pale)';
+    btn.style.color = 'var(--forest)';
+  } catch (e) {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="ti ti-alert-circle"></i> Couldn\'t submit — email info@carbonxfuture.com';
+    setTimeout(() => { btn.innerHTML = '<i class="ti ti-arrow-right"></i> Submit access request'; }, 5000);
+  }
 }
 
 function filterTable(btn, reg) {
@@ -1266,17 +1301,11 @@ function filterTable(btn, reg) {
 }
 
 function quoteRequest(btn) {
-  const orig = btn.textContent;
-  btn.textContent = '✓ Sent';
-  btn.style.background = 'var(--forest)';
-  btn.style.color = 'white';
-  btn.style.borderColor = 'var(--forest)';
-  setTimeout(() => {
-    btn.textContent = orig;
-    btn.style.background = '';
-    btn.style.color = '';
-    btn.style.borderColor = '';
-  }, 2500);
+  const row = btn.closest('tr');
+  const project = row ? row.querySelector('.td-name').textContent : 'Carbon credit listing';
+  const subject = encodeURIComponent('Quote request — ' + project);
+  const body = encodeURIComponent('Hello CarbonXFuture,\n\nI would like to request a quote for: ' + project + '\n\nVolume (tCO2e):\nCompany:\nName:\n');
+  window.location.href = 'mailto:info@carbonxfuture.com?subject=' + subject + '&body=' + body;
 }
 
 /* =========================================================
@@ -1448,12 +1477,26 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal()
 // Init blog on page load
 renderBlog('all');
 
-// Price timestamp
-(function(){
-  const now = new Date();
-  const opts = {day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'};
+/* Prices are loaded from /prices.json — update that file to change
+   displayed prices. The "Last updated" date shown is the date in the
+   file, so it is only claimed when the desk actually updates it. */
+(async function(){
   const el = document.getElementById('priceTimestamp');
-  if(el) el.textContent = 'Prices indicative · Last updated: ' + now.toLocaleDateString('en-US', opts) + ' EST · Not financial advice.';
+  try {
+    const res = await fetch('/prices.json', {cache:'no-store'});
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    for (const [key, val] of Object.entries(data.prices || {})) {
+      const node = document.querySelector(`[data-price="${key}"]`);
+      if (node && typeof val === 'number') node.textContent = '$' + val.toFixed(2);
+    }
+    if (el && data.lastUpdated) {
+      const d = new Date(data.lastUpdated + 'T12:00:00');
+      el.textContent = 'Prices indicative · Last updated: ' + d.toLocaleDateString('en-US',{day:'numeric',month:'short',year:'numeric'}) + ' · Not financial advice.';
+    }
+  } catch(e) {
+    if (el) el.textContent = 'Prices indicative — not financial advice.';
+  }
 })();
 
 /* =========================================================
@@ -1489,12 +1532,16 @@ function sendSuggestion(btn) {
   sendMessage();
 }
 
+function escapeHTML(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
 function addMessage(role, text) {
   const container = document.getElementById('agentMessages');
   const now = new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
   const div = document.createElement('div');
   div.className = 'msg ' + (role === 'user' ? 'user' : 'bot');
-  div.innerHTML = `<div class="msg-bubble">${text.replace(/\n/g,'<br/>')}</div><div class="msg-time">${now}</div>`;
+  div.innerHTML = `<div class="msg-bubble">${escapeHTML(text).replace(/\n/g,'<br/>')}</div><div class="msg-time">${now}</div>`;
   container.appendChild(div);
   container.scrollTop = container.scrollHeight;
 }
@@ -1533,7 +1580,7 @@ async function sendMessage() {
       headers: {'Content-Type':'application/json'},
       body: JSON.stringify({
         system: AGENT_SYSTEM,
-        messages: agentHistory
+        messages: agentHistory.slice(-20)
       })
     });
     const data = await res.json();
