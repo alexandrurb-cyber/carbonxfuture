@@ -347,6 +347,73 @@ footer{background:var(--slate-900);padding:3.5rem 2rem 2rem;}
   .footer-top{grid-template-columns:1fr;}
   section{padding:3.5rem 1.25rem;}
 }
+
+/* PRICES SECTION */
+.prices{background:var(--slate-900);color:white;padding:5rem 2rem;}
+.prices-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:2.5rem;flex-wrap:wrap;gap:1rem;}
+.prices h2{color:white;}
+.prices .eyebrow{color:rgba(255,255,255,0.35);}
+.prices-note{font-size:12px;color:rgba(255,255,255,0.3);margin-top:4px;}
+.prices-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(255,255,255,0.07);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:1.5rem;}
+.price-card{background:var(--slate-900);padding:1.5rem;transition:background 0.15s;}
+.price-card:hover{background:rgba(255,255,255,0.04);}
+.price-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;}
+.price-reg{font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;}
+.price-change{font-size:12px;font-weight:500;padding:2px 8px;border-radius:100px;}
+.price-change.up{background:rgba(29,158,117,0.15);color:#5DCAA5;}
+.price-change.down{background:rgba(226,75,74,0.12);color:#F09595;}
+.price-change.flat{background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.4);}
+.price-type{font-size:12px;color:rgba(255,255,255,0.4);margin-bottom:4px;}
+.price-name{font-size:14px;font-weight:500;color:rgba(255,255,255,0.9);margin-bottom:1rem;line-height:1.35;}
+.price-val{font-size:28px;font-weight:600;color:white;margin-bottom:2px;}
+.price-sub{font-size:11px;color:rgba(255,255,255,0.3);}
+.price-bar-wrap{margin-top:1rem;height:3px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden;}
+.price-bar{height:100%;border-radius:2px;background:rgba(93,202,165,0.6);}
+.price-range{display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,0.25);margin-top:4px;}
+.prices-updated{font-size:11px;color:rgba(255,255,255,0.2);text-align:right;}
+.price-cxf .price-val{color:#5DCAA5;}
+.price-cxf .price-bar{background:rgba(93,202,165,0.8);}
+
+/* AI AGENT BUTTON */
+.agent-fab{position:fixed;bottom:2rem;right:2rem;z-index:300;display:flex;align-items:center;gap:10px;background:var(--forest);color:white;border:none;border-radius:100px;padding:12px 20px 12px 16px;font-size:14px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;box-shadow:0 4px 20px rgba(26,74,46,0.4);transition:all 0.2s;}
+.agent-fab:hover{background:var(--forest-light);transform:translateY(-2px);box-shadow:0 6px 24px rgba(26,74,46,0.5);}
+.agent-fab .fab-dot{width:8px;height:8px;background:#5DCAA5;border-radius:50%;animation:pulse 2s infinite;}
+
+/* AI AGENT CHAT PANEL */
+.agent-panel{position:fixed;bottom:5.5rem;right:2rem;z-index:300;width:380px;max-height:560px;background:var(--white);border:0.5px solid var(--slate-100);border-radius:var(--radius-lg);box-shadow:0 8px 40px rgba(0,0,0,0.12);display:none;flex-direction:column;overflow:hidden;}
+.agent-panel.open{display:flex;}
+.agent-panel-header{background:var(--forest);padding:1rem 1.25rem;display:flex;align-items:center;gap:10px;}
+.agent-avatar{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.agent-panel-title{font-size:14px;font-weight:500;color:white;}
+.agent-panel-sub{font-size:11px;color:rgba(255,255,255,0.6);}
+.agent-close{margin-left:auto;background:none;border:none;color:rgba(255,255,255,0.6);cursor:pointer;font-size:18px;padding:2px;}
+.agent-close:hover{color:white;}
+.agent-messages{flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:12px;}
+.msg{max-width:88%;font-size:13px;line-height:1.55;}
+.msg.bot{align-self:flex-start;}
+.msg.user{align-self:flex-end;}
+.msg-bubble{padding:10px 14px;border-radius:12px;}
+.msg.bot .msg-bubble{background:var(--slate-50);color:var(--slate-800);border-bottom-left-radius:4px;}
+.msg.user .msg-bubble{background:var(--forest);color:white;border-bottom-right-radius:4px;}
+.msg-time{font-size:10px;color:var(--slate-400);margin-top:3px;padding:0 4px;}
+.msg.user .msg-time{text-align:right;}
+.agent-typing{align-self:flex-start;}
+.typing-bubble{background:var(--slate-50);border-radius:12px;border-bottom-left-radius:4px;padding:10px 16px;display:flex;gap:4px;align-items:center;}
+.typing-dot{width:6px;height:6px;background:var(--slate-300);border-radius:50%;animation:typingPulse 1.2s infinite;}
+.typing-dot:nth-child(2){animation-delay:0.2s;}
+.typing-dot:nth-child(3){animation-delay:0.4s;}
+@keyframes typingPulse{0%,60%,100%{transform:translateY(0);}30%{transform:translateY(-4px);}}
+.agent-suggestions{display:flex;gap:6px;flex-wrap:wrap;padding:0 1rem 0.75rem;}
+.sug-btn{font-size:11px;padding:5px 10px;background:var(--forest-pale);border:0.5px solid var(--forest-mid);border-radius:100px;color:var(--forest);cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.15s;white-space:nowrap;}
+.sug-btn:hover{background:var(--forest);color:white;}
+.agent-input-row{display:flex;gap:8px;padding:0.75rem 1rem;border-top:0.5px solid var(--slate-100);}
+.agent-input{flex:1;padding:9px 14px;border:0.5px solid var(--slate-200);border-radius:100px;font-size:13px;font-family:'Inter',sans-serif;outline:none;color:var(--slate-800);}
+.agent-input:focus{border-color:var(--forest);}
+.agent-send{width:34px;height:34px;background:var(--forest);border:none;border-radius:50%;cursor:pointer;color:white;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background 0.15s;}
+.agent-send:hover{background:var(--forest-light);}
+
+@media(max-width:960px){.prices-grid{grid-template-columns:1fr 1fr;}}
+@media(max-width:600px){.prices-grid{grid-template-columns:1fr;}.agent-panel{width:calc(100vw - 2rem);right:1rem;}.agent-fab{bottom:1.5rem;right:1rem;}}
 </style>
 </head>
 <body>
@@ -362,6 +429,7 @@ footer{background:var(--slate-900);padding:3.5rem 2rem 2rem;}
       <a href="#methodology">CXF Credits</a>
       <a href="#earn">Earn Credits</a>
       <a href="#marketplace">Marketplace</a>
+      <a href="#prices">Prices</a>
       <a href="#donate">Donate</a>
       <a href="#about">About</a>
       <a href="#kyc" class="nav-cta">Apply for Access</a>
@@ -878,6 +946,119 @@ footer{background:var(--slate-900);padding:3.5rem 2rem 2rem;}
   </div>
 </section>
 
+
+<!-- PRICES -->
+<section class="prices" id="prices">
+  <div class="container">
+    <div class="prices-header">
+      <div>
+        <div class="eyebrow">Live market prices</div>
+        <h2>Carbon credit prices</h2>
+        <p class="prices-note">Indicative prices updated daily. Source: MSCI Carbon Markets, Xpansiv CBL, CarbonXFuture desk.</p>
+      </div>
+    </div>
+    <div class="prices-grid">
+      <div class="price-card price-cxf">
+        <div class="price-card-top">
+          <span class="price-reg" style="color:#5DCAA5;">⬡ CXF</span>
+          <span class="price-change up">▲ +4.1%</span>
+        </div>
+        <div class="price-type">Waste oil recycling</div>
+        <div class="price-name">CXF Used Oil — US Gulf</div>
+        <div class="price-val">$21.50</div>
+        <div class="price-sub">per tCO₂e · Vintage 2025</div>
+        <div class="price-bar-wrap"><div class="price-bar" style="width:68%"></div></div>
+        <div class="price-range"><span>52w low $14.20</span><span>52w high $26.80</span></div>
+      </div>
+      <div class="price-card">
+        <div class="price-card-top">
+          <span class="price-reg" style="color:#5DCAA5;">Verra VCS</span>
+          <span class="price-change up">▲ +1.8%</span>
+        </div>
+        <div class="price-type">Nature-based / REDD+</div>
+        <div class="price-name">REDD+ Tropical Forest</div>
+        <div class="price-val">$18.40</div>
+        <div class="price-sub">per tCO₂e · Vintage 2023–24</div>
+        <div class="price-bar-wrap"><div class="price-bar" style="width:55%;background:rgba(93,202,165,0.5)"></div></div>
+        <div class="price-range"><span>52w low $10.50</span><span>52w high $31.00</span></div>
+      </div>
+      <div class="price-card">
+        <div class="price-card-top">
+          <span class="price-reg" style="color:#FAC775;">Gold Standard</span>
+          <span class="price-change up">▲ +2.3%</span>
+        </div>
+        <div class="price-type">Renewable energy</div>
+        <div class="price-name">Solar / Wind — Africa</div>
+        <div class="price-val">$22.10</div>
+        <div class="price-sub">per tCO₂e · Vintage 2024</div>
+        <div class="price-bar-wrap"><div class="price-bar" style="width:62%;background:rgba(250,199,117,0.5)"></div></div>
+        <div class="price-range"><span>52w low $14.00</span><span>52w high $29.50</span></div>
+      </div>
+      <div class="price-card">
+        <div class="price-card-top">
+          <span class="price-reg" style="color:#85B7EB;">ACR / CAR</span>
+          <span class="price-change down">▼ -0.9%</span>
+        </div>
+        <div class="price-type">Methane / Forestry</div>
+        <div class="price-name">US Compliance-grade</div>
+        <div class="price-val">$15.20</div>
+        <div class="price-sub">per tCO₂e · Vintage 2023–24</div>
+        <div class="price-bar-wrap"><div class="price-bar" style="width:42%;background:rgba(133,183,235,0.5)"></div></div>
+        <div class="price-range"><span>52w low $9.80</span><span>52w high $22.00</span></div>
+      </div>
+      <div class="price-card">
+        <div class="price-card-top">
+          <span class="price-reg" style="color:#5DCAA5;">Verra VCS</span>
+          <span class="price-change up">▲ +5.2%</span>
+        </div>
+        <div class="price-type">Blue carbon</div>
+        <div class="price-name">Mangrove / Coastal</div>
+        <div class="price-val">$31.50</div>
+        <div class="price-sub">per tCO₂e · Vintage 2023</div>
+        <div class="price-bar-wrap"><div class="price-bar" style="width:82%;background:rgba(93,202,165,0.5)"></div></div>
+        <div class="price-range"><span>52w low $18.00</span><span>52w high $44.00</span></div>
+      </div>
+      <div class="price-card">
+        <div class="price-card-top">
+          <span class="price-reg" style="color:#FAC775;">Gold Standard</span>
+          <span class="price-change flat">→ 0.0%</span>
+        </div>
+        <div class="price-type">Energy efficiency</div>
+        <div class="price-name">Clean Cookstoves — Africa</div>
+        <div class="price-val">$16.80</div>
+        <div class="price-sub">per tCO₂e · Vintage 2024</div>
+        <div class="price-bar-wrap"><div class="price-bar" style="width:48%;background:rgba(250,199,117,0.5)"></div></div>
+        <div class="price-range"><span>52w low $11.00</span><span>52w high $25.00</span></div>
+      </div>
+      <div class="price-card">
+        <div class="price-card-top">
+          <span class="price-reg" style="color:#5DCAA5;">⬡ CXF</span>
+          <span class="price-change up">▲ +3.5%</span>
+        </div>
+        <div class="price-type">Waste oil recycling</div>
+        <div class="price-name">CXF Used Oil — Romania</div>
+        <div class="price-val">$19.80</div>
+        <div class="price-sub">per tCO₂e · Vintage 2025</div>
+        <div class="price-bar-wrap"><div class="price-bar" style="width:58%"></div></div>
+        <div class="price-range"><span>52w low $13.50</span><span>52w high $24.00</span></div>
+      </div>
+      <div class="price-card">
+        <div class="price-card-top">
+          <span class="price-reg" style="color:#C0DD97;">Plan Vivo</span>
+          <span class="price-change down">▼ -1.4%</span>
+        </div>
+        <div class="price-type">Agroforestry</div>
+        <div class="price-name">Community Land — Africa</div>
+        <div class="price-val">$24.00</div>
+        <div class="price-sub">per tCO₂e · Vintage 2024</div>
+        <div class="price-bar-wrap"><div class="price-bar" style="width:60%;background:rgba(192,221,151,0.5)"></div></div>
+        <div class="price-range"><span>52w low $15.00</span><span>52w high $32.00</span></div>
+      </div>
+    </div>
+    <div class="prices-updated" id="priceTimestamp">Prices indicative — updated daily. Not financial advice.</div>
+  </div>
+</section>
+
 <!-- KYC -->
 <section class="kyc" id="kyc">
   <div class="container">
@@ -937,6 +1118,42 @@ footer{background:var(--slate-900);padding:3.5rem 2rem 2rem;}
     </div>
   </div>
 </section>
+
+
+<!-- AI AGENT FAB -->
+<button class="agent-fab" id="agentFab" onclick="toggleAgent()">
+  <span class="fab-dot"></span>
+  <i class="ti ti-robot" aria-hidden="true"></i>
+  Agent CXF
+</button>
+
+<!-- AI AGENT PANEL -->
+<div class="agent-panel" id="agentPanel">
+  <div class="agent-panel-header">
+    <div class="agent-avatar">🤖</div>
+    <div>
+      <div class="agent-panel-title">Agent CXF</div>
+      <div class="agent-panel-sub">Carbon credit assistant · Online</div>
+    </div>
+    <button class="agent-close" onclick="toggleAgent()"><i class="ti ti-x"></i></button>
+  </div>
+  <div class="agent-messages" id="agentMessages">
+    <div class="msg bot">
+      <div class="msg-bubble">Hi! I'm Agent CXF, your carbon credit assistant. I can answer questions about CXF credits, waste oil recycling, how to earn credits, pricing, and the CarbonXFuture platform. How can I help you?</div>
+      <div class="msg-time">Now</div>
+    </div>
+  </div>
+  <div class="agent-suggestions" id="agentSuggestions">
+    <button class="sug-btn" onclick="sendSuggestion(this)">What are CXF credits?</button>
+    <button class="sug-btn" onclick="sendSuggestion(this)">How do I earn credits?</button>
+    <button class="sug-btn" onclick="sendSuggestion(this)">Current prices</button>
+    <button class="sug-btn" onclick="sendSuggestion(this)">How to apply?</button>
+  </div>
+  <div class="agent-input-row">
+    <input class="agent-input" id="agentInput" placeholder="Ask me anything..." onkeydown="if(event.key==='Enter')sendMessage()"/>
+    <button class="agent-send" onclick="sendMessage()"><i class="ti ti-send" aria-hidden="true"></i></button>
+  </div>
+</div>
 
 <!-- FOOTER -->
 <footer>
@@ -1230,6 +1447,108 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal()
 
 // Init blog on page load
 renderBlog('all');
+
+// Price timestamp
+(function(){
+  const now = new Date();
+  const opts = {day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'};
+  const el = document.getElementById('priceTimestamp');
+  if(el) el.textContent = 'Prices indicative · Last updated: ' + now.toLocaleDateString('en-US', opts) + ' EST · Not financial advice.';
+})();
+
+/* =========================================================
+   AGENT CXF — AI Assistant powered by Claude
+   ========================================================= */
+const AGENT_SYSTEM = `You are Agent CXF, the official AI assistant for CarbonXFuture — an institutional carbon credit marketplace based in Fort Lauderdale, Florida.
+
+You help users understand:
+- CXF credits: CarbonXFuture's proprietary carbon credit standard for waste oil recycling and collection. 1 CXF credit = 1 tonne CO2 equivalent avoided. Credits are digital, issued on the CarbonXFuture registry and tradeable on the platform.
+- How to earn CXF credits: waste oil collectors and recyclers apply, submit monthly volume data, pass third-party verification, then receive digital CXF credits to sell on the marketplace.
+- Current indicative prices: CXF Used Oil US Gulf ~$21.50/tCO2e, CXF Romania ~$19.80, Verra VCS REDD+ ~$18.40, Gold Standard ~$22.10, ACR/CAR ~$15.20, Blue Carbon ~$31.50, Plan Vivo ~$24.00.
+- The CXF methodology: covers used oil collection, re-refining, and infrastructure development. ~2.85 tCO2e per 1,000 litres collected. Third-party audited, MRV-compliant.
+- Registries supported: CXF (proprietary), Verra VCS, Gold Standard, ACR, CAR, Plan Vivo.
+- How to apply: users submit KYC on the platform. 24-48h review. Options: waste oil recycler, corporate buyer, investment fund, trading desk, government entity.
+- Donation program: anyone can donate ($50–$1000+) and receive a retired CXF carbon credit certificate in their name within 48h.
+- Physical markets: CarbonXFuture also trades waste oil and base oil physical cargoes.
+
+Be concise, professional, and helpful. Answer in the same language the user writes in. If asked about prices, note they are indicative and updated daily. Never give financial advice. For specific transactions, direct users to apply for access.`;
+
+let agentOpen = false;
+let agentHistory = [];
+let agentTyping = false;
+
+function toggleAgent() {
+  agentOpen = !agentOpen;
+  document.getElementById('agentPanel').classList.toggle('open', agentOpen);
+  if(agentOpen) document.getElementById('agentInput').focus();
+}
+
+function sendSuggestion(btn) {
+  document.getElementById('agentInput').value = btn.textContent;
+  document.getElementById('agentSuggestions').style.display = 'none';
+  sendMessage();
+}
+
+function addMessage(role, text) {
+  const container = document.getElementById('agentMessages');
+  const now = new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+  const div = document.createElement('div');
+  div.className = 'msg ' + (role === 'user' ? 'user' : 'bot');
+  div.innerHTML = `<div class="msg-bubble">${text.replace(/\n/g,'<br/>')}</div><div class="msg-time">${now}</div>`;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+function showTyping() {
+  const container = document.getElementById('agentMessages');
+  const div = document.createElement('div');
+  div.className = 'msg bot agent-typing';
+  div.id = 'typingIndicator';
+  div.innerHTML = '<div class="typing-bubble"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>';
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+function removeTyping() {
+  const el = document.getElementById('typingIndicator');
+  if(el) el.remove();
+}
+
+async function sendMessage() {
+  if(agentTyping) return;
+  const input = document.getElementById('agentInput');
+  const text = input.value.trim();
+  if(!text) return;
+  input.value = '';
+  document.getElementById('agentSuggestions').style.display = 'none';
+
+  addMessage('user', text);
+  agentHistory.push({role:'user', content: text});
+  agentTyping = true;
+  showTyping();
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1000,
+        system: AGENT_SYSTEM,
+        messages: agentHistory
+      })
+    });
+    const data = await res.json();
+    removeTyping();
+    const reply = data.content && data.content[0] ? data.content[0].text : 'Sorry, I could not process that. Please try again.';
+    addMessage('bot', reply);
+    agentHistory.push({role:'assistant', content: reply});
+  } catch(e) {
+    removeTyping();
+    addMessage('bot', 'I\'m having trouble connecting right now. Please try again in a moment, or contact us directly at info@carbonxfuture.com');
+  }
+  agentTyping = false;
+}
 </script>
 </body>
 </html>
