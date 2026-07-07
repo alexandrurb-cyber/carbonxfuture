@@ -837,34 +837,44 @@ footer{background:var(--slate-900);padding:3.5rem 2rem 2rem;}
 <!-- BLOG -->
 <section class="blog" id="blog">
   <div class="container">
-    <div class="eyebrow">Insights</div>
-    <h2>Market intelligence</h2>
-    <div class="blog-grid">
-      <a href="#" class="blog-card">
-        <div class="blog-img" style="background:#EAF2EC;"><i class="ti ti-droplet-off" style="color:var(--forest);" aria-hidden="true"></i></div>
-        <div class="blog-body">
-          <div class="blog-tag">CXF Methodology</div>
-          <div class="blog-title">Introducing CXF: how waste oil recycling generates verified carbon credits</div>
-          <div class="blog-date">July 2025</div>
-        </div>
-      </a>
-      <a href="#" class="blog-card">
-        <div class="blog-img" style="background:#E8EEF5;"><i class="ti ti-chart-area-line" style="color:var(--blue);" aria-hidden="true"></i></div>
-        <div class="blog-body">
-          <div class="blog-tag">Market report</div>
-          <div class="blog-title">Voluntary carbon markets Q2 2025: price dynamics and liquidity trends</div>
-          <div class="blog-date">June 2025</div>
-        </div>
-      </a>
-      <a href="#" class="blog-card">
-        <div class="blog-img" style="background:#FDF3E3;"><i class="ti ti-file-text" style="color:var(--amber);" aria-hidden="true"></i></div>
-        <div class="blog-body">
-          <div class="blog-tag">Regulation</div>
-          <div class="blog-title">ICVCM Core Carbon Principles: what institutional buyers need to know in 2025</div>
-          <div class="blog-date">May 2025</div>
-        </div>
-      </a>
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:2.5rem;">
+      <div>
+        <div class="eyebrow">Insights</div>
+        <h2>Market intelligence</h2>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="filter-btn active" onclick="filterBlog(this,'all')">All</button>
+        <button class="filter-btn" onclick="filterBlog(this,'CXF Methodology')">CXF Methodology</button>
+        <button class="filter-btn" onclick="filterBlog(this,'Market report')">Market reports</button>
+        <button class="filter-btn" onclick="filterBlog(this,'Regulation')">Regulation</button>
+        <button class="filter-btn" onclick="filterBlog(this,'Physical markets')">Physical markets</button>
+      </div>
     </div>
+
+    <!-- ARTICLE MODAL -->
+    <div id="articleModal" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(15,15,13,0.75);backdrop-filter:blur(6px);overflow-y:auto;padding:2rem 1rem;">
+      <div style="max-width:720px;margin:2rem auto;background:var(--white);border-radius:var(--radius-lg);overflow:hidden;">
+        <div id="modalBanner" style="height:200px;display:flex;align-items:center;justify-content:center;font-size:60px;"></div>
+        <div style="padding:2.5rem;">
+          <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap;">
+            <span id="modalTag" style="font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--forest-light);"></span>
+            <span style="color:var(--slate-200);">·</span>
+            <span id="modalDate" style="font-size:13px;color:var(--slate-400);"></span>
+            <span style="color:var(--slate-200);">·</span>
+            <span id="modalReadtime" style="font-size:13px;color:var(--slate-400);"></span>
+          </div>
+          <h2 id="modalTitle" style="font-family:'Playfair Display',serif;font-size:clamp(1.4rem,3vw,2rem);font-weight:400;line-height:1.2;color:var(--slate-800);margin-bottom:1.5rem;"></h2>
+          <div id="modalBody" style="font-size:15px;line-height:1.85;color:var(--slate-600);"></div>
+          <div style="margin-top:2.5rem;padding-top:1.5rem;border-top:0.5px solid var(--slate-100);display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:13px;color:var(--slate-400);">CarbonXFuture · Market Intelligence</span>
+            <button onclick="closeModal()" style="font-size:13px;padding:8px 18px;background:var(--forest);color:white;border:none;border-radius:var(--radius-sm);cursor:pointer;font-family:'Inter',sans-serif;">Close article</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="blog-grid" id="blogGrid"></div>
+    <div id="blogEmpty" style="display:none;text-align:center;padding:3rem;color:var(--slate-400);font-size:14px;">No articles in this category yet.</div>
   </div>
 </section>
 
@@ -1051,6 +1061,175 @@ function quoteRequest(btn) {
     btn.style.borderColor = '';
   }, 2500);
 }
+
+/* =========================================================
+   BLOG ENGINE
+   To add a new article, copy one object from the ARTICLES
+   array below and fill in your content. That's it.
+   ========================================================= */
+const ARTICLES = [
+  {
+    tag: 'CXF Methodology',
+    icon: '♻️',
+    bannerBg: '#EAF2EC',
+    date: 'July 2025',
+    readtime: '5 min read',
+    title: 'Introducing CXF: how waste oil recycling generates verified carbon credits',
+    summary: 'CarbonXFuture launches its proprietary CXF carbon credit standard — the first methodology specifically designed for used oil collection and re-refining infrastructure.',
+    body: `
+      <p style="margin-bottom:1.25rem;">The voluntary carbon market has long overlooked one of the most impactful sectors in the circular economy: <strong>waste oil recycling</strong>. Every litre of used motor oil that is collected, re-refined and returned to service prevents the equivalent of approximately 28 litres of crude oil from being extracted — avoiding significant upstream emissions.</p>
+      <p style="margin-bottom:1.25rem;">CarbonXFuture has developed the <strong>CXF Methodology</strong> to quantify, verify and monetise these emission reductions in a rigorous, auditable framework. The methodology covers three activity types:</p>
+      <ul style="margin:0 0 1.25rem 1.5rem;display:flex;flex-direction:column;gap:8px;">
+        <li><strong>Used oil collection:</strong> Credits issued for volumes collected and diverted from disposal or incineration.</li>
+        <li><strong>Re-refining:</strong> Credits for processing used oil back into base oil, replacing virgin crude-derived products.</li>
+        <li><strong>Infrastructure development:</strong> Credits for establishing collection networks in underserved regions.</li>
+      </ul>
+      <p style="margin-bottom:1.25rem;">Each CXF credit represents <strong>1 tonne of CO₂ equivalent avoided</strong>, verified by an independent third-party auditor against a published baseline. Credits are issued digitally on the CarbonXFuture platform registry, with full chain-of-custody from source facility to retirement.</p>
+      <p>Applicants can register through the CarbonXFuture onboarding portal. Our team supports data collection and documentation throughout the verification cycle.</p>
+    `
+  },
+  {
+    tag: 'Market report',
+    icon: '📊',
+    bannerBg: '#E8EEF5',
+    date: 'June 2025',
+    readtime: '7 min read',
+    title: 'Voluntary carbon markets Q2 2025: price dynamics and liquidity trends',
+    summary: 'An overview of voluntary carbon credit pricing across major registries in Q2 2025, with analysis of liquidity conditions and emerging demand drivers.',
+    body: `
+      <p style="margin-bottom:1.25rem;">Voluntary carbon markets showed increased differentiation in Q2 2025, with high-integrity credits maintaining premiums over lower-quality offsets as buyers applied tighter due diligence standards.</p>
+      <p style="margin-bottom:1.25rem;"><strong>Price highlights:</strong></p>
+      <ul style="margin:0 0 1.25rem 1.5rem;display:flex;flex-direction:column;gap:8px;">
+        <li>REDD+ (Verra VCS, Nature-based): $14–$32/tCO₂e depending on co-benefits and vintage</li>
+        <li>Renewable energy (Gold Standard): $18–$26/tCO₂e, strongest demand from European corporates</li>
+        <li>Methane avoidance (ACR/CAR): $12–$18/tCO₂e, high liquidity in North American markets</li>
+        <li>Waste oil / circular economy (CXF): $18–$24/tCO₂e, growing institutional interest</li>
+      </ul>
+      <p style="margin-bottom:1.25rem;">Corporate demand remained concentrated in net-zero-aligned purchases, with most buyers targeting vintages 2022–2025. The ICVCM Core Carbon Principles continued to influence purchasing decisions, with buyers increasingly requiring CCP label eligibility or equivalent standards.</p>
+      <p>Liquidity on the CarbonXFuture platform grew 34% quarter-on-quarter, driven by new onboarding of institutional trading desks and sovereign buyers in the Middle East and Southeast Asia.</p>
+    `
+  },
+  {
+    tag: 'Regulation',
+    icon: '📋',
+    bannerBg: '#FDF3E3',
+    date: 'May 2025',
+    readtime: '6 min read',
+    title: 'ICVCM Core Carbon Principles: what institutional buyers need to know in 2025',
+    summary: 'The Integrity Council for the Voluntary Carbon Market has finalised its Core Carbon Principles framework. Here is what it means for institutional carbon credit buyers.',
+    body: `
+      <p style="margin-bottom:1.25rem;">The Integrity Council for the Voluntary Carbon Market (ICVCM) Core Carbon Principles (CCPs) represent the most significant governance development in voluntary carbon markets in recent years. For institutional buyers, understanding the framework is now essential due diligence.</p>
+      <p style="margin-bottom:1.25rem;"><strong>What are the CCPs?</strong></p>
+      <p style="margin-bottom:1.25rem;">The CCPs establish a threshold standard for high-quality carbon credits across ten principles covering governance, emissions impact, and sustainable development. Credits that meet the CCPs are eligible for the CCP label, which is increasingly required by corporate procurement policies and voluntary disclosure frameworks.</p>
+      <p style="margin-bottom:1.25rem;"><strong>Key requirements for CCP eligibility:</strong></p>
+      <ul style="margin:0 0 1.25rem 1.5rem;display:flex;flex-direction:column;gap:8px;">
+        <li>Additionality: emission reductions must not have occurred in the absence of carbon credit finance</li>
+        <li>Permanence: credits must represent durable emission reductions with appropriate risk buffers</li>
+        <li>No double counting: registries must prevent duplicate issuance or retirement</li>
+        <li>Sustainable development: projects must demonstrate positive co-benefits</li>
+      </ul>
+      <p>CarbonXFuture is aligning the CXF methodology with ICVCM CCP requirements. All CXF credits issued from Q3 2025 will include a CCP alignment assessment as part of the verification report.</p>
+    `
+  },
+  {
+    tag: 'Physical markets',
+    icon: '🛢️',
+    bannerBg: '#F3EEF8',
+    date: 'April 2025',
+    readtime: '4 min read',
+    title: 'Used oil collection infrastructure: carbon methodology development update',
+    summary: 'Progress update on the CXF used oil methodology, including baseline calculations, MRV protocol design and expected credit yields per litre collected.',
+    body: `
+      <p style="margin-bottom:1.25rem;">Development of the CXF used oil collection methodology is progressing through its final validation phase. This update summarises key technical parameters and expected credit yields for prospective applicants.</p>
+      <p style="margin-bottom:1.25rem;"><strong>Baseline emission factor:</strong> The CXF methodology uses a conservative baseline of 2.85 kg CO₂e per litre of used oil collected and diverted from uncontrolled disposal. This figure reflects the weighted average emission intensity of alternative disposal routes (incineration, illegal dumping, and road oiling) in the applicable geographic zones.</p>
+      <p style="margin-bottom:1.25rem;"><strong>Expected credit yield:</strong></p>
+      <ul style="margin:0 0 1.25rem 1.5rem;display:flex;flex-direction:column;gap:8px;">
+        <li>Collection only: approximately 2.85 tCO₂e per 1,000 litres collected</li>
+        <li>Collection + re-refining: approximately 5.1 tCO₂e per 1,000 litres processed</li>
+        <li>Collection + re-refining + distribution network: up to 6.8 tCO₂e per 1,000 litres</li>
+      </ul>
+      <p style="margin-bottom:1.25rem;"><strong>MRV requirements:</strong> Monthly volume logs with chain-of-custody documentation, quarterly third-party audits, and annual verification reports. CarbonXFuture provides a digital MRV dashboard for all registered applicants.</p>
+      <p>Interested collectors and recyclers can pre-register now to be included in the first issuance cycle, targeted for Q4 2025.</p>
+    `
+  }
+];
+
+// Tag color config
+const tagColors = {
+  'CXF Methodology': { bg: '#EAF2EC', color: 'var(--forest)' },
+  'Market report':   { bg: '#E8EEF5', color: 'var(--blue)' },
+  'Regulation':      { bg: '#FDF3E3', color: 'var(--amber)' },
+  'Physical markets':{ bg: '#F3EEF8', color: 'var(--purple)' },
+};
+
+function renderBlog(filter) {
+  const grid = document.getElementById('blogGrid');
+  const empty = document.getElementById('blogEmpty');
+  const filtered = filter === 'all' ? ARTICLES : ARTICLES.filter(a => a.tag === filter);
+  if (filtered.length === 0) {
+    grid.style.display = 'none';
+    empty.style.display = 'block';
+    return;
+  }
+  grid.style.display = 'grid';
+  empty.style.display = 'none';
+  const tc = tagColors;
+  grid.innerHTML = filtered.map((a, i) => `
+    <div class="blog-card" onclick="openArticle(${ARTICLES.indexOf(a)})" style="cursor:pointer;">
+      <div class="blog-img" style="background:${a.bannerBg};">
+        <span style="font-size:44px;">${a.icon}</span>
+      </div>
+      <div class="blog-body">
+        <div class="blog-tag" style="color:${tc[a.tag]?.color||'var(--forest-light)'};">${a.tag}</div>
+        <div class="blog-title">${a.title}</div>
+        <div style="font-size:12px;color:var(--slate-400);margin-top:6px;line-height:1.5;">${a.summary}</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;">
+          <span class="blog-date">${a.date}</span>
+          <span style="font-size:11px;color:var(--slate-400);">${a.readtime}</span>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterBlog(btn, tag) {
+  document.querySelectorAll('#blog .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderBlog(tag);
+}
+
+function openArticle(index) {
+  const a = ARTICLES[index];
+  const tc = tagColors;
+  document.getElementById('modalBanner').style.background = a.bannerBg;
+  document.getElementById('modalBanner').innerHTML = `<span style="font-size:60px;">${a.icon}</span>`;
+  document.getElementById('modalTag').textContent = a.tag;
+  document.getElementById('modalTag').style.color = tc[a.tag]?.color || 'var(--forest-light)';
+  document.getElementById('modalDate').textContent = a.date;
+  document.getElementById('modalReadtime').textContent = a.readtime;
+  document.getElementById('modalTitle').textContent = a.title;
+  document.getElementById('modalBody').innerHTML = a.body;
+  const modal = document.getElementById('articleModal');
+  modal.style.display = 'block';
+  document.body.style.overflow = 'hidden';
+  modal.scrollTop = 0;
+}
+
+function closeModal() {
+  document.getElementById('articleModal').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+// Close modal on backdrop click
+document.getElementById('articleModal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// Close modal on Escape key
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+// Init blog on page load
+renderBlog('all');
 </script>
 </body>
 </html>
