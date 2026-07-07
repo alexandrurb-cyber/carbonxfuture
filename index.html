@@ -414,6 +414,25 @@ footer{background:var(--slate-900);padding:3.5rem 2rem 2rem;}
 
 @media(max-width:960px){.prices-grid{grid-template-columns:1fr 1fr;}}
 @media(max-width:600px){.prices-grid{grid-template-columns:1fr;}.agent-panel{width:calc(100vw - 2rem);right:1rem;}.agent-fab{bottom:1.5rem;right:1rem;}}
+
+/* CALCULATORS */
+.calcs{background:var(--white);border-top:0.5px solid var(--slate-100);}
+.calcs-sub{max-width:640px;color:var(--slate-600);font-size:15px;margin-top:0.5rem;}
+.calc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.5rem;margin-top:2.5rem;}
+.calc-card{border:0.5px solid var(--slate-100);border-radius:var(--radius-lg);padding:1.75rem;background:var(--white);box-shadow:0 1px 3px rgba(15,15,13,0.04);}
+.calc-icon{width:40px;height:40px;border-radius:10px;background:var(--forest-pale);color:var(--forest);display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:1rem;}
+.calc-card h3{font-size:16px;font-weight:600;color:var(--slate-800);margin-bottom:4px;}
+.calc-desc{font-size:13px;color:var(--slate-400);margin-bottom:0.5rem;}
+.calc-row{margin-top:0.9rem;}
+.calc-row label{display:block;font-size:11px;font-weight:500;color:var(--slate-400);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.5px;}
+.calc-row input,.calc-row select{width:100%;border:0.5px solid var(--slate-200);border-radius:var(--radius-sm);padding:9px 12px;font-size:14px;color:var(--slate-800);background:var(--white);font-family:'Inter',sans-serif;outline:none;transition:border-color 0.15s;}
+.calc-row input:focus,.calc-row select:focus{border-color:var(--forest-light);}
+.calc-result{margin-top:1.25rem;background:var(--forest-pale);border-radius:var(--radius-md);padding:0.9rem 1.1rem;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;}
+.calc-result-num{font-size:1.45rem;font-weight:600;color:var(--forest);letter-spacing:-0.5px;}
+.calc-result-lbl{font-size:12px;color:var(--slate-600);}
+.calc-result-val{margin-left:auto;font-size:13px;color:var(--forest-light);font-weight:500;}
+.calcs-note{margin-top:2rem;font-size:12px;color:var(--slate-400);max-width:860px;line-height:1.7;}
+@media(max-width:800px){.calc-grid{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
@@ -430,6 +449,7 @@ footer{background:var(--slate-900);padding:3.5rem 2rem 2rem;}
       <a href="#earn">Earn Credits</a>
       <a href="#marketplace">Marketplace</a>
       <a href="#prices">Prices</a>
+      <a href="#calculators">Calculators</a>
       <a href="#donate">Donate</a>
       <a href="#about">About</a>
       <a href="#kyc" class="nav-cta">Apply for Access</a>
@@ -661,6 +681,106 @@ footer{background:var(--slate-900);padding:3.5rem 2rem 2rem;}
         </div>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- CALCULATORS -->
+<section class="calcs" id="calculators">
+  <div class="container">
+    <div class="eyebrow">Estimate your impact</div>
+    <h2>Carbon credit calculators</h2>
+    <p class="calcs-sub">Get an indicative estimate of the credits your activity could generate, or what offsetting your footprint would cost. Final issuance always depends on verified data and independent audit.</p>
+    <div class="calc-grid">
+
+      <div class="calc-card">
+        <div class="calc-icon"><i class="ti ti-droplet" aria-hidden="true"></i></div>
+        <h3>Waste oil recycling</h3>
+        <p class="calc-desc">Credits from used-oil collection under the CXF methodology.</p>
+        <div class="calc-row">
+          <label>Annual volume collected (litres)</label>
+          <input type="number" id="calcWoVol" min="0" placeholder="e.g. 250,000" oninput="calcWasteOil()"/>
+        </div>
+        <div class="calc-row">
+          <label>Activity scope</label>
+          <select id="calcWoScope" onchange="calcWasteOil()">
+            <option value="2.85">Collection only — 2.85 tCO₂e / 1,000 L</option>
+            <option value="5.1">Collection + re-refining — 5.1 tCO₂e / 1,000 L</option>
+            <option value="6.8">+ distribution network — 6.8 tCO₂e / 1,000 L</option>
+          </select>
+        </div>
+        <div class="calc-result">
+          <span class="calc-result-num" id="calcWoNum">—</span>
+          <span class="calc-result-lbl">CXF credits / year</span>
+          <span class="calc-result-val" id="calcWoVal"></span>
+        </div>
+      </div>
+
+      <div class="calc-card">
+        <div class="calc-icon"><i class="ti ti-solar-panel" aria-hidden="true"></i></div>
+        <h3>Green energy</h3>
+        <p class="calc-desc">Avoided grid emissions from renewable generation.</p>
+        <div class="calc-row">
+          <label>Annual generation (MWh)</label>
+          <input type="number" id="calcGeMwh" min="0" placeholder="e.g. 12,000" oninput="calcGreenEnergy()"/>
+        </div>
+        <div class="calc-row">
+          <label>Displaced grid (typical average factor)</label>
+          <select id="calcGeFactor" onchange="calcGreenEnergy()">
+            <option value="0.37">United States — 0.37 tCO₂e / MWh</option>
+            <option value="0.25">European Union — 0.25 tCO₂e / MWh</option>
+            <option value="0.60">Emerging grids (Asia / Africa) — 0.60 tCO₂e / MWh</option>
+          </select>
+        </div>
+        <div class="calc-result">
+          <span class="calc-result-num" id="calcGeNum">—</span>
+          <span class="calc-result-lbl">tCO₂e avoided / year</span>
+          <span class="calc-result-val" id="calcGeVal"></span>
+        </div>
+      </div>
+
+      <div class="calc-card">
+        <div class="calc-icon"><i class="ti ti-flame" aria-hidden="true"></i></div>
+        <h3>Methane capture</h3>
+        <p class="calc-desc">Landfill or biogas methane destruction (GWP₁₀₀ = 28).</p>
+        <div class="calc-row">
+          <label>Methane captured &amp; destroyed (tonnes CH₄ / year)</label>
+          <input type="number" id="calcMeT" min="0" placeholder="e.g. 400" oninput="calcMethane()"/>
+        </div>
+        <div class="calc-result">
+          <span class="calc-result-num" id="calcMeNum">—</span>
+          <span class="calc-result-lbl">tCO₂e avoided / year</span>
+          <span class="calc-result-val" id="calcMeVal"></span>
+        </div>
+      </div>
+
+      <div class="calc-card">
+        <div class="calc-icon"><i class="ti ti-leaf" aria-hidden="true"></i></div>
+        <h3>Offset your footprint</h3>
+        <p class="calc-desc">Indicative cost to retire credits against your emissions.</p>
+        <div class="calc-row">
+          <label>Emissions to offset (tCO₂e)</label>
+          <input type="number" id="calcOfT" min="0" placeholder="e.g. 1,500" oninput="calcOffset()"/>
+        </div>
+        <div class="calc-row">
+          <label>Credit type</label>
+          <select id="calcOfType" onchange="calcOffset()">
+            <option value="cxf-usgulf">⬡ CXF — Waste oil (US Gulf)</option>
+            <option value="verra-redd">Verra VCS — REDD+</option>
+            <option value="gold-solar">Gold Standard — Renewable energy</option>
+            <option value="acr-car">ACR / CAR — US compliance-grade</option>
+            <option value="verra-blue">Verra VCS — Blue carbon</option>
+            <option value="planvivo-agro">Plan Vivo — Agroforestry</option>
+          </select>
+        </div>
+        <div class="calc-result">
+          <span class="calc-result-num" id="calcOfNum">—</span>
+          <span class="calc-result-lbl">indicative cost</span>
+          <span class="calc-result-val" id="calcOfVal"></span>
+        </div>
+      </div>
+
+    </div>
+    <p class="calcs-note">Estimates are for guidance only and do not constitute a verification result, an offer, or financial advice. Factors used: CXF methodology baselines (waste oil); typical grid-average emission factors — actual avoided emissions depend on the project baseline approved under the applicable methodology (green energy); IPCC AR5 GWP₁₀₀ of 28 for methane. Indicative values use current platform mid prices.</p>
   </div>
 </section>
 
@@ -1171,6 +1291,7 @@ footer{background:var(--slate-900);padding:3.5rem 2rem 2rem;}
         <a href="#methodology">CXF Methodology</a>
         <a href="#earn">Earn credits</a>
         <a href="#marketplace">Marketplace</a>
+        <a href="#calculators">Calculators</a>
         <a href="#donate">Donate</a>
         <a href="#kyc">Apply for access</a>
       </div>
@@ -1490,6 +1611,8 @@ renderBlog('all');
       const node = document.querySelector(`[data-price="${key}"]`);
       if (node && typeof val === 'number') node.textContent = '$' + val.toFixed(2);
     }
+    window.CXF_PRICES = data.prices || {};
+    if (typeof refreshCalcs === 'function') refreshCalcs();
     if (el && data.lastUpdated) {
       const d = new Date(data.lastUpdated + 'T12:00:00');
       el.textContent = 'Prices indicative · Last updated: ' + d.toLocaleDateString('en-US',{day:'numeric',month:'short',year:'numeric'}) + ' · Not financial advice.';
@@ -1594,6 +1717,61 @@ async function sendMessage() {
   }
   agentTyping = false;
 }
+
+/* =========================================================
+   CARBON CREDIT CALCULATORS — indicative estimates only
+   ========================================================= */
+const CALC_FALLBACK_PRICES = {
+  'cxf-usgulf': 21.50, 'verra-redd': 18.40, 'gold-solar': 22.10,
+  'acr-car': 15.20, 'verra-blue': 31.50, 'gold-cookstoves': 16.80,
+  'cxf-rerefining': 19.80, 'planvivo-agro': 24.00
+};
+
+function calcPrice(key) {
+  return (window.CXF_PRICES && window.CXF_PRICES[key]) || CALC_FALLBACK_PRICES[key] || 0;
+}
+
+function calcFmt(n, dec) {
+  return n.toLocaleString('en-US', {maximumFractionDigits: dec === undefined ? 0 : dec});
+}
+
+function calcSet(numId, valId, credits, priceKey) {
+  const numEl = document.getElementById(numId);
+  const valEl = document.getElementById(valId);
+  if (!numEl) return;
+  if (!credits || credits <= 0) { numEl.textContent = '—'; valEl.textContent = ''; return; }
+  numEl.textContent = calcFmt(credits);
+  valEl.textContent = '≈ $' + calcFmt(credits * calcPrice(priceKey)) + ' indicative value';
+}
+
+function calcWasteOil() {
+  const litres = parseFloat(document.getElementById('calcWoVol').value) || 0;
+  const factor = parseFloat(document.getElementById('calcWoScope').value);
+  calcSet('calcWoNum', 'calcWoVal', litres / 1000 * factor, 'cxf-usgulf');
+}
+
+function calcGreenEnergy() {
+  const mwh = parseFloat(document.getElementById('calcGeMwh').value) || 0;
+  const factor = parseFloat(document.getElementById('calcGeFactor').value);
+  calcSet('calcGeNum', 'calcGeVal', mwh * factor, 'gold-solar');
+}
+
+function calcMethane() {
+  const ch4 = parseFloat(document.getElementById('calcMeT').value) || 0;
+  calcSet('calcMeNum', 'calcMeVal', ch4 * 28, 'acr-car');
+}
+
+function calcOffset() {
+  const t = parseFloat(document.getElementById('calcOfT').value) || 0;
+  const key = document.getElementById('calcOfType').value;
+  const numEl = document.getElementById('calcOfNum');
+  const valEl = document.getElementById('calcOfVal');
+  if (!t || t <= 0) { numEl.textContent = '—'; valEl.textContent = ''; return; }
+  numEl.textContent = '$' + calcFmt(t * calcPrice(key));
+  valEl.textContent = calcFmt(t) + ' tCO₂e @ $' + calcPrice(key).toFixed(2) + ' / tCO₂e';
+}
+
+function refreshCalcs() { calcWasteOil(); calcGreenEnergy(); calcMethane(); calcOffset(); }
 </script>
 </body>
 </html>
