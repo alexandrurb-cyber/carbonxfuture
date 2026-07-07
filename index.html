@@ -744,7 +744,7 @@ footer{background:var(--slate-900);padding:3.5rem 2rem 2rem;}
             <td class="td-action"><button onclick="quoteRequest(this)">Request quote</button></td>
           </tr>
           <tr data-reg="cxf">
-            <td><div class="td-project"><span class="project-dot cxf"></span><div><div class="td-name">Industrial Oil Recovery — Romania</div><div class="td-sub">Romania · Used oil collection</div></div></div></td>
+            <td><div class="td-project"><span class="project-dot cxf"></span><div><div class="td-name">CXF Industrial Re-refining</div><div class="td-sub">Used oil re-refining · Vintage 2025</div></div></div></td>
             <td><span class="badge cxf">⬡ CXF</span></td>
             <td class="td-muted">Waste oil</td><td>2025</td>
             <td class="td-price">12,400</td><td class="td-price">$19.80</td>
@@ -1030,13 +1030,13 @@ footer{background:var(--slate-900);padding:3.5rem 2rem 2rem;}
         <div class="price-bar-wrap"><div class="price-bar" style="width:48%;background:rgba(250,199,117,0.5)"></div></div>
         <div class="price-range"><span>52w low $11.00</span><span>52w high $25.00</span></div>
       </div>
-      <div class="price-card">
+      <div class="price-card price-cxf">
         <div class="price-card-top">
           <span class="price-reg" style="color:#5DCAA5;">⬡ CXF</span>
           <span class="price-change up">▲ +3.5%</span>
         </div>
         <div class="price-type">Waste oil recycling</div>
-        <div class="price-name">CXF Used Oil — Romania</div>
+        <div class="price-name">CXF Industrial Re-refining</div>
         <div class="price-val">$19.80</div>
         <div class="price-sub">per tCO₂e · Vintage 2025</div>
         <div class="price-bar-wrap"><div class="price-bar" style="width:58%"></div></div>
@@ -1464,7 +1464,7 @@ const AGENT_SYSTEM = `You are Agent CXF, the official AI assistant for CarbonXFu
 You help users understand:
 - CXF credits: CarbonXFuture's proprietary carbon credit standard for waste oil recycling and collection. 1 CXF credit = 1 tonne CO2 equivalent avoided. Credits are digital, issued on the CarbonXFuture registry and tradeable on the platform.
 - How to earn CXF credits: waste oil collectors and recyclers apply, submit monthly volume data, pass third-party verification, then receive digital CXF credits to sell on the marketplace.
-- Current indicative prices: CXF Used Oil US Gulf ~$21.50/tCO2e, CXF Romania ~$19.80, Verra VCS REDD+ ~$18.40, Gold Standard ~$22.10, ACR/CAR ~$15.20, Blue Carbon ~$31.50, Plan Vivo ~$24.00.
+- Current indicative prices: CXF Used Oil US Gulf ~$21.50/tCO2e, CXF  ~$19.80, Verra VCS REDD+ ~$18.40, Gold Standard ~$22.10, ACR/CAR ~$15.20, Blue Carbon ~$31.50, Plan Vivo ~$24.00.
 - The CXF methodology: covers used oil collection, re-refining, and infrastructure development. ~2.85 tCO2e per 1,000 litres collected. Third-party audited, MRV-compliant.
 - Registries supported: CXF (proprietary), Verra VCS, Gold Standard, ACR, CAR, Plan Vivo.
 - How to apply: users submit KYC on the platform. 24-48h review. Options: waste oil recycler, corporate buyer, investment fund, trading desk, government entity.
@@ -1528,12 +1528,10 @@ async function sendMessage() {
   showTyping();
 
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
+    const res = await fetch('/api/chat', {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
       body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 1000,
         system: AGENT_SYSTEM,
         messages: agentHistory
       })
