@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="description" content="CarbonXFuture — The institutional marketplace for verified carbon credits across Verra, Gold Standard, ACR, CAR and Plan Vivo registries."/>
+<title>CarbonXFuture | Institutional Carbon Credit Exchange</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@400;500&display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --white:#ffffff;
+  --off-white:#F8F7F4;
+  --slate-50:#F5F5F3;
+  --slate-100:#E8E8E4;
+  --slate-200:#C8C8C2;
+  --slate-400:#8A8A82;
+  --slate-600:#4A4A45;
+  --slate-800:#1E1E1A;
+  --slate-900:#0F0F0D;
+  --forest:#1A4A2E;
+  --forest-light:#2D6B45;
+  --forest-pale:#EAF2EC;
+  --forest-mid:#C5DFC9;
+  --amber:#B8740A;
+  --amber-pale:#FDF3E3;
+  --blue:#1A3A5C;
+  --blue-pale:#E8EEF5;
+  --purple:#7B4F9E;
+  --purple-pale:#F3EEF8;
+  --radius-sm:6px;
+  --radius-md:10px;
+  --radius-lg:16px;
+}
+html{scroll-behavior:smooth;}
+body{font-family:'Inter',sans-serif;background:var(--white);color:var(--slate-800);font-size:15px;line-height:1.6;}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.96);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:0.5px solid var(--slate-100);padding:0 2rem;}
+.nav-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:62px;}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.logo-mark{width:32px;height:32px;background:var(--forest);border-radius:8px;display:flex;align-items:center;justify-content:center;}
+.logo-mark span{color:white;font-size:13px;font-weight:600;letter-spacing:-0.5px;}
+.logo-text{font-size:15px;font-weight:500;color:var(--slate-800);letter-spacing:-0.3px;}
+.logo-text em{color:var(--forest-light);font-style:normal;}
+.nav-links{display:flex;align-items:center;gap:0;}
+.nav-links a{font-size:13px;color:var(--slate-600);text-decoration:none;padding:6px 14px;border-radius:var(--radius-sm);transition:all 0.15s;}
+.nav-links a:hover{color:var(--slate-800);background:var(--slate-50);}
+.nav-cta{background:var(--forest)!important;color:white!important;border-radius:var(--radius-sm);font-size:13px!important;padding:7px 18px!important;margin-left:8px;}
+.nav-cta:hover{background:var(--forest-light)!important;}
+.nav-mobile-toggle{display:none;background:none;border:none;cursor:pointer;color:var(--slate-800);font-size:22px;}
+
+/* HERO */
+.hero{padding:6rem 2rem 5rem;background:var(--white);}
+.hero-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 420px;gap:4rem;align-items:center;}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:var(--forest-pale);border:0.5px solid var(--forest-mid);border-radius:100px;padding:5px 14px;font-size:12px;color:var(--forest);font-weight:500;margin-bottom:2rem;}
+.hero-badge .dot{width:6px;height:6px;border-radius:50%;background:var(--forest-light);animation:pulse 2s infinite;}
+.eyebrow{font-size:11px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--forest-light);margin-bottom:1rem;}
+h1{font-family:'Playfair Display',serif;font-size:clamp(2.2rem,4vw,3.4rem);font-weight:400;line-height:1.15;letter-spacing:-0.5px;color:var(--slate-800);}
+h1 em{font-style:italic;color:var(--forest-light);}
+h2{font-family:'Playfair Display',serif;font-size:clamp(1.6rem,3vw,2.4rem);font-weight:400;line-height:1.2;color:var(--slate-800);}
+h3{font-size:15px;font-weight:500;color:var(--slate-800);}
+.lead{font-size:17px;line-height:1.7;color:var(--slate-600);max-width:560px;margin-top:1rem;}
+.hero-actions{display:flex;align-items:center;gap:1rem;margin-top:2rem;flex-wrap:wrap;}
+.btn-primary{background:var(--forest);color:white;border:none;border-radius:var(--radius-sm);padding:12px 22px;font-size:14px;font-weight:500;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:background 0.15s;}
+.btn-primary:hover{background:var(--forest-light);}
+.btn-secondary{background:transparent;color:var(--slate-600);border:0.5px solid var(--slate-200);border-radius:var(--radius-sm);padding:12px 20px;font-size:14px;font-weight:400;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:all 0.15s;}
+.btn-secondary:hover{border-color:var(--slate-400);color:var(--slate-800);}
+
+/* HERO CARD */
+.hero-card{background:var(--slate-50);border:0.5px solid var(--slate-100);border-radius:var(--radius-lg);padding:1.5rem;}
+.hero-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;padding-bottom:1rem;border-bottom:0.5px solid var(--slate-100);}
+.hch-left span{font-size:12px;color:var(--slate-400);}
+.hch-left strong{display:block;font-size:15px;font-weight:600;color:var(--slate-800);}
+.status-live{display:inline-flex;align-items:center;gap:5px;font-size:11px;color:var(--forest-light);font-weight:500;}
+.status-live .dot{width:6px;height:6px;background:var(--forest-light);border-radius:50%;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+.credit-rows{display:flex;flex-direction:column;gap:10px;margin-bottom:1.25rem;}
+.credit-row{display:flex;justify-content:space-between;align-items:center;background:var(--white);border:0.5px solid var(--slate-100);border-radius:var(--radius-md);padding:10px 14px;}
+.cr-left{display:flex;align-items:center;gap:10px;}
+.cr-icon{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;}
+.cr-icon.verra{background:var(--forest-pale);color:var(--forest);}
+.cr-icon.gold{background:var(--amber-pale);color:var(--amber);}
+.cr-icon.acr{background:var(--blue-pale);color:var(--blue);}
+.cr-name{font-size:13px;font-weight:500;color:var(--slate-800);}
+.cr-reg{font-size:11px;color:var(--slate-400);}
+.cr-right{text-align:right;}
+.cr-price{font-size:14px;font-weight:600;color:var(--slate-800);}
+.cr-vol{font-size:11px;color:var(--slate-400);}
+.hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.h-stat{text-align:center;padding:10px;background:var(--white);border:0.5px solid var(--slate-100);border-radius:var(--radius-md);}
+.h-stat .val{font-size:16px;font-weight:600;color:var(--slate-800);}
+.h-stat .lbl{font-size:10px;color:var(--slate-400);margin-top:2px;}
+
+/* REGISTRIES BAR */
+.registries{background:var(--slate-50);border-top:0.5px solid var(--slate-100);border-bottom:0.5px solid var(--slate-100);padding:1.25rem 2rem;}
+.reg-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:2rem;flex-wrap:wrap;}
+.reg-label{font-size:11px;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:var(--slate-400);white-space:nowrap;}
+.reg-divider{width:0.5px;height:20px;background:var(--slate-200);}
+.reg-pills{display:flex;gap:8px;flex-wrap:wrap;}
+.reg-pill{font-size:12px;font-weight:500;color:var(--slate-600);padding:4px 12px;background:var(--white);border:0.5px solid var(--slate-200);border-radius:100px;}
+
+/* SECTIONS */
+section{padding:5rem 2rem;}
+.container{max-width:1100px;margin:0 auto;}
+
+/* FEATURES */
+.features{background:var(--white);}
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:3rem;}
+.feat-card{padding:1.5rem;background:var(--white);border:0.5px solid var(--slate-100);border-radius:var(--radius-lg);transition:border-color 0.2s,transform 0.2s;}
+.feat-card:hover{border-color:var(--slate-200);transform:translateY(-2px);}
+.feat-icon{width:38px;height:38px;border-radius:8px;background:var(--forest-pale);display:flex;align-items:center;justify-content:center;margin-bottom:1rem;color:var(--forest);font-size:18px;}
+.feat-card h3{margin-bottom:6px;}
+.feat-card p{font-size:13px;color:var(--slate-400);line-height:1.65;}
+
+/* MARKETPLACE */
+.marketplace{background:var(--white);}
+.market-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:2rem;flex-wrap:wrap;gap:1rem;}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.5rem;}
+.filter-btn{font-size:12px;padding:5px 14px;border-radius:100px;border:0.5px solid var(--slate-200);background:var(--white);color:var(--slate-600);cursor:pointer;transition:all 0.15s;font-family:'Inter',sans-serif;}
+.filter-btn.active,.filter-btn:hover{background:var(--forest);color:white;border-color:var(--forest);}
+.table-wrap{overflow-x:auto;border:0.5px solid var(--slate-100);border-radius:var(--radius-lg);}
+.listings-table{width:100%;border-collapse:collapse;min-width:700px;}
+.listings-table thead th{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.8px;color:var(--slate-400);padding:12px 16px;text-align:left;border-bottom:0.5px solid var(--slate-100);background:var(--slate-50);}
+.listings-table thead th:first-child{border-radius:var(--radius-lg) 0 0 0;}
+.listings-table thead th:last-child{border-radius:0 var(--radius-lg) 0 0;}
+.listings-table tbody tr{border-bottom:0.5px solid var(--slate-50);transition:background 0.1s;cursor:pointer;}
+.listings-table tbody tr:last-child{border-bottom:none;}
+.listings-table tbody tr:hover{background:var(--slate-50);}
+.listings-table td{padding:14px 16px;font-size:13px;color:var(--slate-800);}
+.td-project{display:flex;align-items:center;gap:10px;}
+.project-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.project-dot.verra{background:var(--forest-light);}
+.project-dot.gold{background:var(--amber);}
+.project-dot.acr{background:var(--blue);}
+.project-dot.car{background:var(--purple);}
+.project-dot.plan{background:#C27528;}
+.td-name{font-weight:500;font-size:13px;}
+.td-sub{font-size:11px;color:var(--slate-400);}
+.td-price{font-weight:600;}
+.td-muted{color:var(--slate-400);}
+.badge{display:inline-block;font-size:10px;font-weight:500;padding:3px 9px;border-radius:100px;white-space:nowrap;}
+.badge.verra{background:var(--forest-pale);color:var(--forest);}
+.badge.gold{background:var(--amber-pale);color:var(--amber);}
+.badge.acr{background:var(--blue-pale);color:var(--blue);}
+.badge.car{background:var(--purple-pale);color:var(--purple);}
+.badge.plan{background:#FEF5EC;color:#C27528;}
+.td-action button{font-size:11px;padding:5px 12px;background:transparent;border:0.5px solid var(--slate-200);border-radius:var(--radius-sm);color:var(--slate-600);cursor:pointer;transition:all 0.15s;font-family:'Inter',sans-serif;}
+.td-action button:hover{background:var(--forest);color:white;border-color:var(--forest);}
+
+/* DONATION */
+.donation{background:var(--forest-pale);border-top:0.5px solid var(--forest-mid);border-bottom:0.5px solid var(--forest-mid);}
+.donation-inner{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:start;}
+.donation-left p{font-size:15px;color:var(--slate-600);line-height:1.7;margin:1rem 0 1.75rem;}
+.donation-steps{display:flex;flex-direction:column;gap:14px;}
+.d-step{display:flex;align-items:flex-start;gap:12px;}
+.d-step-num{min-width:24px;height:24px;border-radius:50%;background:var(--forest);color:white;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;margin-top:2px;flex-shrink:0;}
+.d-step-text{font-size:14px;color:var(--slate-600);line-height:1.5;}
+.donation-card{background:var(--white);border:0.5px solid var(--forest-mid);border-radius:var(--radius-lg);padding:2rem;}
+.dc-title{font-size:13px;font-weight:500;color:var(--slate-600);margin-bottom:1rem;}
+.amount-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1rem;}
+.amount-btn{padding:10px;background:var(--slate-50);border:0.5px solid var(--slate-200);border-radius:var(--radius-md);font-size:14px;font-weight:500;color:var(--slate-800);cursor:pointer;transition:all 0.15s;text-align:center;font-family:'Inter',sans-serif;}
+.amount-btn.selected,.amount-btn:hover{background:var(--forest);color:white;border-color:var(--forest);}
+.custom-input{width:100%;padding:10px 14px;border:0.5px solid var(--slate-200);border-radius:var(--radius-md);font-size:14px;color:var(--slate-800);font-family:'Inter',sans-serif;background:var(--white);margin-bottom:1rem;outline:none;transition:border-color 0.15s;}
+.custom-input:focus{border-color:var(--forest);}
+.reward-preview{background:var(--forest-pale);border:0.5px solid var(--forest-mid);border-radius:var(--radius-md);padding:12px 16px;margin-bottom:1rem;display:flex;align-items:center;gap:12px;}
+.reward-icon{font-size:22px;color:var(--forest);}
+.reward-text{font-size:13px;color:var(--forest);font-weight:500;line-height:1.5;}
+.reward-text span{font-size:11px;font-weight:400;display:block;color:var(--forest-light);margin-top:2px;}
+.donate-note{font-size:11px;color:var(--slate-400);margin-top:12px;text-align:center;line-height:1.6;}
+
+/* HOW IT WORKS */
+.how{background:var(--white);}
+.steps-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;margin-top:3rem;position:relative;}
+.steps-grid::before{content:'';position:absolute;top:24px;left:12%;right:12%;height:0.5px;background:var(--slate-100);z-index:0;}
+.step-card{position:relative;z-index:1;text-align:center;padding:1.5rem 1rem;}
+.step-num{width:48px;height:48px;border-radius:50%;background:var(--white);border:0.5px solid var(--slate-200);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:14px;font-weight:600;color:var(--slate-800);}
+.step-card h3{margin-bottom:6px;font-size:14px;}
+.step-card p{font-size:12px;color:var(--slate-400);line-height:1.6;}
+
+/* ABOUT */
+.about{background:var(--slate-50);border-top:0.5px solid var(--slate-100);}
+.about-inner{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:start;}
+.about p{font-size:14px;color:var(--slate-600);margin-top:1rem;line-height:1.75;}
+.about-stats{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:2rem;}
+.a-stat{padding:1.25rem;background:var(--white);border:0.5px solid var(--slate-100);border-radius:var(--radius-md);}
+.a-stat .val{font-size:24px;font-weight:600;color:var(--slate-800);}
+.a-stat .lbl{font-size:12px;color:var(--slate-400);margin-top:4px;}
+.team-section-label{font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:1px;color:var(--slate-400);margin-bottom:1rem;}
+.team-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;}
+.team-card{background:var(--white);border:0.5px solid var(--slate-100);border-radius:var(--radius-lg);padding:1.25rem;display:flex;align-items:center;gap:12px;}
+.team-avatar{width:44px;height:44px;border-radius:50%;background:var(--forest-pale);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:14px;color:var(--forest);flex-shrink:0;}
+.team-name{font-size:14px;font-weight:500;}
+.team-role{font-size:12px;color:var(--slate-400);}
+
+/* BLOG */
+.blog{background:var(--white);}
+.blog-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:3rem;}
+.blog-card{border:0.5px solid var(--slate-100);border-radius:var(--radius-lg);overflow:hidden;transition:border-color 0.2s,transform 0.2s;text-decoration:none;}
+.blog-card:hover{border-color:var(--slate-200);transform:translateY(-2px);}
+.blog-img{height:140px;background:var(--slate-50);display:flex;align-items:center;justify-content:center;border-bottom:0.5px solid var(--slate-100);}
+.blog-img i{font-size:40px;color:var(--slate-200);}
+.blog-body{padding:1.25rem;}
+.blog-tag{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.8px;color:var(--forest-light);margin-bottom:8px;}
+.blog-title{font-size:14px;font-weight:500;line-height:1.45;color:var(--slate-800);margin-bottom:8px;}
+.blog-date{font-size:11px;color:var(--slate-400);}
+
+/* KYC */
+.kyc{background:var(--slate-800);}
+.kyc-inner{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:start;}
+.kyc h2{color:var(--white);}
+.kyc .eyebrow{color:rgba(255,255,255,0.35);}
+.kyc-desc{color:rgba(255,255,255,0.55);font-size:15px;line-height:1.7;margin:1rem 0 2rem;}
+.kyc-benefits{display:flex;flex-direction:column;gap:10px;}
+.kyc-benefit{display:flex;align-items:center;gap:10px;color:rgba(255,255,255,0.5);font-size:13px;}
+.kyc-benefit i{color:var(--forest-mid);font-size:16px;}
+.kyc-form{background:rgba(255,255,255,0.05);border:0.5px solid rgba(255,255,255,0.1);border-radius:var(--radius-lg);padding:2rem;}
+.form-row{margin-bottom:1rem;}
+.form-row label{display:block;font-size:11px;font-weight:500;color:rgba(255,255,255,0.4);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px;}
+.form-row input,.form-row select{width:100%;background:rgba(255,255,255,0.07);border:0.5px solid rgba(255,255,255,0.12);border-radius:var(--radius-sm);padding:10px 14px;font-size:14px;color:white;font-family:'Inter',sans-serif;outline:none;transition:border-color 0.15s;-webkit-appearance:none;}
+.form-row input:focus,.form-row select:focus{border-color:rgba(255,255,255,0.3);}
+.form-row input::placeholder{color:rgba(255,255,255,0.2);}
+.form-row select option{background:var(--slate-800);color:white;}
+.form-row select{color:rgba(255,255,255,0.6);}
+.kyc-note{font-size:11px;color:rgba(255,255,255,0.25);margin-top:1rem;line-height:1.6;text-align:center;}
+.btn-white{background:white;color:var(--slate-800);border:none;border-radius:var(--radius-sm);padding:12px 22px;font-size:14px;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:background 0.15s;width:100%;justify-content:center;margin-top:0.5rem;font-family:'Inter',sans-serif;}
+.btn-white:hover{background:var(--off-white);}
+
+/* FOOTER */
+footer{background:var(--slate-900);padding:3.5rem 2rem 2rem;}
+.footer-inner{max-width:1100px;margin:0 auto;}
+.footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;padding-bottom:2.5rem;border-bottom:0.5px solid rgba(255,255,255,0.07);}
+.footer-logo{display:flex;align-items:center;gap:10px;margin-bottom:1rem;}
+.footer-brand-desc{font-size:13px;color:rgba(255,255,255,0.35);line-height:1.7;max-width:260px;}
+.footer-col h4{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,0.25);margin-bottom:1rem;}
+.footer-col a{display:block;font-size:13px;color:rgba(255,255,255,0.45);text-decoration:none;margin-bottom:8px;transition:color 0.15s;}
+.footer-col a:hover{color:rgba(255,255,255,0.8);}
+.footer-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:1.5rem;flex-wrap:wrap;gap:1rem;}
+.footer-copy{font-size:12px;color:rgba(255,255,255,0.2);}
+.footer-certs{display:flex;gap:8px;flex-wrap:wrap;}
+.cert-badge{font-size:10px;padding:3px 10px;border:0.5px solid rgba(255,255,255,0.1);border-radius:100px;color:rgba(255,255,255,0.3);}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .hero-inner{grid-template-columns:1fr;}
+  .hero-card{display:none;}
+  .features-grid{grid-template-columns:1fr 1fr;}
+  .steps-grid{grid-template-columns:1fr 1fr;}
+  .steps-grid::before{display:none;}
+  .donation-inner,.about-inner,.kyc-inner{grid-template-columns:1fr;}
+  .footer-top{grid-template-columns:1fr 1fr;}
+  .blog-grid{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:600px){
+  .nav-links{display:none;}
+  .nav-mobile-toggle{display:block;}
+  .features-grid{grid-template-columns:1fr;}
+  .steps-grid{grid-template-columns:1fr;}
+  .blog-grid{grid-template-columns:1fr;}
+  .footer-top{grid-template-columns:1fr;}
+  h1{font-size:2rem;}
+  section{padding:3.5rem 1.25rem;}
+  .hero{padding:4rem 1.25rem 3rem;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="logo">
+      <div class="logo-mark"><span>CX</span></div>
+      <span class="logo-text">Carbon<em>X</em>Future</span>
+    </a>
+    <div class="nav-links">
+      <a href="#marketplace">Marketplace</a>
+      <a href="#how">How it works</a>
+      <a href="#donate">Donate</a>
+      <a href="#about">About</a>
+      <a href="#blog">Insights</a>
+      <a href="#kyc" class="nav-cta">Request Access</a>
+    </div>
+    <button class="nav-mobile-toggle" aria-label="Menu"><i class="ti ti-menu-2"></i></button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="hero-badge"><span class="dot"></span> Live institutional marketplace</div>
+      <h1>The verified carbon<br/><em>exchange</em> for institutions</h1>
+      <p class="lead">Trade verified carbon credits across Verra, Gold Standard, ACR, CAR and Plan Vivo — with full registry transparency and direct counterparty matching.</p>
+      <div class="hero-actions">
+        <a href="#marketplace" class="btn-primary">Browse marketplace <i class="ti ti-arrow-right" aria-hidden="true"></i></a>
+        <a href="#kyc" class="btn-secondary">Request access</a>
+      </div>
+    </div>
+    <div class="hero-card">
+      <div class="hero-card-header">
+        <div class="hch-left">
+          <span>Live listings</span>
+          <strong>Market snapshot</strong>
+        </div>
+        <div class="status-live"><span class="dot"></span> Live</div>
+      </div>
+      <div class="credit-rows">
+        <div class="credit-row">
+          <div class="cr-left">
+            <div class="cr-icon verra"><i class="ti ti-leaf" aria-hidden="true"></i></div>
+            <div>
+              <div class="cr-name">REDD+ Amazon Basin</div>
+              <div class="cr-reg">Verra VCS · Vintage 2023</div>
+            </div>
+          </div>
+          <div class="cr-right">
+            <div class="cr-price">$18.40</div>
+            <div class="cr-vol">42,000 tCO₂e</div>
+          </div>
+        </div>
+        <div class="credit-row">
+          <div class="cr-left">
+            <div class="cr-icon gold"><i class="ti ti-sun" aria-hidden="true"></i></div>
+            <div>
+              <div class="cr-name">Solar Grid — Kenya</div>
+              <div class="cr-reg">Gold Standard · Vintage 2024</div>
+            </div>
+          </div>
+          <div class="cr-right">
+            <div class="cr-price">$22.10</div>
+            <div class="cr-vol">18,500 tCO₂e</div>
+          </div>
+        </div>
+        <div class="credit-row">
+          <div class="cr-left">
+            <div class="cr-icon acr"><i class="ti ti-building-factory" aria-hidden="true"></i></div>
+            <div>
+              <div class="cr-name">Methane Capture US</div>
+              <div class="cr-reg">ACR · Vintage 2023</div>
+            </div>
+          </div>
+          <div class="cr-right">
+            <div class="cr-price">$14.75</div>
+            <div class="cr-vol">90,000 tCO₂e</div>
+          </div>
+        </div>
+      </div>
+      <div class="hero-stats">
+        <div class="h-stat"><div class="val">$2.4B</div><div class="lbl">Volume traded</div></div>
+        <div class="h-stat"><div class="val">340+</div><div class="lbl">Active projects</div></div>
+        <div class="h-stat"><div class="val">5</div><div class="lbl">Registries</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REGISTRIES BAR -->
+<div class="registries">
+  <div class="reg-inner">
+    <span class="reg-label">Verified registries</span>
+    <div class="reg-divider"></div>
+    <div class="reg-pills">
+      <span class="reg-pill">Verra VCS</span>
+      <span class="reg-pill">Gold Standard</span>
+      <span class="reg-pill">ACR</span>
+      <span class="reg-pill">CAR</span>
+      <span class="reg-pill">Plan Vivo</span>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section class="features">
+  <div class="container">
+    <div class="eyebrow">Why CarbonXFuture</div>
+    <h2>Built for institutional<br/>carbon markets</h2>
+    <div class="features-grid">
+      <div class="feat-card">
+        <div class="feat-icon"><i class="ti ti-shield-check" aria-hidden="true"></i></div>
+        <h3>Registry-verified credits</h3>
+        <p>Every credit is cross-referenced against its source registry in real time. No double-counting, no unverified offsets.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon"><i class="ti ti-users" aria-hidden="true"></i></div>
+        <h3>Direct counterparty matching</h3>
+        <p>Institutional buyers connect directly with project developers. No intermediary markups, transparent pricing.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon"><i class="ti ti-file-certificate" aria-hidden="true"></i></div>
+        <h3>Full documentation chain</h3>
+        <p>Access project design documents, MRV reports, verification statements and retirement certificates in one place.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon"><i class="ti ti-truck" aria-hidden="true"></i></div>
+        <h3>Physical cargo trading</h3>
+        <p>Integrated marketplace for waste oil and base oil cargoes, connecting refiners, processors and end buyers globally.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon"><i class="ti ti-chart-line" aria-hidden="true"></i></div>
+        <h3>Live market data</h3>
+        <p>Real-time price discovery across project types, vintages and geographies — with historical benchmark data.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon"><i class="ti ti-lock" aria-hidden="true"></i></div>
+        <h3>KYC / AML compliant</h3>
+        <p>All participants onboarded through institutional-grade KYC. Fully compliant with FATF and IOSCO frameworks.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MARKETPLACE -->
+<section class="marketplace" id="marketplace" style="background:var(--slate-50);border-top:0.5px solid var(--slate-100);">
+  <div class="container">
+    <div class="market-header">
+      <div>
+        <div class="eyebrow">Live marketplace</div>
+        <h2>Available credit listings</h2>
+      </div>
+      <a href="#kyc" class="btn-secondary" style="font-size:13px;">Request full access <i class="ti ti-arrow-right" aria-hidden="true"></i></a>
+    </div>
+    <div class="filters">
+      <button class="filter-btn active" onclick="filterTable(this,'all')">All registries</button>
+      <button class="filter-btn" onclick="filterTable(this,'verra')">Verra VCS</button>
+      <button class="filter-btn" onclick="filterTable(this,'gold')">Gold Standard</button>
+      <button class="filter-btn" onclick="filterTable(this,'acr')">ACR</button>
+      <button class="filter-btn" onclick="filterTable(this,'car')">CAR</button>
+      <button class="filter-btn" onclick="filterTable(this,'plan')">Plan Vivo</button>
+    </div>
+    <div class="table-wrap">
+      <table class="listings-table" id="listingsTable">
+        <thead>
+          <tr>
+            <th>Project</th>
+            <th>Registry</th>
+            <th>Type</th>
+            <th>Vintage</th>
+            <th>Volume (tCO₂e)</th>
+            <th>Price / tCO₂e</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr data-reg="verra">
+            <td><div class="td-project"><span class="project-dot verra"></span><div><div class="td-name">REDD+ Amazon Basin</div><div class="td-sub">Brazil · Forest conservation</div></div></div></td>
+            <td><span class="badge verra">Verra VCS</span></td>
+            <td class="td-muted">REDD+</td><td>2023</td>
+            <td class="td-price">42,000</td><td class="td-price">$18.40</td>
+            <td class="td-action"><button onclick="quoteRequest(this)">Request quote</button></td>
+          </tr>
+          <tr data-reg="gold">
+            <td><div class="td-project"><span class="project-dot gold"></span><div><div class="td-name">Solar Grid — Kenya</div><div class="td-sub">Kenya · Renewable energy</div></div></div></td>
+            <td><span class="badge gold">Gold Standard</span></td>
+            <td class="td-muted">Renewable energy</td><td>2024</td>
+            <td class="td-price">18,500</td><td class="td-price">$22.10</td>
+            <td class="td-action"><button onclick="quoteRequest(this)">Request quote</button></td>
+          </tr>
+          <tr data-reg="acr">
+            <td><div class="td-project"><span class="project-dot acr"></span><div><div class="td-name">Landfill Methane Capture</div><div class="td-sub">United States · Waste management</div></div></div></td>
+            <td><span class="badge acr">ACR</span></td>
+            <td class="td-muted">Methane avoidance</td><td>2023</td>
+            <td class="td-price">90,000</td><td class="td-price">$14.75</td>
+            <td class="td-action"><button onclick="quoteRequest(this)">Request quote</button></td>
+          </tr>
+          <tr data-reg="car">
+            <td><div class="td-project"><span class="project-dot car"></span><div><div class="td-name">Improved Forest Mgmt — Oregon</div><div class="td-sub">USA · Forestry</div></div></div></td>
+            <td><span class="badge car">CAR</span></td>
+            <td class="td-muted">IFM</td><td>2024</td>
+            <td class="td-price">27,800</td><td class="td-price">$19.90</td>
+            <td class="td-action"><button onclick="quoteRequest(this)">Request quote</button></td>
+          </tr>
+          <tr data-reg="verra">
+            <td><div class="td-project"><span class="project-dot verra"></span><div><div class="td-name">Blue Carbon — Mangroves</div><div class="td-sub">Indonesia · Coastal ecosystem</div></div></div></td>
+            <td><span class="badge verra">Verra VCS</span></td>
+            <td class="td-muted">Blue carbon</td><td>2023</td>
+            <td class="td-price">12,000</td><td class="td-price">$31.50</td>
+            <td class="td-action"><button onclick="quoteRequest(this)">Request quote</button></td>
+          </tr>
+          <tr data-reg="gold">
+            <td><div class="td-project"><span class="project-dot gold"></span><div><div class="td-name">Clean Cookstoves — Ghana</div><div class="td-sub">Ghana · Community health</div></div></div></td>
+            <td><span class="badge gold">Gold Standard</span></td>
+            <td class="td-muted">Energy efficiency</td><td>2024</td>
+            <td class="td-price">35,200</td><td class="td-price">$16.80</td>
+            <td class="td-action"><button onclick="quoteRequest(this)">Request quote</button></td>
+          </tr>
+          <tr data-reg="plan">
+            <td><div class="td-project"><span class="project-dot plan"></span><div><div class="td-name">Agroforestry — Uganda</div><div class="td-sub">Uganda · Land use</div></div></div></td>
+            <td><span class="badge plan">Plan Vivo</span></td>
+            <td class="td-muted">Agroforestry</td><td>2024</td>
+            <td class="td-price">8,400</td><td class="td-price">$24.00</td>
+            <td class="td-action"><button onclick="quoteRequest(this)">Request quote</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- DONATION -->
+<section class="donation" id="donate">
+  <div class="container">
+    <div class="donation-inner">
+      <div class="donation-left">
+        <div class="eyebrow">Climate action fund</div>
+        <h2>Donate & receive a<br/>carbon credit</h2>
+        <p>Support verified climate projects through your donation. Every contributor receives a certified carbon credit as recognition — because real climate action deserves real accountability.</p>
+        <div class="donation-steps">
+          <div class="d-step">
+            <div class="d-step-num">1</div>
+            <div class="d-step-text">Choose your donation amount and preferred project type</div>
+          </div>
+          <div class="d-step">
+            <div class="d-step-num">2</div>
+            <div class="d-step-text">Your funds go directly to a verified carbon project on registry</div>
+          </div>
+          <div class="d-step">
+            <div class="d-step-num">3</div>
+            <div class="d-step-text">Receive a certified retirement certificate in your name within 48h</div>
+          </div>
+        </div>
+      </div>
+      <div class="donation-card">
+        <div class="dc-title">Select donation amount</div>
+        <div class="amount-grid">
+          <div class="amount-btn selected" onclick="selectAmount(this,'50')">$50</div>
+          <div class="amount-btn" onclick="selectAmount(this,'100')">$100</div>
+          <div class="amount-btn" onclick="selectAmount(this,'250')">$250</div>
+          <div class="amount-btn" onclick="selectAmount(this,'500')">$500</div>
+          <div class="amount-btn" onclick="selectAmount(this,'1000')">$1,000</div>
+          <div class="amount-btn" onclick="selectAmount(this,'custom')">Custom</div>
+        </div>
+        <input class="custom-input" type="number" placeholder="Enter custom amount (USD)" id="custom-amount" style="display:none"/>
+        <div class="reward-preview">
+          <i class="ti ti-certificate reward-icon" aria-hidden="true"></i>
+          <div class="reward-text">
+            You will receive <strong id="credit-amount">approx. 2.7 tCO₂e</strong>
+            <span>as a verified carbon credit retirement in your name</span>
+          </div>
+        </div>
+        <button class="btn-primary" style="width:100%;justify-content:center;" id="donateBtn" onclick="handleDonate()">
+          <i class="ti ti-heart" aria-hidden="true"></i> Donate & claim your credit
+        </button>
+        <p class="donate-note">Credits retired via Verra VCS registry on your behalf. Certificate emailed within 48 hours.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how" id="how">
+  <div class="container">
+    <div class="eyebrow">Process</div>
+    <h2>How it works</h2>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-num">01</div>
+        <h3>Apply & onboard</h3>
+        <p>Submit your institutional KYC. Our compliance team reviews within 24–48 hours.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">02</div>
+        <h3>Browse listings</h3>
+        <p>Access the full marketplace with live pricing, project documents and vintage data.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">03</div>
+        <h3>Request a quote</h3>
+        <p>Submit RFQs directly to project developers. Negotiate and agree terms on-platform.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">04</div>
+        <h3>Trade & retire</h3>
+        <p>Execute the transaction. Credits are transferred or retired directly in the registry.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div class="container">
+    <div class="about-inner">
+      <div>
+        <div class="eyebrow">About us</div>
+        <h2>Connecting capital<br/>with verified climate action</h2>
+        <p>CarbonXFuture is a Fort Lauderdale-based institutional marketplace operating across five carbon credit registries and physical commodity markets. We specialize in high-volume, direct transactions for corporates, funds and government entities.</p>
+        <div class="about-stats">
+          <div class="a-stat"><div class="val">$2.4B+</div><div class="lbl">Total volume facilitated</div></div>
+          <div class="a-stat"><div class="val">340+</div><div class="lbl">Verified projects listed</div></div>
+          <div class="a-stat"><div class="val">5</div><div class="lbl">Registry integrations</div></div>
+          <div class="a-stat"><div class="val">28</div><div class="lbl">Countries covered</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="team-section-label">Leadership team</div>
+        <div class="team-grid">
+          <div class="team-card">
+            <div class="team-avatar">AC</div>
+            <div><div class="team-name">Alexandru C.</div><div class="team-role">Founder & CEO</div></div>
+          </div>
+          <div class="team-card">
+            <div class="team-avatar">HM</div>
+            <div><div class="team-name">Head of Markets</div><div class="team-role">Carbon Desk</div></div>
+          </div>
+          <div class="team-card">
+            <div class="team-avatar">HC</div>
+            <div><div class="team-name">Head of Compliance</div><div class="team-role">KYC / AML</div></div>
+          </div>
+          <div class="team-card">
+            <div class="team-avatar">HT</div>
+            <div><div class="team-name">Head of Technology</div><div class="team-role">Platform & Data</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BLOG -->
+<section class="blog" id="blog">
+  <div class="container">
+    <div class="eyebrow">Insights</div>
+    <h2>Market intelligence</h2>
+    <div class="blog-grid">
+      <a href="#" class="blog-card">
+        <div class="blog-img"><i class="ti ti-chart-area-line" aria-hidden="true"></i></div>
+        <div class="blog-body">
+          <div class="blog-tag">Market report</div>
+          <div class="blog-title">Voluntary carbon markets Q2 2025: price dynamics and liquidity trends</div>
+          <div class="blog-date">July 2025</div>
+        </div>
+      </a>
+      <a href="#" class="blog-card">
+        <div class="blog-img"><i class="ti ti-file-text" aria-hidden="true"></i></div>
+        <div class="blog-body">
+          <div class="blog-tag">Regulation</div>
+          <div class="blog-title">ICVCM Core Carbon Principles: what institutional buyers need to know in 2025</div>
+          <div class="blog-date">June 2025</div>
+        </div>
+      </a>
+      <a href="#" class="blog-card">
+        <div class="blog-img"><i class="ti ti-droplet" aria-hidden="true"></i></div>
+        <div class="blog-body">
+          <div class="blog-tag">Physical markets</div>
+          <div class="blog-title">Used oil collection infrastructure: carbon methodology development update</div>
+          <div class="blog-date">May 2025</div>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- KYC / CONTACT -->
+<section class="kyc" id="kyc">
+  <div class="container">
+    <div class="kyc-inner">
+      <div>
+        <div class="eyebrow">Access request</div>
+        <h2>Ready to start trading?</h2>
+        <p class="kyc-desc">CarbonXFuture is open to institutional buyers, project developers, corporates and funds. Complete the form to begin onboarding.</p>
+        <div class="kyc-benefits">
+          <div class="kyc-benefit"><i class="ti ti-check" aria-hidden="true"></i> 24–48h KYC review</div>
+          <div class="kyc-benefit"><i class="ti ti-check" aria-hidden="true"></i> Access to full listing database</div>
+          <div class="kyc-benefit"><i class="ti ti-check" aria-hidden="true"></i> Direct counterparty matching</div>
+          <div class="kyc-benefit"><i class="ti ti-check" aria-hidden="true"></i> Dedicated account manager</div>
+        </div>
+      </div>
+      <div class="kyc-form">
+        <div class="form-row">
+          <label>Full name</label>
+          <input type="text" placeholder="John Smith"/>
+        </div>
+        <div class="form-row">
+          <label>Company / Institution</label>
+          <input type="text" placeholder="Acme Capital LLC"/>
+        </div>
+        <div class="form-row">
+          <label>Business email</label>
+          <input type="email" placeholder="j.smith@company.com"/>
+        </div>
+        <div class="form-row">
+          <label>Entity type</label>
+          <select>
+            <option value="">Select entity type</option>
+            <option>Corporate buyer</option>
+            <option>Investment fund</option>
+            <option>Project developer</option>
+            <option>Trading desk</option>
+            <option>Government / Public entity</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label>Estimated annual volume (tCO₂e)</label>
+          <select>
+            <option value="">Select range</option>
+            <option>Under 1,000</option>
+            <option>1,000 – 10,000</option>
+            <option>10,000 – 100,000</option>
+            <option>100,000+</option>
+          </select>
+        </div>
+        <button class="btn-white" id="kycBtn" onclick="handleKYC()">
+          <i class="ti ti-arrow-right" aria-hidden="true"></i> Submit access request
+        </button>
+        <p class="kyc-note">All information is treated as strictly confidential. You will be contacted within 24–48 business hours.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div>
+        <div class="footer-logo">
+          <div class="logo-mark"><span>CX</span></div>
+          <span class="logo-text" style="color:rgba(255,255,255,0.65);">Carbon<em>X</em>Future</span>
+        </div>
+        <p class="footer-brand-desc">The institutional marketplace for verified carbon credits and physical commodity trading. Based in Fort Lauderdale, Florida.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Platform</h4>
+        <a href="#marketplace">Marketplace</a>
+        <a href="#how">How it works</a>
+        <a href="#donate">Donate</a>
+        <a href="#kyc">Request access</a>
+      </div>
+      <div class="footer-col">
+        <h4>Registries</h4>
+        <a href="#">Verra VCS</a>
+        <a href="#">Gold Standard</a>
+        <a href="#">ACR</a>
+        <a href="#">CAR</a>
+        <a href="#">Plan Vivo</a>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <a href="#about">About</a>
+        <a href="#blog">Insights</a>
+        <a href="#">Privacy policy</a>
+        <a href="#">Terms of use</a>
+        <a href="#">Contact</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2025 CarbonXFuture. All rights reserved. Fort Lauderdale, Florida.</p>
+      <div class="footer-certs">
+        <span class="cert-badge">Verra member</span>
+        <span class="cert-badge">Gold Standard partner</span>
+        <span class="cert-badge">ICVCM aligned</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+function selectAmount(el, val) {
+  document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  const customInput = document.getElementById('custom-amount');
+  const creditEl = document.getElementById('credit-amount');
+  if (val === 'custom') {
+    customInput.style.display = 'block';
+    creditEl.textContent = 'calculated upon entry';
+    customInput.oninput = function() {
+      const amt = parseFloat(this.value) || 0;
+      creditEl.textContent = 'approx. ' + (amt / 18.4).toFixed(1) + ' tCO₂e';
+    };
+  } else {
+    customInput.style.display = 'none';
+    creditEl.textContent = 'approx. ' + (parseFloat(val) / 18.4).toFixed(1) + ' tCO₂e';
+  }
+}
+
+function handleDonate() {
+  const btn = document.getElementById('donateBtn');
+  btn.innerHTML = '<i class="ti ti-check"></i> Thank you! Certificate will be emailed within 48h.';
+  btn.style.background = 'var(--forest-light)';
+  btn.disabled = true;
+  setTimeout(() => {
+    btn.innerHTML = '<i class="ti ti-heart"></i> Donate & claim your credit';
+    btn.style.background = '';
+    btn.disabled = false;
+  }, 4000);
+}
+
+function handleKYC() {
+  const btn = document.getElementById('kycBtn');
+  btn.innerHTML = '<i class="ti ti-check"></i> Request submitted — we\'ll contact you within 48h';
+  btn.style.background = 'var(--forest-pale)';
+  btn.style.color = 'var(--forest)';
+  btn.disabled = true;
+}
+
+function filterTable(btn, reg) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('#listingsTable tbody tr').forEach(row => {
+    row.style.display = (reg === 'all' || row.dataset.reg === reg) ? '' : 'none';
+  });
+}
+
+function quoteRequest(btn) {
+  const orig = btn.textContent;
+  btn.textContent = '✓ Sent';
+  btn.style.background = 'var(--forest)';
+  btn.style.color = 'white';
+  btn.style.borderColor = 'var(--forest)';
+  setTimeout(() => {
+    btn.textContent = orig;
+    btn.style.background = '';
+    btn.style.color = '';
+    btn.style.borderColor = '';
+  }, 2500);
+}
+</script>
+</body>
+</html>
