@@ -68,11 +68,21 @@ nav.scrolled .nav-mobile-toggle{color:var(--slate-800);}
 /* ===================== HERO ===================== */
 .hero{position:relative;min-height:100vh;display:flex;flex-direction:column;justify-content:center;overflow:hidden;background:#0a1f12;}
 
-/* Animated SVG background */
-.hero-bg{position:absolute;inset:0;width:100%;height:100%;z-index:0;}
+/* Real photo background */
+.hero-bg-photo{
+  position:absolute;inset:0;width:100%;height:100%;
+  background-image:url('https://images.unsplash.com/photo-1518186285589-2f7649de83e0?w=1800&q=80');
+  background-size:cover;
+  background-position:center center;
+  background-repeat:no-repeat;
+  z-index:0;
+  transform:scale(1.04);
+  transition:transform 8s ease;
+}
+.hero-bg-photo.loaded{transform:scale(1);}
 
 /* Overlay gradient for readability */
-.hero-overlay{position:absolute;inset:0;background:linear-gradient(135deg,rgba(10,31,18,0.82) 0%,rgba(10,31,18,0.55) 60%,rgba(10,31,18,0.3) 100%);z-index:1;}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(120deg,rgba(10,31,18,0.88) 0%,rgba(10,31,18,0.65) 55%,rgba(10,31,18,0.4) 100%);z-index:1;}
 
 .hero-content{position:relative;z-index:2;max-width:1140px;margin:0 auto;padding:0 2rem;padding-top:80px;display:grid;grid-template-columns:1fr 400px;gap:4rem;align-items:center;width:100%;}
 .hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.1);border:0.5px solid rgba(255,255,255,0.2);border-radius:100px;padding:6px 16px;font-size:12px;color:rgba(255,255,255,0.9);font-weight:500;margin-bottom:1.75rem;backdrop-filter:blur(4px);}
@@ -363,120 +373,8 @@ footer{background:var(--slate-900);padding:3.5rem 2rem 2rem;}
 <!-- HERO -->
 <section class="hero">
 
-  <!-- Animated SVG Background: aerial green industrial landscape -->
-  <svg class="hero-bg" viewBox="0 0 1440 900" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
-    <defs>
-      <radialGradient id="glow1" cx="30%" cy="60%" r="50%">
-        <stop offset="0%" stop-color="#1D9E75" stop-opacity="0.25"/>
-        <stop offset="100%" stop-color="#0a1f12" stop-opacity="0"/>
-      </radialGradient>
-      <radialGradient id="glow2" cx="80%" cy="30%" r="40%">
-        <stop offset="0%" stop-color="#2D6B45" stop-opacity="0.2"/>
-        <stop offset="100%" stop-color="#0a1f12" stop-opacity="0"/>
-      </radialGradient>
-      <filter id="blur2">
-        <feGaussianBlur stdDeviation="2"/>
-      </filter>
-    </defs>
-
-    <!-- Base dark background -->
-    <rect width="1440" height="900" fill="#0a1f12"/>
-
-    <!-- Atmospheric glows -->
-    <ellipse cx="430" cy="540" rx="520" ry="380" fill="url(#glow1)"/>
-    <ellipse cx="1150" cy="270" rx="400" ry="300" fill="url(#glow2)"/>
-
-    <!-- Aerial landscape: abstract oil recycling facility + green zones -->
-    <!-- Ground plane -->
-    <rect x="0" y="580" width="1440" height="320" fill="#061410"/>
-
-    <!-- Forest zones (aerial view - circles = treetops) -->
-    <g opacity="0.6">
-      <circle cx="80" cy="640" r="45" fill="#0F6E56"/>
-      <circle cx="145" cy="620" r="38" fill="#1D9E75"/>
-      <circle cx="110" cy="680" r="42" fill="#0F6E56"/>
-      <circle cx="190" cy="660" r="35" fill="#2D6B45"/>
-      <circle cx="55" cy="700" r="30" fill="#0F6E56"/>
-      <circle cx="230" cy="630" r="28" fill="#1D9E75"/>
-    </g>
-    <g opacity="0.5">
-      <circle cx="1280" cy="650" r="50" fill="#0F6E56"/>
-      <circle cx="1350" cy="625" r="40" fill="#1D9E75"/>
-      <circle cx="1310" cy="695" r="45" fill="#0F6E56"/>
-      <circle cx="1390" cy="665" r="30" fill="#2D6B45"/>
-      <circle cx="1260" cy="700" r="35" fill="#0F6E56"/>
-    </g>
-
-    <!-- Roads / infrastructure grid (aerial) -->
-    <g opacity="0.25" stroke="#5DCAA5" stroke-width="1" fill="none">
-      <line x1="280" y1="580" x2="280" y2="900"/>
-      <line x1="500" y1="580" x2="500" y2="900"/>
-      <line x1="760" y1="580" x2="760" y2="900"/>
-      <line x1="980" y1="580" x2="980" y2="900"/>
-      <line x1="1160" y1="580" x2="1160" y2="900"/>
-      <line x1="0" y1="680" x2="1440" y2="680"/>
-      <line x1="0" y1="780" x2="1440" y2="780"/>
-    </g>
-
-    <!-- Recycling facility buildings (aerial rectangles) -->
-    <g opacity="0.45">
-      <rect x="380" y="620" width="80" height="50" rx="3" fill="#1A4A2E"/>
-      <rect x="390" y="630" width="60" height="30" rx="2" fill="#2D6B45" opacity="0.7"/>
-      <rect x="480" y="615" width="120" height="70" rx="3" fill="#1A4A2E"/>
-      <rect x="490" y="625" width="100" height="50" rx="2" fill="#2D6B45" opacity="0.6"/>
-      <rect x="620" y="625" width="60" height="40" rx="3" fill="#1A4A2E"/>
-      <!-- Storage tanks (circular aerial view) -->
-      <circle cx="720" cy="650" r="22" fill="#1A4A2E" stroke="#2D6B45" stroke-width="1.5"/>
-      <circle cx="720" cy="650" r="14" fill="#2D6B45" opacity="0.5"/>
-      <circle cx="760" cy="655" r="18" fill="#1A4A2E" stroke="#2D6B45" stroke-width="1.5"/>
-      <circle cx="760" cy="655" r="11" fill="#2D6B45" opacity="0.5"/>
-      <circle cx="795" cy="645" r="15" fill="#1A4A2E" stroke="#2D6B45" stroke-width="1.5"/>
-      <!-- Processing units -->
-      <rect x="840" y="618" width="90" height="55" rx="3" fill="#1A4A2E"/>
-      <rect x="850" y="628" width="70" height="35" rx="2" fill="#0F6E56" opacity="0.4"/>
-      <rect x="950" y="622" width="55" height="45" rx="3" fill="#1A4A2E"/>
-    </g>
-
-    <!-- Pipeline / conveyor lines -->
-    <g opacity="0.3" stroke="#5DCAA5" stroke-width="1.5" fill="none">
-      <path d="M460 645 Q540 635 620 645"/>
-      <path d="M680 645 Q700 645 698 645"/>
-      <path d="M840 645 Q890 645 840 645"/>
-      <path d="M500 580 Q500 600 500 615"/>
-    </g>
-
-    <!-- Data / grid lines (tech feel) -->
-    <g opacity="0.08" stroke="#5DCAA5" stroke-width="0.5" fill="none">
-      <line x1="0" y1="100" x2="1440" y2="100"/>
-      <line x1="0" y1="200" x2="1440" y2="200"/>
-      <line x1="0" y1="300" x2="1440" y2="300"/>
-      <line x1="0" y1="400" x2="1440" y2="400"/>
-      <line x1="0" y1="500" x2="1440" y2="500"/>
-      <line x1="200" y1="0" x2="200" y2="580"/>
-      <line x1="400" y1="0" x2="400" y2="580"/>
-      <line x1="600" y1="0" x2="600" y2="580"/>
-      <line x1="800" y1="0" x2="800" y2="580"/>
-      <line x1="1000" y1="0" x2="1000" y2="580"/>
-      <line x1="1200" y1="0" x2="1200" y2="580"/>
-    </g>
-
-    <!-- Floating data nodes (trading platform feel) -->
-    <g opacity="0.5">
-      <circle cx="350" cy="180" r="3" fill="#5DCAA5"/>
-      <circle cx="620" cy="120" r="3" fill="#5DCAA5"/>
-      <circle cx="900" cy="200" r="3" fill="#5DCAA5"/>
-      <circle cx="1100" cy="140" r="3" fill="#5DCAA5"/>
-      <circle cx="1300" cy="250" r="3" fill="#5DCAA5"/>
-      <line x1="350" y1="180" x2="620" y2="120" stroke="#5DCAA5" stroke-width="0.5" opacity="0.3"/>
-      <line x1="620" y1="120" x2="900" y2="200" stroke="#5DCAA5" stroke-width="0.5" opacity="0.3"/>
-      <line x1="900" y1="200" x2="1100" y2="140" stroke="#5DCAA5" stroke-width="0.5" opacity="0.3"/>
-      <line x1="1100" y1="140" x2="1300" y2="250" stroke="#5DCAA5" stroke-width="0.5" opacity="0.3"/>
-    </g>
-
-    <!-- Subtle horizon glow -->
-    <rect x="0" y="565" width="1440" height="20" fill="#1D9E75" opacity="0.07"/>
-    <rect x="0" y="575" width="1440" height="10" fill="#1D9E75" opacity="0.05"/>
-  </svg>
+  <!-- Real photo background -->
+  <div class="hero-bg-photo" id="heroBg"></div>
 
   <div class="hero-overlay"></div>
 
@@ -1082,6 +980,17 @@ footer{background:var(--slate-900);padding:3.5rem 2rem 2rem;}
 window.addEventListener('scroll', () => {
   document.getElementById('mainNav').classList.toggle('scrolled', window.scrollY > 60);
 });
+
+// Hero photo: animate in on load + fallback
+const heroBg = document.getElementById('heroBg');
+const img = new Image();
+img.onload = () => { heroBg.classList.add('loaded'); };
+img.onerror = () => {
+  // Fallback to second Unsplash photo if first fails
+  heroBg.style.backgroundImage = "url('https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?w=1800&q=80')";
+};
+img.src = 'https://images.unsplash.com/photo-1518186285589-2f7649de83e0?w=1800&q=80';
+setTimeout(() => heroBg.classList.add('loaded'), 100);
 
 function selectAmount(el, val) {
   document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('selected'));
