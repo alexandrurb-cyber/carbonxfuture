@@ -26,7 +26,7 @@ The chat widget will NOT work without this:
 3. Redeploy.
 
 ### 2. Access-request form (FormSubmit)
-The KYC form emails submissions to `info@carbonxfuture.com` via FormSubmit.
+The KYC form emails submissions to `desk@carbonxfuture.com` via FormSubmit.
 The **first submission** triggers an activation email to that inbox — click the
 confirmation link once and all later submissions arrive normally.
 
