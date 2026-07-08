@@ -432,6 +432,19 @@ footer{background:var(--slate-900);padding:3.5rem 2rem 2rem;}
 @media(max-width:960px){.prices-grid{grid-template-columns:1fr 1fr;}}
 @media(max-width:600px){.prices-grid{grid-template-columns:1fr;}.agent-panel{width:calc(100vw - 2rem);right:1rem;}.agent-fab{bottom:1.5rem;right:1rem;}}
 
+/* NEWSLETTER */
+.newsletter{background:var(--forest-pale);border-top:0.5px solid var(--forest-mid);}
+.newsletter-inner{max-width:640px;margin:0 auto;text-align:center;}
+.newsletter h2{margin-bottom:0.5rem;}
+.newsletter-sub{color:var(--slate-600);font-size:15px;margin-bottom:1.75rem;}
+.news-row{display:flex;gap:10px;max-width:440px;margin:0 auto;}
+.news-row input{flex:1;border:0.5px solid var(--slate-200);border-radius:8px;padding:12px 16px;font-size:14px;font-family:'Inter',sans-serif;outline:none;background:#fff;color:var(--slate-800);}
+.news-row input:focus{border-color:var(--forest-light);}
+.news-btn{background:var(--forest);color:#fff;border:none;border-radius:8px;padding:12px 22px;font-size:14px;font-weight:500;font-family:'Inter',sans-serif;cursor:pointer;white-space:nowrap;transition:background 0.15s;}
+.news-btn:hover{background:var(--forest-light);}
+.news-note{font-size:12px;color:var(--slate-400);margin-top:0.9rem;}
+@media(max-width:520px){.news-row{flex-direction:column;}}
+
 /* STANDARDS STRIP */
 .standards{background:var(--white);border-top:0.5px solid var(--slate-100);padding:2.5rem 2rem;}
 .standards-inner{max-width:1140px;margin:0 auto;text-align:center;}
@@ -1405,6 +1418,20 @@ footer{background:var(--slate-900);padding:3.5rem 2rem 2rem;}
   </div>
 </div>
 
+<!-- NEWSLETTER -->
+<section class="newsletter" id="newsletter">
+  <div class="newsletter-inner">
+    <div class="eyebrow">The Desk Note</div>
+    <h2>Weekly intelligence on carbon &amp; waste oil</h2>
+    <p class="newsletter-sub">One short note from the CarbonXFuture desk — prices, methodology updates and market moves that matter. No spam.</p>
+    <div class="news-row">
+      <input type="email" id="newsEmail" placeholder="Your business email" onkeydown="if(event.key==='Enter')subscribeNews()"/>
+      <button class="news-btn" id="newsBtn" onclick="subscribeNews()">Subscribe</button>
+    </div>
+    <p class="news-note" id="newsNote">Unsubscribe anytime with one reply.</p>
+  </div>
+</section>
+
 <!-- FOOTER -->
 <footer>
   <div class="footer-inner">
@@ -1943,6 +1970,34 @@ function calcOffset() {
 function calcReforest() {
   const ha = parseFloat(document.getElementById('calcRfHa').value) || 0;
   calcSet('calcRfNum', 'calcRfVal', ha * 6, 'verra-redd');
+}
+
+async function subscribeNews() {
+  const input = document.getElementById('newsEmail');
+  const btn = document.getElementById('newsBtn');
+  const note = document.getElementById('newsNote');
+  const email = input.value.trim();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    note.textContent = 'Please enter a valid email address.';
+    return;
+  }
+  btn.disabled = true;
+  btn.textContent = 'Subscribing…';
+  try {
+    const res = await fetch('https://formsubmit.co/ajax/desk@carbonxfuture.com', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
+      body: JSON.stringify({ _subject: 'Desk Note subscription: ' + email, email, source: 'newsletter' })
+    });
+    if (!res.ok) throw new Error();
+    btn.textContent = '✓ Subscribed';
+    input.value = '';
+    note.textContent = 'Welcome aboard — the next Desk Note lands in your inbox.';
+  } catch (e) {
+    btn.disabled = false;
+    btn.textContent = 'Subscribe';
+    note.textContent = 'Could not subscribe — please email desk@carbonxfuture.com';
+  }
 }
 
 function refreshCalcs() { calcWasteOil(); calcGreenEnergy(); calcMethane(); calcReforest(); calcOffset(); }
