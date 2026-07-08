@@ -1032,7 +1032,7 @@ footer{background:var(--slate-900);padding:3.5rem 2rem 2rem;}
         <p>Every donation goes directly toward CarbonXFuture's public-good work: open methodology templates, free educational content on the voluntary carbon market, waste-oil re-refining research, and small-scale project grants for verified operators in emerging markets.</p>
         <div class="donation-steps">
           <div class="d-step"><div class="d-step-num">1</div><div class="d-step-text">Choose your donation amount</div></div>
-          <div class="d-step"><div class="d-step-num">2</div><div class="d-step-text">Pay securely via PayPal — guest checkout, no account required</div></div>
+          <div class="d-step"><div class="d-step-num">2</div><div class="d-step-text">Pay securely via Stripe — cards, Apple Pay and Google Pay, no account required</div></div>
           <div class="d-step"><div class="d-step-num">3</div><div class="d-step-text">Funds support open methodology, education and project grants</div></div>
         </div>
       </div>
@@ -1055,9 +1055,9 @@ footer{background:var(--slate-900);padding:3.5rem 2rem 2rem;}
           </div>
         </div>
         <button class="btn-primary" style="width:100%;justify-content:center;" id="donateBtn" onclick="handleDonate()">
-          <i class="ti ti-heart" aria-hidden="true"></i> Donate via PayPal
+          <i class="ti ti-heart" aria-hidden="true"></i> Donate securely via Stripe
         </button>
-        <p class="donate-note">One-time payment via PayPal — no account required. CarbonXFuture charges no platform fees on donations.</p>
+        <p class="donate-note">Payments processed by Stripe — one-time, no account required. CarbonXFuture charges no platform fees on donations.</p>
       </div>
     </div>
   </div>
@@ -1470,10 +1470,9 @@ function selectAmount(el, val) {
   }
 }
 
-/* Donation — paste your Stripe Payment Link (use a "customer chooses
-   amount" link) or PayPal donate URL below. Until set, the button
-   honestly tells visitors donations aren't open online yet. */
-const DONATION_LINK = 'https://www.paypal.com/biz/profile/carbonxfuture';
+/* Donation — Stripe Payment Link ("customer chooses what to pay").
+   To change it, replace the URL below. */
+const DONATION_LINK = 'https://buy.stripe.com/5kQ7sLa3a9Hq1hD5uT1ck00'; // Stripe Payment Link
 
 function handleDonate() {
   const btn = document.getElementById('donateBtn');
@@ -1481,7 +1480,7 @@ function handleDonate() {
     btn.innerHTML = '<i class="ti ti-mail"></i> Online donations open soon — email info@carbonxfuture.com';
     btn.disabled = true;
     setTimeout(() => {
-      btn.innerHTML = '<i class="ti ti-heart"></i> Donate via PayPal';
+      btn.innerHTML = '<i class="ti ti-heart"></i> Donate securely via Stripe';
       btn.disabled = false;
     }, 5000);
     return;
@@ -1746,7 +1745,7 @@ You help users understand:
 - The CXF methodology: covers used oil collection, re-refining, and infrastructure development. ~2.85 tCO2e per 1,000 litres collected. Third-party audited, MRV-compliant.
 - Registries supported: CXF (proprietary), Verra VCS, Gold Standard, ACR, CAR, Plan Vivo.
 - How to apply: users submit KYC on the platform. 24-48h review. Options: waste oil recycler, corporate buyer, investment fund, trading desk, government entity.
-- Donation program: one-time donations via PayPal (guest checkout) fund open methodology templates, education on the voluntary carbon market, waste-oil re-refining research and small project grants. No platform fees on donations.
+- Donation program: one-time donations via Stripe (cards, Apple Pay, Google Pay) fund open methodology templates, education on the voluntary carbon market, waste-oil re-refining research and small project grants. No platform fees on donations.
 - Physical markets: the CarbonXFuture desk trades physical cargoes — waste engine oil, used oil, VGO, Group I/II base oils and diesel blend components — from KYC-verified originators, with lab reports and port logistics.
 
 Be concise, professional, and helpful. Answer in the same language the user writes in. If asked about prices, note they are indicative and updated daily. Never give financial advice. For specific transactions, direct users to apply for access.`;

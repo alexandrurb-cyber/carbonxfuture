@@ -30,12 +30,9 @@ The KYC form emails submissions to `info@carbonxfuture.com` via FormSubmit.
 The **first submission** triggers an activation email to that inbox — click the
 confirmation link once and all later submissions arrive normally.
 
-### 3. Donations (Stripe or PayPal)
-Donations are disabled until you add a payment link:
-1. **Stripe:** Dashboard → Payment Links → create a link with "Customers choose what to pay". Or **PayPal:** create a Donate button link.
-2. Paste the URL into `DONATION_LINK` near the bottom of `index.html`.
-
-Until then, the donate button tells visitors online donations aren't open yet.
+### 3. Donations — already configured (Stripe)
+The donate button opens your Stripe Payment Link — the `DONATION_LINK`
+constant near the bottom of `index.html`. To change it, edit that constant.
 
 ### 4. Daily prices
 Edit `prices.json`: change the numbers and set `lastUpdated` to today's date
