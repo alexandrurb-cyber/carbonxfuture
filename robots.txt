@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://carbonxfuture.com/sitemap.xml
+Sitemap: https://www.carbonxfuture.com/sitemap.xml
