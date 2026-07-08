@@ -1416,6 +1416,15 @@ footer{background:var(--slate-900);padding:3.5rem 2rem 2rem;}
     <button class="sug-btn" onclick="sendSuggestion(this)">Current prices</button>
     <button class="sug-btn" onclick="sendSuggestion(this)">How to apply?</button>
   </div>
+  <div class="agent-lead" id="agentLead" style="display:none;padding:6px 14px 10px;">
+    <button onclick="showLeadForm()" style="width:100%;font-size:12px;padding:8px;border-radius:8px;border:0.5px solid var(--forest-mid);background:var(--forest-pale);color:var(--forest);cursor:pointer;font-family:'Inter',sans-serif;">✉ Want the desk to follow up? Leave your email</button>
+  </div>
+  <div class="agent-lead-form" id="agentLeadForm" style="display:none;padding:6px 14px 10px;gap:6px;">
+    <div style="display:flex;gap:6px;">
+      <input type="email" id="leadEmail" placeholder="Your business email" style="flex:1;font-size:13px;padding:8px 10px;border-radius:8px;border:0.5px solid var(--slate-200);outline:none;font-family:'Inter',sans-serif;" onkeydown="if(event.key==='Enter')sendLead()"/>
+      <button onclick="sendLead()" id="leadBtn" style="font-size:12px;padding:8px 14px;border-radius:8px;border:none;background:var(--forest);color:#fff;cursor:pointer;font-family:'Inter',sans-serif;">Send</button>
+    </div>
+  </div>
   <div class="agent-input-row">
     <input class="agent-input" id="agentInput" placeholder="Ask me anything..." onkeydown="if(event.key==='Enter')sendMessage()"/>
     <button class="agent-send" onclick="sendMessage()"><i class="ti ti-send" aria-hidden="true"></i></button>
@@ -1788,6 +1797,7 @@ renderBlog('all');
     const res = await fetch('/listings.json', {cache:'no-store'});
     if (!res.ok) return;
     const data = await res.json();
+    window.CXF_LISTINGS = data;
     const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     if (Array.isArray(data.carbon) && data.carbon.length) {
       const tb = document.querySelector('#listingsTable tbody');
@@ -1827,6 +1837,7 @@ renderBlog('all');
       if (node && typeof val === 'number') node.textContent = '$' + val.toFixed(2);
     }
     window.CXF_PRICES = data.prices || {};
+    window.CXF_PRICES_DATE = data.lastUpdated || '';
     if (typeof refreshCalcs === 'function') refreshCalcs();
     if (el && data.lastUpdated) {
       const d = new Date(data.lastUpdated + 'T12:00:00');
@@ -1845,7 +1856,7 @@ const AGENT_SYSTEM = `You are Agent CXF, the official AI assistant for CarbonXFu
 You help users understand:
 - CXF credits: CarbonXFuture's proprietary carbon credit standard for waste oil recycling and collection. 1 CXF credit = 1 tonne CO2 equivalent avoided. Credits are digital, issued on the CarbonXFuture registry and tradeable on the platform.
 - How to earn CXF credits: waste oil collectors and recyclers apply, submit monthly volume data, pass third-party verification, then receive digital CXF credits to sell on the marketplace.
-- Current indicative prices: CXF Used Oil US Gulf ~$21.50/tCO2e, CXF  ~$19.80, Verra VCS REDD+ ~$18.40, Gold Standard ~$22.10, ACR/CAR ~$15.20, Blue Carbon ~$31.50, Plan Vivo ~$24.00.
+- Current indicative prices and live listings: use ONLY the numbers in the CURRENT PLATFORM DATA section appended at the end of this prompt. Always note prices are indicative.
 - The CXF methodology: covers used oil collection, re-refining, and infrastructure development. ~2.85 tCO2e per 1,000 litres collected. Third-party audited, MRV-compliant.
 - Registries supported: CXF (proprietary), Verra VCS, Gold Standard, ACR, CAR, Plan Vivo.
 - How to apply: users submit KYC on the platform. 24-48h review. Options: waste oil recycler, corporate buyer, investment fund, trading desk, government entity.
@@ -1854,9 +1865,55 @@ You help users understand:
 
 Be concise, professional, and helpful. Answer in the same language the user writes in. If asked about prices, note they are indicative and updated daily. Never give financial advice. For specific transactions, direct users to apply for access.`;
 
+function buildAgentSystem() {
+  let live = '';
+  if (window.CXF_PRICES && Object.keys(window.CXF_PRICES).length) {
+    live += '\n\nCURRENT PLATFORM DATA (indicative, updated ' + (window.CXF_PRICES_DATE || 'recently') + '):\nPrices (USD/tCO2e): ' +
+      Object.entries(window.CXF_PRICES).map(([k,v]) => k + ' $' + Number(v).toFixed(2)).join(', ') + '.';
+  }
+  if (window.CXF_LISTINGS) {
+    if (Array.isArray(window.CXF_LISTINGS.carbon)) {
+      live += '\nCarbon listings: ' + window.CXF_LISTINGS.carbon.map(l =>
+        l.name + ' (' + l.badge + ', vintage ' + l.vintage + ', ' + l.volume + ' tCO2e @ $' + Number(l.price).toFixed(2) + ')').join('; ') + '.';
+    }
+    if (Array.isArray(window.CXF_LISTINGS.oil)) {
+      live += '\nOil desk cargoes: ' + window.CXF_LISTINGS.oil.map(l =>
+        l.name + ' — ' + l.location + ', ' + l.qty + ' @ ' + l.price + '/gal').join('; ') + '.';
+    }
+  }
+  return AGENT_SYSTEM + live;
+}
+
 let agentOpen = false;
 let agentHistory = [];
 let agentTyping = false;
+
+function showLeadForm() {
+  document.getElementById('agentLead').style.display = 'none';
+  document.getElementById('agentLeadForm').style.display = 'block';
+  document.getElementById('leadEmail').focus();
+}
+
+async function sendLead() {
+  const email = document.getElementById('leadEmail').value.trim();
+  const btn = document.getElementById('leadBtn');
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { document.getElementById('leadEmail').style.borderColor = '#B8740A'; return; }
+  btn.disabled = true; btn.textContent = '…';
+  const transcript = agentHistory.map(m => (m.role === 'user' ? 'Visitor' : 'Agent CXF') + ': ' + m.content).join('\n\n').slice(0, 8000);
+  try {
+    const res = await fetch('https://formsubmit.co/ajax/desk@carbonxfuture.com', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
+      body: JSON.stringify({ _subject: 'Agent CXF lead: ' + email, email, transcript, source: 'agent-cxf-chat' })
+    });
+    if (!res.ok) throw new Error();
+    document.getElementById('agentLeadForm').style.display = 'none';
+    addMessage('bot', 'Thanks! The desk has your conversation and will follow up at ' + email + ' within one business day.');
+  } catch (e) {
+    btn.disabled = false; btn.textContent = 'Send';
+    addMessage('bot', 'Could not send just now — please email desk@carbonxfuture.com directly.');
+  }
+}
 
 function toggleAgent() {
   agentOpen = !agentOpen;
@@ -1917,7 +1974,7 @@ async function sendMessage() {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
       body: JSON.stringify({
-        system: AGENT_SYSTEM,
+        system: buildAgentSystem(),
         messages: agentHistory.slice(-20)
       })
     });
@@ -1926,6 +1983,7 @@ async function sendMessage() {
     const reply = data.content && data.content[0] ? data.content[0].text : 'Sorry, I could not process that. Please try again.';
     addMessage('bot', reply);
     agentHistory.push({role:'assistant', content: reply});
+    if (agentHistory.length >= 2) document.getElementById('agentLead').style.display = 'block';
   } catch(e) {
     removeTyping();
     addMessage('bot', 'I\'m having trouble connecting right now. Please try again in a moment, or contact us directly at desk@carbonxfuture.com');
