@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<meta name="description" content="CarbonXFuture — The institutional marketplace for verified CXF carbon credits from waste oil recycling. Trade, earn and retire credits on our platform."/>
-<title>CarbonXFuture | CXF Carbon Credit Exchange</title>
+<meta name="description" content="CarbonXFuture — the institutional marketplace for CXF waste-oil carbon credits, verified credits across Verra, Gold Standard, ACR, CAR and Plan Vivo, and physical waste &amp; base oil cargoes."/>
+<title>CarbonXFuture | Carbon Credit &amp; Waste-Oil Marketplace</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@400;500i&display=swap" rel="stylesheet"/>
 <link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" rel="stylesheet"/>
@@ -415,6 +415,19 @@ footer{background:var(--slate-900);padding:3.5rem 2rem 2rem;}
 @media(max-width:960px){.prices-grid{grid-template-columns:1fr 1fr;}}
 @media(max-width:600px){.prices-grid{grid-template-columns:1fr;}.agent-panel{width:calc(100vw - 2rem);right:1rem;}.agent-fab{bottom:1.5rem;right:1rem;}}
 
+/* STANDARDS STRIP */
+.standards{background:var(--white);border-top:0.5px solid var(--slate-100);padding:2.5rem 2rem;}
+.standards-inner{max-width:1140px;margin:0 auto;text-align:center;}
+.standards-label{font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--slate-400);margin-bottom:1.5rem;}
+.standards-row{display:flex;justify-content:center;gap:3rem;flex-wrap:wrap;}
+.standard-item{text-align:center;}
+.standard-name{font-size:15px;font-weight:600;letter-spacing:1px;color:var(--slate-600);}
+.standard-sub{font-size:11px;color:var(--slate-400);margin-top:2px;}
+
+/* OIL DESK */
+.oildesk{background:var(--white);border-top:0.5px solid var(--slate-100);}
+.oildesk-note{font-size:12px;color:var(--slate-400);margin-top:1rem;}
+
 /* CALCULATORS */
 .calcs{background:var(--white);border-top:0.5px solid var(--slate-100);}
 .calcs-sub{max-width:640px;color:var(--slate-600);font-size:15px;margin-top:0.5rem;}
@@ -448,6 +461,7 @@ footer{background:var(--slate-900);padding:3.5rem 2rem 2rem;}
       <a href="#methodology">CXF Credits</a>
       <a href="#earn">Earn Credits</a>
       <a href="#marketplace">Marketplace</a>
+      <a href="#oildesk">Oil Desk</a>
       <a href="#prices">Prices</a>
       <a href="#calculators">Calculators</a>
       <a href="#donate">Donate</a>
@@ -473,7 +487,7 @@ footer{background:var(--slate-900);padding:3.5rem 2rem 2rem;}
         Introducing CXF — our proprietary carbon credit standard
       </div>
       <h1>Turn waste oil recycling<br/>into <em>verified</em> carbon credits</h1>
-      <p class="hero-sub">CarbonXFuture connects waste oil collectors and recyclers with a certified carbon credit methodology — CXF — and a live marketplace to trade, retire and monetize their environmental impact.</p>
+      <p class="hero-sub">CarbonXFuture connects recyclers, refiners, ESG investors and corporate buyers through the circular economy — CXF waste-oil credits, verified Verra, Gold Standard, ACR and CAR credits, and physical waste &amp; base oil cargoes.</p>
       <div class="hero-actions">
         <a href="#earn" class="btn-hero-primary">Earn CXF credits <i class="ti ti-arrow-right" aria-hidden="true"></i></a>
         <a href="#marketplace" class="btn-hero-secondary">View marketplace</a>
@@ -487,10 +501,10 @@ footer{background:var(--slate-900);padding:3.5rem 2rem 2rem;}
     <div class="hero-card">
       <div class="hero-card-header">
         <div>
-          <div class="hch-label">Live market</div>
+          <div class="hch-label">Market snapshot</div>
           <div class="hch-title">CXF credit snapshot</div>
         </div>
-        <div class="status-live"><span class="dot"></span> Live</div>
+        <div class="status-live"><span class="dot"></span> Indicative</div>
       </div>
       <div class="credit-rows">
         <div class="credit-row">
@@ -510,12 +524,12 @@ footer{background:var(--slate-900);padding:3.5rem 2rem 2rem;}
           <div class="cr-left">
             <div class="cr-icon verra"><i class="ti ti-leaf" aria-hidden="true"></i></div>
             <div>
-              <div class="cr-name">REDD+ Amazon Basin</div>
-              <div class="cr-reg">Verra VCS · Vintage 2024</div>
+              <div class="cr-name">Kasigau Corridor REDD+</div>
+              <div class="cr-reg">Verra VCS · Vintage 2023</div>
             </div>
           </div>
           <div style="text-align:right;">
-            <div class="cr-price">$18.40</div>
+            <div class="cr-price">$14.85</div>
             <div class="cr-vol">42,000 tCO₂e</div>
           </div>
         </div>
@@ -523,19 +537,19 @@ footer{background:var(--slate-900);padding:3.5rem 2rem 2rem;}
           <div class="cr-left">
             <div class="cr-icon gold"><i class="ti ti-sun" aria-hidden="true"></i></div>
             <div>
-              <div class="cr-name">Solar Grid — Kenya</div>
+              <div class="cr-name">Sichuan Household Biogas</div>
               <div class="cr-reg">Gold Standard · Vintage 2024</div>
             </div>
           </div>
           <div style="text-align:right;">
-            <div class="cr-price">$22.10</div>
+            <div class="cr-price">$19.20</div>
             <div class="cr-vol">18,500 tCO₂e</div>
           </div>
         </div>
       </div>
       <div class="hero-stats">
         <div class="h-stat"><div class="val">CXF</div><div class="lbl">Proprietary std.</div></div>
-        <div class="h-stat"><div class="val">340+</div><div class="lbl">Projects listed</div></div>
+        <div class="h-stat"><div class="val">$80B+</div><div class="lbl">Waste oil market</div></div>
         <div class="h-stat"><div class="val">5</div><div class="lbl">Registries</div></div>
       </div>
     </div>
@@ -754,6 +768,21 @@ footer{background:var(--slate-900);padding:3.5rem 2rem 2rem;}
       </div>
 
       <div class="calc-card">
+        <div class="calc-icon"><i class="ti ti-trees" aria-hidden="true"></i></div>
+        <h3>Reforestation</h3>
+        <p class="calc-desc">Sequestration from reforestation / afforestation area.</p>
+        <div class="calc-row">
+          <label>Project area (hectares)</label>
+          <input type="number" id="calcRfHa" min="0" placeholder="e.g. 1,200" oninput="calcReforest()"/>
+        </div>
+        <div class="calc-result">
+          <span class="calc-result-num" id="calcRfNum">—</span>
+          <span class="calc-result-lbl">tCO₂e sequestered / year</span>
+          <span class="calc-result-val" id="calcRfVal"></span>
+        </div>
+      </div>
+
+      <div class="calc-card">
         <div class="calc-icon"><i class="ti ti-leaf" aria-hidden="true"></i></div>
         <h3>Offset your footprint</h3>
         <p class="calc-desc">Indicative cost to retire credits against your emissions.</p>
@@ -780,7 +809,7 @@ footer{background:var(--slate-900);padding:3.5rem 2rem 2rem;}
       </div>
 
     </div>
-    <p class="calcs-note">Estimates are for guidance only and do not constitute a verification result, an offer, or financial advice. Factors used: CXF methodology baselines (waste oil); typical grid-average emission factors — actual avoided emissions depend on the project baseline approved under the applicable methodology (green energy); IPCC AR5 GWP₁₀₀ of 28 for methane. Indicative values use current platform mid prices.</p>
+    <p class="calcs-note">Estimates are for guidance only and do not constitute a verification result, an offer, or financial advice. Factors used: CXF methodology baselines (waste oil); typical grid-average emission factors — actual avoided emissions depend on the project baseline approved under the applicable methodology (green energy); IPCC AR5 GWP₁₀₀ of 28 for methane; indicative 6 tCO₂e per hectare per year for reforestation (project-dependent). Indicative values use current platform mid prices.</p>
   </div>
 </section>
 
@@ -820,6 +849,20 @@ footer{background:var(--slate-900);padding:3.5rem 2rem 2rem;}
         <h3>KYC / AML compliant</h3>
         <p>All participants onboarded through institutional-grade KYC. Compliant with FATF and IOSCO frameworks.</p>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- STANDARDS -->
+<section class="standards" style="padding:2.5rem 2rem;">
+  <div class="standards-inner">
+    <div class="standards-label">Compatible with leading carbon standards</div>
+    <div class="standards-row">
+      <div class="standard-item"><div class="standard-name">VERRA</div><div class="standard-sub">Verified Carbon Standard</div></div>
+      <div class="standard-item"><div class="standard-name">GOLD STANDARD</div><div class="standard-sub">For the Global Goals</div></div>
+      <div class="standard-item"><div class="standard-name">ACR</div><div class="standard-sub">American Carbon Registry</div></div>
+      <div class="standard-item"><div class="standard-name">CAR</div><div class="standard-sub">Climate Action Reserve</div></div>
+      <div class="standard-item"><div class="standard-name">PLAN VIVO</div><div class="standard-sub">Plan Vivo Foundation</div></div>
     </div>
   </div>
 </section>
@@ -871,43 +914,111 @@ footer{background:var(--slate-900);padding:3.5rem 2rem 2rem;}
             <td class="td-action"><button onclick="quoteRequest(this)">Request quote</button></td>
           </tr>
           <tr data-reg="verra">
-            <td><div class="td-project"><span class="project-dot verra"></span><div><div class="td-name">REDD+ Amazon Basin</div><div class="td-sub">Brazil · Forest conservation</div></div></div></td>
+            <td><div class="td-project"><span class="project-dot verra"></span><div><div class="td-name">Kasigau Corridor REDD+</div><div class="td-sub">Kenya · Forest conservation</div></div></div></td>
             <td><span class="badge verra">Verra VCS</span></td>
-            <td class="td-muted">REDD+</td><td>2024</td>
-            <td class="td-price">42,000</td><td class="td-price">$18.40</td>
+            <td class="td-muted">REDD+</td><td>2023</td>
+            <td class="td-price">42,000</td><td class="td-price">$14.85</td>
             <td class="td-action"><button onclick="quoteRequest(this)">Request quote</button></td>
           </tr>
           <tr data-reg="gold">
-            <td><div class="td-project"><span class="project-dot gold"></span><div><div class="td-name">Solar Grid — Kenya</div><div class="td-sub">Kenya · Renewable energy</div></div></div></td>
+            <td><div class="td-project"><span class="project-dot gold"></span><div><div class="td-name">Sichuan Household Biogas</div><div class="td-sub">China · Household biogas</div></div></div></td>
             <td><span class="badge gold">Gold Standard</span></td>
-            <td class="td-muted">Renewable energy</td><td>2024</td>
-            <td class="td-price">18,500</td><td class="td-price">$22.10</td>
+            <td class="td-muted">Biogas</td><td>2024</td>
+            <td class="td-price">18,500</td><td class="td-price">$19.20</td>
             <td class="td-action"><button onclick="quoteRequest(this)">Request quote</button></td>
           </tr>
           <tr data-reg="acr">
-            <td><div class="td-project"><span class="project-dot acr"></span><div><div class="td-name">Landfill Methane Capture</div><div class="td-sub">United States · Waste management</div></div></div></td>
+            <td><div class="td-project"><span class="project-dot acr"></span><div><div class="td-name">Cascadia IFM</div><div class="td-sub">Oregon, USA · Improved forest management</div></div></div></td>
             <td><span class="badge acr">ACR</span></td>
-            <td class="td-muted">Methane avoidance</td><td>2023</td>
-            <td class="td-price">90,000</td><td class="td-price">$14.75</td>
+            <td class="td-muted">IFM</td><td>2022</td>
+            <td class="td-price">25,000</td><td class="td-price">$24.10</td>
             <td class="td-action"><button onclick="quoteRequest(this)">Request quote</button></td>
           </tr>
           <tr data-reg="car">
-            <td><div class="td-project"><span class="project-dot car"></span><div><div class="td-name">Improved Forest Mgmt — Oregon</div><div class="td-sub">USA · Forestry</div></div></div></td>
+            <td><div class="td-project"><span class="project-dot car"></span><div><div class="td-name">Landfill Methane Capture</div><div class="td-sub">Pennsylvania, USA · Waste management</div></div></div></td>
             <td><span class="badge car">CAR</span></td>
-            <td class="td-muted">IFM</td><td>2024</td>
-            <td class="td-price">27,800</td><td class="td-price">$19.90</td>
+            <td class="td-muted">Methane avoidance</td><td>2024</td>
+            <td class="td-price">90,000</td><td class="td-price">$9.50</td>
             <td class="td-action"><button onclick="quoteRequest(this)">Request quote</button></td>
           </tr>
           <tr data-reg="verra">
-            <td><div class="td-project"><span class="project-dot verra"></span><div><div class="td-name">Blue Carbon — Mangroves</div><div class="td-sub">Indonesia · Coastal ecosystem</div></div></div></td>
+            <td><div class="td-project"><span class="project-dot verra"></span><div><div class="td-name">Rimba Raya Biodiversity Reserve</div><div class="td-sub">Indonesia · REDD+ / peatland</div></div></div></td>
             <td><span class="badge verra">Verra VCS</span></td>
-            <td class="td-muted">Blue carbon</td><td>2023</td>
-            <td class="td-price">12,000</td><td class="td-price">$31.50</td>
+            <td class="td-muted">REDD+</td><td>2023</td>
+            <td class="td-price">12,000</td><td class="td-price">$16.75</td>
             <td class="td-action"><button onclick="quoteRequest(this)">Request quote</button></td>
           </tr>
         </tbody>
       </table>
     </div>
+  </div>
+</section>
+
+<!-- OIL DESK -->
+<section class="oildesk" id="oildesk">
+  <div class="container">
+    <div class="market-header">
+      <div>
+        <div class="eyebrow">Physical markets</div>
+        <h2>Waste &amp; base oil desk</h2>
+      </div>
+      <a href="#kyc" class="btn-secondary" style="font-size:13px;">Request full access <i class="ti ti-arrow-right" aria-hidden="true"></i></a>
+    </div>
+    <p style="max-width:640px;color:var(--slate-600);font-size:15px;margin-bottom:2rem;">Waste engine oil, VGO, base oil and diesel blend components from KYC'd originators — with lab reports and port logistics handled by the CarbonXFuture desk.</p>
+    <div class="table-wrap">
+      <table class="listings-table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Location</th>
+            <th>Monthly qty</th>
+            <th>Sulfur (ppm)</th>
+            <th>H₂O %</th>
+            <th>Price / gal</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><div class="td-project"><span class="project-dot cxf"></span><div><div class="td-name">Base Oil Group I</div></div></div></td>
+            <td class="td-muted">Houston, USA</td><td class="td-price">220,000 gal</td>
+            <td class="td-muted">300</td><td class="td-muted">0.08%</td><td class="td-price">$3.10</td>
+            <td class="td-action"><button onclick="quoteRequest(this)">Request details</button></td>
+          </tr>
+          <tr>
+            <td><div class="td-project"><span class="project-dot cxf"></span><div><div class="td-name">Waste Engine Oil</div></div></div></td>
+            <td class="td-muted">Singapore</td><td class="td-price">290,000 gal</td>
+            <td class="td-muted">4,100</td><td class="td-muted">2.5%</td><td class="td-price">$1.65</td>
+            <td class="td-action"><button onclick="quoteRequest(this)">Request details</button></td>
+          </tr>
+          <tr>
+            <td><div class="td-project"><span class="project-dot cxf"></span><div><div class="td-name">Diesel Blend Components</div></div></div></td>
+            <td class="td-muted">Florida, USA</td><td class="td-price">410,000 gal</td>
+            <td class="td-muted">1,200</td><td class="td-muted">0.3%</td><td class="td-price">$1.85</td>
+            <td class="td-action"><button onclick="quoteRequest(this)">Request details</button></td>
+          </tr>
+          <tr>
+            <td><div class="td-project"><span class="project-dot cxf"></span><div><div class="td-name">Base Oil Group II</div></div></div></td>
+            <td class="td-muted">Rotterdam, Netherlands</td><td class="td-price">320,000 gal</td>
+            <td class="td-muted">50</td><td class="td-muted">0.05%</td><td class="td-price">$3.40</td>
+            <td class="td-action"><button onclick="quoteRequest(this)">Request details</button></td>
+          </tr>
+          <tr>
+            <td><div class="td-project"><span class="project-dot cxf"></span><div><div class="td-name">VGO</div></div></div></td>
+            <td class="td-muted">Louisiana, USA</td><td class="td-price">500,000 gal</td>
+            <td class="td-muted">8,500</td><td class="td-muted">0.4%</td><td class="td-price">$2.10</td>
+            <td class="td-action"><button onclick="quoteRequest(this)">Request details</button></td>
+          </tr>
+          <tr>
+            <td><div class="td-project"><span class="project-dot cxf"></span><div><div class="td-name">Used Oil</div></div></div></td>
+            <td class="td-muted">California, USA</td><td class="td-price">180,000 gal</td>
+            <td class="td-muted">3,800</td><td class="td-muted">2.8%</td><td class="td-price">$1.55</td>
+            <td class="td-action"><button onclick="quoteRequest(this)">Request details</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="oildesk-note">Indicative sample listings — live availability, lab reports and logistics via the desk after KYC.</p>
   </div>
 </section>
 
@@ -917,12 +1028,12 @@ footer{background:var(--slate-900);padding:3.5rem 2rem 2rem;}
     <div class="donation-inner">
       <div class="donation-left">
         <div class="eyebrow">Climate action fund</div>
-        <h2>Donate & receive a<br/>CXF carbon credit</h2>
-        <p>Support verified waste oil recycling projects through your donation. Every contributor receives a certified CXF carbon credit as recognition — because real climate action deserves real accountability.</p>
+        <h2>Support the mission —<br/>fund open climate infrastructure</h2>
+        <p>Every donation goes directly toward CarbonXFuture's public-good work: open methodology templates, free educational content on the voluntary carbon market, waste-oil re-refining research, and small-scale project grants for verified operators in emerging markets.</p>
         <div class="donation-steps">
           <div class="d-step"><div class="d-step-num">1</div><div class="d-step-text">Choose your donation amount</div></div>
-          <div class="d-step"><div class="d-step-num">2</div><div class="d-step-text">Funds go directly to a CXF-verified waste oil project</div></div>
-          <div class="d-step"><div class="d-step-num">3</div><div class="d-step-text">Receive a digital CXF credit retirement certificate in your name within 48h</div></div>
+          <div class="d-step"><div class="d-step-num">2</div><div class="d-step-text">Pay securely via PayPal — guest checkout, no account required</div></div>
+          <div class="d-step"><div class="d-step-num">3</div><div class="d-step-text">Funds support open methodology, education and project grants</div></div>
         </div>
       </div>
       <div class="donation-card">
@@ -939,14 +1050,14 @@ footer{background:var(--slate-900);padding:3.5rem 2rem 2rem;}
         <div class="reward-preview">
           <i class="ti ti-certificate reward-icon" aria-hidden="true"></i>
           <div class="reward-text">
-            You will receive <strong id="credit-amount">approx. 2.3 tCO₂e</strong>
-            <span>as a verified ⬡ CXF credit retirement in your name</span>
+            Equivalent impact: <strong id="credit-amount">approx. 2.3 tCO₂e</strong>
+            <span>at the current indicative ⬡ CXF credit price</span>
           </div>
         </div>
         <button class="btn-primary" style="width:100%;justify-content:center;" id="donateBtn" onclick="handleDonate()">
-          <i class="ti ti-heart" aria-hidden="true"></i> Donate & claim your CXF credit
+          <i class="ti ti-heart" aria-hidden="true"></i> Donate via PayPal
         </button>
-        <p class="donate-note">CXF credits retired in our registry on your behalf. Certificate emailed within 48 hours.</p>
+        <p class="donate-note">One-time payment via PayPal — no account required. CarbonXFuture charges no platform fees on donations.</p>
       </div>
     </div>
   </div>
@@ -992,9 +1103,9 @@ footer{background:var(--slate-900);padding:3.5rem 2rem 2rem;}
         <p>CarbonXFuture is a Fort Lauderdale-based institutional marketplace and carbon methodology developer. We built the CXF standard to unlock carbon value from waste oil recycling — one of the most overlooked yet impactful sectors in the circular economy.</p>
         <div class="about-stats">
           <div class="a-stat"><div class="val">CXF</div><div class="lbl">Proprietary methodology</div></div>
-          <div class="a-stat"><div class="val">340+</div><div class="lbl">Projects listed</div></div>
+          <div class="a-stat"><div class="val">$80B+</div><div class="lbl">Global waste oil market</div></div>
           <div class="a-stat"><div class="val">6</div><div class="lbl">Credit standards</div></div>
-          <div class="a-stat"><div class="val">28</div><div class="lbl">Countries covered</div></div>
+          <div class="a-stat"><div class="val">1.8B t</div><div class="lbl">VCM 2030 potential (tCO₂e)</div></div>
         </div>
       </div>
       <div>
@@ -1291,6 +1402,7 @@ footer{background:var(--slate-900);padding:3.5rem 2rem 2rem;}
         <a href="#methodology">CXF Methodology</a>
         <a href="#earn">Earn credits</a>
         <a href="#marketplace">Marketplace</a>
+        <a href="#oildesk">Oil desk</a>
         <a href="#calculators">Calculators</a>
         <a href="#donate">Donate</a>
         <a href="#kyc">Apply for access</a>
@@ -1313,11 +1425,11 @@ footer{background:var(--slate-900);padding:3.5rem 2rem 2rem;}
       </div>
     </div>
     <div class="footer-bottom">
-      <p class="footer-copy">© 2025 CarbonXFuture. All rights reserved. Fort Lauderdale, Florida.</p>
+      <p class="footer-copy">© 2026 CarbonXFuture Markets, Inc. All rights reserved. Fort Lauderdale, Florida.</p>
       <div class="footer-certs">
         <span class="cert-badge">⬡ CXF Standard</span>
-        <span class="cert-badge">Verra member</span>
-        <span class="cert-badge">ICVCM aligned</span>
+        <span class="cert-badge">Verra · GS · ACR · CAR · Plan Vivo compatible</span>
+        <span class="cert-badge">ICVCM CCP alignment in progress</span>
       </div>
     </div>
   </div>
@@ -1361,7 +1473,7 @@ function selectAmount(el, val) {
 /* Donation — paste your Stripe Payment Link (use a "customer chooses
    amount" link) or PayPal donate URL below. Until set, the button
    honestly tells visitors donations aren't open online yet. */
-const DONATION_LINK = ''; // e.g. 'https://buy.stripe.com/xxxx' or 'https://www.paypal.com/donate/?hosted_button_id=xxxx'
+const DONATION_LINK = 'https://www.paypal.com/biz/profile/carbonxfuture';
 
 function handleDonate() {
   const btn = document.getElementById('donateBtn');
@@ -1369,7 +1481,7 @@ function handleDonate() {
     btn.innerHTML = '<i class="ti ti-mail"></i> Online donations open soon — email info@carbonxfuture.com';
     btn.disabled = true;
     setTimeout(() => {
-      btn.innerHTML = '<i class="ti ti-heart"></i> Donate & claim your CXF credit';
+      btn.innerHTML = '<i class="ti ti-heart"></i> Donate via PayPal';
       btn.disabled = false;
     }, 5000);
     return;
@@ -1634,8 +1746,8 @@ You help users understand:
 - The CXF methodology: covers used oil collection, re-refining, and infrastructure development. ~2.85 tCO2e per 1,000 litres collected. Third-party audited, MRV-compliant.
 - Registries supported: CXF (proprietary), Verra VCS, Gold Standard, ACR, CAR, Plan Vivo.
 - How to apply: users submit KYC on the platform. 24-48h review. Options: waste oil recycler, corporate buyer, investment fund, trading desk, government entity.
-- Donation program: anyone can donate ($50–$1000+) and receive a retired CXF carbon credit certificate in their name within 48h.
-- Physical markets: CarbonXFuture also trades waste oil and base oil physical cargoes.
+- Donation program: one-time donations via PayPal (guest checkout) fund open methodology templates, education on the voluntary carbon market, waste-oil re-refining research and small project grants. No platform fees on donations.
+- Physical markets: the CarbonXFuture desk trades physical cargoes — waste engine oil, used oil, VGO, Group I/II base oils and diesel blend components — from KYC-verified originators, with lab reports and port logistics.
 
 Be concise, professional, and helpful. Answer in the same language the user writes in. If asked about prices, note they are indicative and updated daily. Never give financial advice. For specific transactions, direct users to apply for access.`;
 
@@ -1771,7 +1883,12 @@ function calcOffset() {
   valEl.textContent = calcFmt(t) + ' tCO₂e @ $' + calcPrice(key).toFixed(2) + ' / tCO₂e';
 }
 
-function refreshCalcs() { calcWasteOil(); calcGreenEnergy(); calcMethane(); calcOffset(); }
+function calcReforest() {
+  const ha = parseFloat(document.getElementById('calcRfHa').value) || 0;
+  calcSet('calcRfNum', 'calcRfVal', ha * 6, 'verra-redd');
+}
+
+function refreshCalcs() { calcWasteOil(); calcGreenEnergy(); calcMethane(); calcReforest(); calcOffset(); }
 </script>
 </body>
 </html>
