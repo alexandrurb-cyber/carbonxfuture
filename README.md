@@ -34,9 +34,12 @@ confirmation link once and all later submissions arrive normally.
 The donate button opens your Stripe Payment Link — the `DONATION_LINK`
 constant near the bottom of `index.html`. To change it, edit that constant.
 
-### 4. Daily prices
-Edit `prices.json`: change the numbers and set `lastUpdated` to today's date
-(format `YYYY-MM-DD`), then commit. The site shows the date from this file.
+### 4. Daily updates (prices + listings)
+- **Prices:** edit `prices.json` — numbers + `lastUpdated` (format `YYYY-MM-DD`) → commit.
+- **Listings:** edit `listings.json` — the `carbon` array feeds the marketplace
+  table, the `oil` array feeds the oil desk table. Add/remove/edit entries and
+  commit; the site rebuilds both tables automatically. `reg` must be one of:
+  cxf, verra, gold, acr, car (controls badge color + filters).
 
 ### 5. Custom domain (optional)
 In Vercel: **Settings → Domains** → add `carbonxfuture.com` and follow the DNS

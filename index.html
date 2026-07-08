@@ -983,7 +983,7 @@ footer{background:var(--slate-900);padding:3.5rem 2rem 2rem;}
     </div>
     <p style="max-width:640px;color:var(--slate-600);font-size:15px;margin-bottom:2rem;">Waste engine oil, VGO, base oil and diesel blend components from KYC'd originators — with lab reports and port logistics handled by the CarbonXFuture desk.</p>
     <div class="table-wrap">
-      <table class="listings-table">
+      <table class="listings-table" id="oilTable">
         <thead>
           <tr>
             <th>Product</th>
@@ -1729,6 +1729,39 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal()
 
 // Init blog on page load
 renderBlog('all');
+
+/* Listings are loaded from /listings.json — edit that file to update
+   marketplace and oil desk offers daily. Hardcoded rows below remain
+   as fallback if the file can't be fetched. */
+(async function(){
+  try {
+    const res = await fetch('/listings.json', {cache:'no-store'});
+    if (!res.ok) return;
+    const data = await res.json();
+    const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    if (Array.isArray(data.carbon) && data.carbon.length) {
+      const tb = document.querySelector('#listingsTable tbody');
+      if (tb) tb.innerHTML = data.carbon.map(l => `
+        <tr data-reg="${esc(l.reg)}">
+          <td><div class="td-project"><span class="project-dot ${esc(l.reg)}"></span><div><div class="td-name">${esc(l.name)}</div><div class="td-sub">${esc(l.sub)}</div></div></div></td>
+          <td><span class="badge ${esc(l.reg)}">${esc(l.badge)}</span></td>
+          <td class="td-muted">${esc(l.type)}</td><td>${esc(l.vintage)}</td>
+          <td class="td-price">${esc(l.volume)}</td><td class="td-price">$${Number(l.price).toFixed(2)}</td>
+          <td class="td-action"><button onclick="quoteRequest(this)">Request quote</button></td>
+        </tr>`).join('');
+    }
+    if (Array.isArray(data.oil) && data.oil.length) {
+      const tb = document.querySelector('#oilTable tbody');
+      if (tb) tb.innerHTML = data.oil.map(l => `
+        <tr>
+          <td><div class="td-project"><span class="project-dot cxf"></span><div><div class="td-name">${esc(l.name)}</div></div></div></td>
+          <td class="td-muted">${esc(l.location)}</td><td class="td-price">${esc(l.qty)}</td>
+          <td class="td-muted">${esc(l.sulfur)}</td><td class="td-muted">${esc(l.h2o)}</td><td class="td-price">${esc(l.price)}</td>
+          <td class="td-action"><button onclick="quoteRequest(this)">Request details</button></td>
+        </tr>`).join('');
+    }
+  } catch(e) {}
+})();
 
 /* Prices are loaded from /prices.json — update that file to change
    displayed prices. The "Last updated" date shown is the date in the
