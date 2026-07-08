@@ -1477,7 +1477,7 @@ const DONATION_LINK = 'https://buy.stripe.com/5kQ7sLa3a9Hq1hD5uT1ck00'; // Strip
 function handleDonate() {
   const btn = document.getElementById('donateBtn');
   if (!DONATION_LINK) {
-    btn.innerHTML = '<i class="ti ti-mail"></i> Online donations open soon — email info@carbonxfuture.com';
+    btn.innerHTML = '<i class="ti ti-mail"></i> Online donations open soon — email desk@carbonxfuture.com';
     btn.disabled = true;
     setTimeout(() => {
       btn.innerHTML = '<i class="ti ti-heart"></i> Donate securely via Stripe';
@@ -1505,7 +1505,7 @@ async function handleKYC() {
   btn.disabled = true;
   btn.innerHTML = 'Submitting…';
   try {
-    const res = await fetch('https://formsubmit.co/ajax/info@carbonxfuture.com', {
+    const res = await fetch('https://formsubmit.co/ajax/desk@carbonxfuture.com', {
       method: 'POST',
       headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
       body: JSON.stringify({
@@ -1519,7 +1519,7 @@ async function handleKYC() {
     btn.style.color = 'var(--forest)';
   } catch (e) {
     btn.disabled = false;
-    btn.innerHTML = '<i class="ti ti-alert-circle"></i> Couldn\'t submit — email info@carbonxfuture.com';
+    btn.innerHTML = '<i class="ti ti-alert-circle"></i> Couldn\'t submit — email desk@carbonxfuture.com';
     setTimeout(() => { btn.innerHTML = '<i class="ti ti-arrow-right"></i> Submit access request'; }, 5000);
   }
 }
@@ -1537,7 +1537,7 @@ function quoteRequest(btn) {
   const project = row ? row.querySelector('.td-name').textContent : 'Carbon credit listing';
   const subject = encodeURIComponent('Quote request — ' + project);
   const body = encodeURIComponent('Hello CarbonXFuture,\n\nI would like to request a quote for: ' + project + '\n\nVolume (tCO2e):\nCompany:\nName:\n');
-  window.location.href = 'mailto:info@carbonxfuture.com?subject=' + subject + '&body=' + body;
+  window.location.href = 'mailto:desk@carbonxfuture.com?subject=' + subject + '&body=' + body;
 }
 
 /* =========================================================
@@ -1824,7 +1824,7 @@ async function sendMessage() {
     agentHistory.push({role:'assistant', content: reply});
   } catch(e) {
     removeTyping();
-    addMessage('bot', 'I\'m having trouble connecting right now. Please try again in a moment, or contact us directly at info@carbonxfuture.com');
+    addMessage('bot', 'I\'m having trouble connecting right now. Please try again in a moment, or contact us directly at desk@carbonxfuture.com');
   }
   agentTyping = false;
 }
