@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="robots" content="noindex, follow"/>
+<title>Member Login | CarbonXFuture</title>
+<link rel="icon" href="/favicon.ico" sizes="48x48"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--forest:#1A4A2E;--forest-light:#2D6B45;--forest-pale:#EAF2EC;--slate-100:#E8E8E4;--slate-200:#C8C8C2;--slate-400:#8A8A82;--slate-600:#4A4A45;--slate-800:#1E1E1A;}
+body{font-family:'Inter',sans-serif;background:var(--forest);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1.5rem;}
+.card{background:#fff;border-radius:16px;padding:2.5rem;max-width:420px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.25);}
+.logo{display:flex;align-items:center;gap:10px;margin-bottom:1.75rem;}
+.logo-mark{width:36px;height:36px;background:var(--forest);border-radius:9px;display:flex;align-items:center;justify-content:center;}
+.logo-mark span{color:#fff;font-size:11px;font-weight:700;}
+.logo-text{font-size:15px;font-weight:500;color:var(--slate-800);}
+h1{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:400;margin-bottom:0.4rem;color:var(--slate-800);}
+.sub{font-size:13.5px;color:var(--slate-400);margin-bottom:1.5rem;line-height:1.6;}
+label{display:block;font-size:11px;font-weight:500;color:var(--slate-600);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.5px;}
+input{width:100%;border:0.5px solid var(--slate-200);border-radius:8px;padding:12px 14px;font-size:14px;font-family:'Inter',sans-serif;outline:none;color:var(--slate-800);}
+input:focus{border-color:var(--forest-light);}
+button{width:100%;background:var(--forest);color:#fff;border:none;border-radius:8px;padding:13px;font-size:14px;font-weight:500;font-family:'Inter',sans-serif;cursor:pointer;margin-top:1rem;}
+button:hover{background:var(--forest-light);}
+button:disabled{opacity:0.6;cursor:default;}
+.msg{font-size:13px;margin-top:0.9rem;line-height:1.6;color:var(--slate-600);}
+.msg.ok{color:var(--forest-light);}
+.msg.err{color:#B8740A;}
+.note{font-size:12px;color:var(--slate-400);margin-top:1.5rem;padding-top:1.25rem;border-top:0.5px solid var(--slate-100);line-height:1.6;}
+.note a{color:var(--forest-light);}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="logo"><div class="logo-mark"><span>CXF</span></div><span class="logo-text">CarbonXFuture · Member Portal</span></div>
+  <h1>Sign in</h1>
+  <p class="sub">Enter the email you applied with. We'll send you a secure one-time sign-in link — no password needed.</p>
+  <label>Email</label>
+  <input type="email" id="email" placeholder="you@company.com" onkeydown="if(event.key==='Enter')sendLink()"/>
+  <button id="btn" onclick="sendLink()">Send sign-in link</button>
+  <div class="msg" id="msg"></div>
+  <p class="note">No account yet? <a href="/#kyc">Apply for access</a> — approved members receive portal access from the desk.<br/>Questions: <a href="mailto:desk@carbonxfuture.com">desk@carbonxfuture.com</a></p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/portal/config.js"></script>
+<script>
+const db = supabase.createClient(CXF_SUPABASE_URL, CXF_SUPABASE_KEY);
+
+// Already signed in? Go straight to the dashboard.
+db.auth.getSession().then(({data}) => {
+  if (data.session) location.href = '/portal/dashboard.html';
+});
+
+async function sendLink() {
+  const email = document.getElementById('email').value.trim().toLowerCase();
+  const btn = document.getElementById('btn');
+  const msg = document.getElementById('msg');
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    msg.className = 'msg err'; msg.textContent = 'Please enter a valid email address.'; return;
+  }
+  btn.disabled = true; btn.textContent = 'Sending…';
+  const { error } = await db.auth.signInWithOtp({
+    email,
+    options: { emailRedirectTo: location.origin + '/portal/dashboard.html' }
+  });
+  if (error) {
+    msg.className = 'msg err';
+    msg.textContent = 'Could not send the link: ' + error.message;
+    btn.disabled = false; btn.textContent = 'Send sign-in link';
+  } else {
+    msg.className = 'msg ok';
+    msg.textContent = 'Check your inbox — the sign-in link is on its way. It expires in 1 hour.';
+    btn.textContent = 'Link sent ✓';
+  }
+}
+</script>
+</body>
+</html>
