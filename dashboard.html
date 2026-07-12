@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="robots" content="noindex, follow"/>
+<title>Member Dashboard | CarbonXFuture</title>
+<link rel="icon" href="/favicon.ico" sizes="48x48"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--forest:#1A4A2E;--forest-light:#2D6B45;--forest-pale:#EAF2EC;--forest-mid:#C5DFC9;--slate-50:#F5F5F3;--slate-100:#E8E8E4;--slate-200:#C8C8C2;--slate-400:#8A8A82;--slate-600:#4A4A45;--slate-800:#1E1E1A;--amber:#B8740A;--amber-pale:#FDF3E3;}
+body{font-family:'Inter',sans-serif;color:var(--slate-800);font-size:14.5px;line-height:1.65;background:var(--slate-50);min-height:100vh;}
+.topbar{background:var(--forest);padding:12px 1.5rem;display:flex;justify-content:space-between;align-items:center;}
+.topbar .brand{color:#fff;font-size:13px;font-weight:500;text-decoration:none;}
+.topbar button{background:rgba(255,255,255,0.12);color:#fff;border:none;border-radius:7px;padding:7px 14px;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;}
+.wrap{max-width:900px;margin:0 auto;padding:2.5rem 1.5rem 4rem;}
+h1{font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:400;margin-bottom:0.25rem;}
+.sub{font-size:13px;color:var(--slate-400);margin-bottom:1.75rem;}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.5rem;}
+.tab{font-size:12.5px;padding:7px 16px;border-radius:100px;border:0.5px solid var(--slate-200);background:#fff;color:var(--slate-600);cursor:pointer;font-family:'Inter',sans-serif;}
+.tab.active{background:var(--forest);color:#fff;border-color:var(--forest);}
+.panel{display:none;}
+.panel.active{display:block;}
+.card{background:#fff;border:0.5px solid var(--slate-100);border-radius:14px;padding:1.75rem;margin-bottom:1.25rem;}
+.card h2{font-size:1.05rem;font-weight:600;margin-bottom:0.75rem;}
+label{display:block;font-size:11px;font-weight:500;color:var(--slate-600);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.5px;}
+input,select{width:100%;border:0.5px solid var(--slate-200);border-radius:8px;padding:10px 13px;font-size:14px;font-family:'Inter',sans-serif;outline:none;color:var(--slate-800);background:#fff;margin-bottom:0.9rem;}
+input:focus,select:focus{border-color:var(--forest-light);}
+button.primary{background:var(--forest);color:#fff;border:none;border-radius:8px;padding:11px 22px;font-size:13.5px;font-weight:500;font-family:'Inter',sans-serif;cursor:pointer;}
+button.primary:hover{background:var(--forest-light);}
+button.primary:disabled{opacity:0.6;}
+.preview{background:var(--forest-pale);border-radius:10px;padding:0.9rem 1.1rem;margin-bottom:0.9rem;font-size:13px;}
+.preview b{font-size:1.15rem;color:var(--forest);}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:0.5px;color:var(--slate-400);padding:8px 10px;border-bottom:1px solid var(--slate-100);}
+td{padding:9px 10px;border-bottom:0.5px solid var(--slate-100);vertical-align:middle;}
+.pill{font-size:10.5px;font-weight:600;padding:3px 10px;border-radius:100px;text-transform:uppercase;letter-spacing:0.4px;}
+.pill.submitted{background:var(--amber-pale);color:var(--amber);}
+.pill.validated,.pill.published{background:var(--forest-pale);color:var(--forest);}
+.pill.rejected{background:#FBEAEA;color:#A33;}
+.pill.changes_requested{background:var(--amber-pale);color:var(--amber);}
+.center{max-width:520px;margin:4rem auto;text-align:center;}
+.center .icon{font-size:2.5rem;margin-bottom:1rem;}
+.muted{color:var(--slate-400);font-size:12.5px;}
+.hidden{display:none;}
+.notice{background:var(--amber-pale);border-left:3px solid var(--amber);padding:0.8rem 1rem;border-radius:6px;font-size:12.5px;margin-bottom:1.25rem;}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a class="brand" href="/">⬡ CarbonXFuture · Member Portal</a>
+  <button onclick="signOut()">Sign out</button>
+</div>
+
+<div class="wrap" id="app"><p class="muted" style="text-align:center;margin-top:4rem;">Loading…</p></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/portal/config.js"></script>
+<script>
+const db = supabase.createClient(CXF_SUPABASE_URL, CXF_SUPABASE_KEY);
+let USER = null, MEMBER = null;
+const esc = s => String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+async function signOut(){ await db.auth.signOut(); location.href='/portal/'; }
+
+(async function init(){
+  const { data } = await db.auth.getSession();
+  if (!data.session) { location.href = '/portal/'; return; }
+  USER = data.session.user;
+  const { data: m } = await db.from('members').select('*').eq('id', USER.id).maybeSingle();
+  MEMBER = m;
+  if (!MEMBER) return renderOnboarding();
+  if (MEMBER.status !== 'approved') return renderPending();
+  renderDashboard();
+})();
+
+/* ---------- Onboarding (first login) ---------- */
+function renderOnboarding(){
+  document.getElementById('app').innerHTML = `
+  <div class="center"><div class="card" style="text-align:left;">
+    <h1 style="margin-bottom:0.75rem;">Welcome — complete your profile</h1>
+    <p class="muted" style="margin-bottom:1.25rem;">Your account will then go to the CarbonXFuture desk for review.</p>
+    <label>Contact name</label><input id="obName" placeholder="Jane Doe"/>
+    <label>Company</label><input id="obCompany" placeholder="Acme Recycling LLC"/>
+    <label>I am a</label>
+    <select id="obType">
+      <option value="collector">Waste oil collector</option>
+      <option value="rerefiner">Re-refiner</option>
+      <option value="project_developer">Project developer</option>
+      <option value="buyer">Corporate buyer</option>
+    </select>
+    <button class="primary" onclick="submitOnboarding()">Submit for review</button>
+  </div></div>`;
+}
+async function submitOnboarding(){
+  const contact_name = document.getElementById('obName').value.trim();
+  const company = document.getElementById('obCompany').value.trim();
+  const member_type = document.getElementById('obType').value;
+  if (!contact_name || !company) return alert('Please fill in your name and company.');
+  const { error } = await db.from('members').insert({
+    id: USER.id, email: USER.email, contact_name, company, member_type, status: 'pending'
+  });
+  if (error) return alert('Error: ' + error.message);
+  // Notify the desk that a new application is waiting (non-blocking)
+  try {
+    const { data: s } = await db.auth.getSession();
+    fetch('/api/notify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + s.session.access_token },
+      body: JSON.stringify({ type: 'new_member_admin', data: { name: contact_name, company, email: USER.email, member_type } })
+    });
+  } catch(e) {}
+  MEMBER = { status: 'pending' };
+  renderPending();
+}
+
+/* ---------- Pending screen ---------- */
+function renderPending(){
+  const rejected = MEMBER.status === 'rejected';
+  document.getElementById('app').innerHTML = `
+  <div class="center">
+    <div class="icon">${rejected ? '✉️' : '⏳'}</div>
+    <h1>${rejected ? 'Application not approved' : 'Under review'}</h1>
+    <p class="muted" style="margin-top:0.5rem;">${rejected
+      ? 'Your application was not approved at this time. For details, contact desk@carbonxfuture.com.'
+      : 'The CarbonXFuture desk is reviewing your account. You will receive an email once approved — typically within 24–48 business hours.'}</p>
+  </div>`;
+}
+
+/* ---------- Main dashboard ---------- */
+function renderDashboard(){
+  const t = MEMBER.member_type;
+  const canReport = (t === 'collector' || t === 'rerefiner');
+  document.getElementById('app').innerHTML = `
+  <h1>${esc(MEMBER.company)}</h1>
+  <p class="sub">${esc(MEMBER.contact_name)} · ${esc(t)} · <span class="pill validated">approved</span></p>
+  <div class="tabs">
+    ${canReport ? '<button class="tab active" data-p="report">Submit report</button>' : ''}
+    <button class="tab ${canReport ? '' : 'active'}" data-p="reports">My reports</button>
+    <button class="tab" data-p="docs">Documents</button>
+    <button class="tab" data-p="listings">My listings</button>
+  </div>
+
+  ${canReport ? `
+  <div class="panel active" id="p-report">
+    <div class="card">
+      <h2>Monthly activity report</h2>
+      <div class="notice">Figures below are <b>indicative</b> under the CXF Methodology. Credits are attributed only after desk validation of your evidence.</div>
+      <label>Period</label><input type="month" id="rPeriod"/>
+      <label>Activity scope</label>
+      <select id="rActivity" onchange="calcPreview()">
+        <option value="collection">Collection only — 2.85 tCO₂e / 1,000 L</option>
+        <option value="collection_rerefining">Collection + re-refining — 5.1 tCO₂e / 1,000 L</option>
+        <option value="full_chain">+ distribution — 6.8 tCO₂e / 1,000 L</option>
+      </select>
+      <label>Volume (litres)</label><input type="number" id="rLitres" min="1" placeholder="e.g. 120000" oninput="calcPreview()"/>
+      <div class="preview">Indicative credits: <b id="rPreview">—</b> tCO₂e <span class="muted">(pending validation)</span></div>
+      <label>Evidence (weighbridge tickets, delivery receipts — PDF/image, optional)</label>
+      <input type="file" id="rFile" accept=".pdf,.png,.jpg,.jpeg"/>
+      <button class="primary" id="rBtn" onclick="submitReport()">Submit report</button>
+    </div>
+  </div>` : ''}
+
+  <div class="panel ${canReport ? '' : 'active'}" id="p-reports"><div class="card"><h2>My reports</h2><div id="reportsList" class="muted">Loading…</div></div></div>
+  <div class="panel" id="p-docs">
+    <div class="card">
+      <h2>Upload document</h2>
+      <label>Document type</label>
+      <select id="dType"><option>Company registration</option><option>Operating license (FDEP/state)</option><option>Lab certificate</option><option>Project dossier</option><option>Other</option></select>
+      <label>File (PDF/image)</label><input type="file" id="dFile" accept=".pdf,.png,.jpg,.jpeg"/>
+      <button class="primary" id="dBtn" onclick="uploadDoc()">Upload</button>
+    </div>
+    <div class="card"><h2>My documents</h2><div id="docsList" class="muted">Loading…</div></div>
+  </div>
+  <div class="panel" id="p-listings"><div class="card"><h2>My marketplace listings</h2><div id="listingsList" class="muted">Loading…</div></div></div>`;
+
+  document.querySelectorAll('.tab').forEach(b => b.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    document.getElementById('p-' + b.dataset.p).classList.add('active');
+  }));
+  loadReports(); loadDocs(); loadListings();
+}
+
+function calcPreview(){
+  const litres = parseFloat(document.getElementById('rLitres').value) || 0;
+  const f = CXF_FACTORS[document.getElementById('rActivity').value].factor;
+  document.getElementById('rPreview').textContent = litres > 0 ? (litres/1000*f).toFixed(1) : '—';
+}
+
+async function submitReport(){
+  const period = document.getElementById('rPeriod').value;
+  const activity = document.getElementById('rActivity').value;
+  const litres = parseFloat(document.getElementById('rLitres').value);
+  const file = document.getElementById('rFile').files[0];
+  const btn = document.getElementById('rBtn');
+  if (!period || !litres || litres <= 0) return alert('Please select the period and enter a valid volume.');
+  btn.disabled = true; btn.textContent = 'Submitting…';
+  let evidence_path = null;
+  try {
+    if (file) {
+      if (file.size > 15*1024*1024) throw new Error('File too large (max 15 MB).');
+      evidence_path = `${USER.id}/reports/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.\-_]/g,'_')}`;
+      const { error: upErr } = await db.storage.from('member-docs').upload(evidence_path, file);
+      if (upErr) throw upErr;
+    }
+    const computed_tco2e = +(litres/1000*CXF_FACTORS[activity].factor).toFixed(2);
+    const { error } = await db.from('reports').insert({ member_id: USER.id, period, activity, litres, computed_tco2e, evidence_path });
+    if (error) throw error;
+    btn.textContent = '✓ Submitted for validation';
+    loadReports();
+  } catch(e) {
+    alert('Error: ' + e.message);
+    btn.disabled = false; btn.textContent = 'Submit report';
+  }
+}
+
+async function uploadDoc(){
+  const file = document.getElementById('dFile').files[0];
+  const doc_type = document.getElementById('dType').value;
+  const btn = document.getElementById('dBtn');
+  if (!file) return alert('Please choose a file.');
+  if (file.size > 15*1024*1024) return alert('File too large (max 15 MB).');
+  btn.disabled = true; btn.textContent = 'Uploading…';
+  try {
+    const storage_path = `${USER.id}/docs/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.\-_]/g,'_')}`;
+    const { error: upErr } = await db.storage.from('member-docs').upload(storage_path, file);
+    if (upErr) throw upErr;
+    const { error } = await db.from('documents').insert({ member_id: USER.id, doc_type, file_name: file.name, storage_path });
+    if (error) throw error;
+    btn.textContent = '✓ Uploaded'; setTimeout(()=>{btn.disabled=false;btn.textContent='Upload';},2000);
+    loadDocs();
+  } catch(e) { alert('Error: ' + e.message); btn.disabled=false; btn.textContent='Upload'; }
+}
+
+async function loadReports(){
+  const { data } = await db.from('reports').select('*').order('created_at',{ascending:false});
+  const el = document.getElementById('reportsList');
+  if (!data || !data.length) { el.textContent = 'No reports yet.'; return; }
+  el.innerHTML = `<table><tr><th>Period</th><th>Activity</th><th>Litres</th><th>Indicative tCO₂e</th><th>Status</th></tr>` +
+    data.map(r => `<tr><td>${esc(r.period)}</td><td>${esc(CXF_FACTORS[r.activity]?.label || r.activity)}</td><td>${Number(r.litres).toLocaleString()}</td><td>${r.computed_tco2e}</td><td><span class="pill ${esc(r.status)}">${esc(r.status.replace('_',' '))}</span>${r.admin_notes ? '<div class="muted">'+esc(r.admin_notes)+'</div>' : ''}</td></tr>`).join('') + '</table>';
+}
+async function loadDocs(){
+  const { data } = await db.from('documents').select('*').order('uploaded_at',{ascending:false});
+  const el = document.getElementById('docsList');
+  if (!data || !data.length) { el.textContent = 'No documents yet.'; return; }
+  el.innerHTML = `<table><tr><th>Type</th><th>File</th><th>Status</th></tr>` +
+    data.map(d => `<tr><td>${esc(d.doc_type)}</td><td>${esc(d.file_name)}</td><td><span class="pill ${esc(d.status)}">${esc(d.status.replace('_',' '))}</span></td></tr>`).join('') + '</table>';
+}
+async function loadListings(){
+  const { data } = await db.from('listings').select('*').eq('member_id', USER.id).order('validated_at',{ascending:false});
+  const el = document.getElementById('listingsList');
+  if (!data || !data.length) { el.textContent = 'No listings yet — validated reports appear here automatically.'; return; }
+  el.innerHTML = `<table><tr><th>Listing</th><th>Vintage</th><th>Volume (tCO₂e)</th><th>Status</th></tr>` +
+    data.map(l => `<tr><td>${esc(l.name)}</td><td>${esc(l.vintage)}</td><td>${Number(l.volume).toLocaleString()}</td><td><span class="pill ${esc(l.status)}">${esc(l.status)}</span></td></tr>`).join('') + '</table>';
+}
+</script>
+</body>
+</html>
