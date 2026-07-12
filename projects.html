@@ -35,6 +35,7 @@ tr:last-child td{border-bottom:none;}
 .p-sub{font-size:12px;color:var(--slate-400);}
 .badge{font-size:10.5px;font-weight:600;letter-spacing:0.4px;padding:3px 10px;border-radius:100px;white-space:nowrap;}
 .badge.verra{background:var(--forest-pale);color:var(--forest);}
+.badge.cxf{background:var(--forest);color:#fff;}
 .badge.gold{background:var(--gold-pale);color:var(--gold);}
 .badge.acr{background:var(--blue-pale);color:var(--blue);}
 .badge.car{background:var(--blue-pale);color:var(--blue);}
@@ -59,6 +60,7 @@ tr:last-child td{border-bottom:none;}
 
 <div class="filters" id="regFilters">
   <button class="filter-btn active" data-reg="all">All registries</button>
+  <button class="filter-btn" data-reg="cxf">⬡ CXF</button>
   <button class="filter-btn" data-reg="verra">Verra VCS</button>
   <button class="filter-btn" data-reg="gold">Gold Standard</button>
   <button class="filter-btn" data-reg="acr">ACR</button>
@@ -111,6 +113,20 @@ function render() {
     const data = await res.json();
     PROJECTS = data.projects || [];
     if (data.note) document.getElementById('note').textContent = data.note;
+    // Desk-published CXF member projects (live from the portal)
+    try {
+      const cr = await fetch('https://zohskwbavtzvecqziklq.supabase.co/rest/v1/cxf_projects?select=name,country,type,vintages,size&status=eq.published&order=created_at.desc', {
+        headers: { apikey: 'sb_publishable_K-4sl6hEk75fByleZEZcfA_f_Zha9aI' }
+      });
+      if (cr.ok) {
+        const cxf = await cr.json();
+        cxf.forEach(c => PROJECTS.unshift({
+          name: c.name, country: c.country, registry: '⬡ CXF', reg: 'cxf',
+          type: c.type, vintages: c.vintages || '—', size: c.size || '—',
+          link: '/methodology.html'
+        }));
+      }
+    } catch(e) {}
     const countries = [...new Set(PROJECTS.map(p => p.country))].sort();
     const sel = document.getElementById('countryFilter');
     countries.forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = c; sel.appendChild(o); });

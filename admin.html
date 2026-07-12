@@ -38,7 +38,7 @@ a{color:var(--forest-light);}
 <body>
 <div class="topbar">
   <a class="brand" href="/">⬡ CarbonXFuture · Desk Admin</a>
-  <button onclick="signOut()">Sign out</button>
+  <div><a href="/" style="color:#fff;font-size:12px;margin-right:12px;">← Website</a><button onclick="signOut()">Sign out</button></div>
 </div>
 <div class="wrap" id="app"><p class="muted" style="text-align:center;margin-top:4rem;">Loading…</p></div>
 
@@ -81,8 +81,21 @@ async function notifyMember(type, to, data) {
     <div class="card"><h2>Members</h2><div id="members" class="muted">Loading…</div></div>
     <div class="card"><h2>Reports awaiting validation</h2><div id="reports" class="muted">Loading…</div></div>
     <div class="card"><h2>Documents</h2><div id="docs" class="muted">Loading…</div></div>
-    <div class="card"><h2>Published listings</h2><div id="listings" class="muted">Loading…</div></div>`;
-  loadMembers(); loadReports(); loadDocs(); loadListings();
+    <div class="card"><h2>Published listings</h2><div id="listings" class="muted">Loading…</div></div>
+    <div class="card"><h2>Public projects — website Project Explorer</h2>
+      <p class="muted" style="margin-bottom:0.75rem;">Publish a validated member project to the public Project Explorer page (shown with the ⬡ CXF badge).</p>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px;">
+        <select id="pjMember" style="padding:8px;border:0.5px solid var(--slate-200);border-radius:7px;font-family:'Inter',sans-serif;font-size:12.5px;"><option value="">— member (optional) —</option></select>
+        <input id="pjName" placeholder="Project name" style="padding:8px;border:0.5px solid var(--slate-200);border-radius:7px;font-family:'Inter',sans-serif;font-size:12.5px;"/>
+        <input id="pjCountry" placeholder="Country / State" value="Florida, USA" style="padding:8px;border:0.5px solid var(--slate-200);border-radius:7px;font-family:'Inter',sans-serif;font-size:12.5px;"/>
+        <input id="pjType" placeholder="Type" value="Waste oil re-refining" style="padding:8px;border:0.5px solid var(--slate-200);border-radius:7px;font-family:'Inter',sans-serif;font-size:12.5px;"/>
+        <input id="pjVintages" placeholder="Vintages (e.g. 2027–2036)" style="padding:8px;border:0.5px solid var(--slate-200);border-radius:7px;font-family:'Inter',sans-serif;font-size:12.5px;"/>
+        <input id="pjSize" placeholder="Indicative size (e.g. ~425k tCO₂e/yr, pre-operational)" style="padding:8px;border:0.5px solid var(--slate-200);border-radius:7px;font-family:'Inter',sans-serif;font-size:12.5px;"/>
+      </div>
+      <button class="act ok" onclick="publishProject()">Publish to website</button>
+      <div id="cxfprojects" class="muted" style="margin-top:1rem;">Loading…</div>
+    </div>`;
+  loadMembers(); loadReports(); loadDocs(); loadListings(); loadCxfProjects();
 })();
 
 /* ---------- Members ---------- */
@@ -220,6 +233,47 @@ async function loadListings(){
       <td>${l.status === 'published' ? `<button class="act ghost" onclick="withdrawListing('${l.id}')">Withdraw</button>` : ''}</td>
     </tr>`).join('') + '</table>';
 }
+/* ---------- Public projects (website showcase) ---------- */
+async function loadCxfProjects(){
+  const el = document.getElementById('cxfprojects');
+  const { data: members } = await db.from('members').select('id, company').eq('status','approved');
+  const sel = document.getElementById('pjMember');
+  if (members && sel.options.length <= 1) members.forEach(m => { const o = document.createElement('option'); o.value = m.id; o.textContent = m.company; sel.appendChild(o); });
+  const { data, error } = await db.from('cxf_projects').select('*, members(company)').order('created_at',{ascending:false});
+  if (error) { el.textContent = 'Error: ' + error.message + ' — did you run schema-projects.sql in Supabase?'; return; }
+  if (!data.length) { el.textContent = 'No public projects yet.'; return; }
+  el.innerHTML = `<table><tr><th>Project</th><th>Member</th><th>Country</th><th>Type</th><th>Vintages</th><th>Size</th><th>Status</th><th></th></tr>` +
+    data.map(p => `<tr>
+      <td><b>${esc(p.name)}</b></td><td>${esc(p.members?.company ?? '—')}</td><td>${esc(p.country)}</td>
+      <td>${esc(p.type)}</td><td>${esc(p.vintages)}</td><td>${esc(p.size)}</td>
+      <td><span class="pill ${esc(p.status)}">${esc(p.status)}</span></td>
+      <td>${p.status === 'published' ? `<button class="act ghost" onclick="withdrawProject('${p.id}')">Withdraw</button>` : ''}</td>
+    </tr>`).join('') + '</table>';
+}
+async function publishProject(){
+  const name = document.getElementById('pjName').value.trim();
+  if (!name) return alert('Please enter the project name.');
+  const member_id = document.getElementById('pjMember').value || null;
+  const { error } = await db.from('cxf_projects').insert({
+    member_id, name,
+    country: document.getElementById('pjCountry').value.trim() || 'USA',
+    type: document.getElementById('pjType').value.trim() || 'Waste oil re-refining',
+    vintages: document.getElementById('pjVintages').value.trim(),
+    size: document.getElementById('pjSize').value.trim()
+  });
+  if (error) return alert('Error: ' + error.message);
+  audit('project_published', name);
+  document.getElementById('pjName').value = ''; document.getElementById('pjVintages').value = ''; document.getElementById('pjSize').value = '';
+  alert('Published — it is now live on the Project Explorer page.');
+  loadCxfProjects();
+}
+async function withdrawProject(id){
+  if (!confirm('Withdraw this project from the public website?')) return;
+  const { error } = await db.from('cxf_projects').update({ status: 'withdrawn' }).eq('id', id);
+  if (error) return alert('Error: ' + error.message);
+  audit('project_withdrawn', id); loadCxfProjects();
+}
+
 async function withdrawListing(id){
   if (!confirm('Withdraw this listing from the marketplace?')) return;
   const { error } = await db.from('listings').update({ status: 'withdrawn' }).eq('id', id);

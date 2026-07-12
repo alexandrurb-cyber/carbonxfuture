@@ -50,7 +50,7 @@ td{padding:9px 10px;border-bottom:0.5px solid var(--slate-100);vertical-align:mi
 <body>
 <div class="topbar">
   <a class="brand" href="/">⬡ CarbonXFuture · Member Portal</a>
-  <button onclick="signOut()">Sign out</button>
+  <div><a href="/" style="color:#fff;font-size:12px;margin-right:12px;">← Website</a><button onclick="signOut()">Sign out</button></div>
 </div>
 
 <div class="wrap" id="app"><p class="muted" style="text-align:center;margin-top:4rem;">Loading…</p></div>
@@ -173,7 +173,10 @@ function renderDashboard(){
     </div>
     <div class="card"><h2>My documents</h2><div id="docsList" class="muted">Loading…</div></div>
   </div>
-  <div class="panel" id="p-listings"><div class="card"><h2>My marketplace listings</h2><div id="listingsList" class="muted">Loading…</div></div></div>`;
+  <div class="panel" id="p-listings">
+    <div class="card"><h2>My marketplace listings</h2><div id="listingsList" class="muted">Loading…</div></div>
+    <div class="card"><h2>My public projects</h2><div id="projectsList" class="muted">Loading…</div></div>
+  </div>`;
 
   document.querySelectorAll('.tab').forEach(b => b.addEventListener('click', () => {
     document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
@@ -249,7 +252,16 @@ async function loadDocs(){
   el.innerHTML = `<table><tr><th>Type</th><th>File</th><th>Status</th></tr>` +
     data.map(d => `<tr><td>${esc(d.doc_type)}</td><td>${esc(d.file_name)}</td><td><span class="pill ${esc(d.status)}">${esc(d.status.replace('_',' '))}</span></td></tr>`).join('') + '</table>';
 }
+async function loadMyProjects(){
+  const el = document.getElementById('projectsList');
+  const { data, error } = await db.from('cxf_projects').select('*').eq('member_id', USER.id).order('created_at',{ascending:false});
+  if (error || !data || !data.length) { el.textContent = 'No public projects yet — projects are published by the desk after review of your dossier.'; return; }
+  el.innerHTML = `<table><tr><th>Project</th><th>Type</th><th>Vintages</th><th>Size</th><th>Status</th></tr>` +
+    data.map(p => `<tr><td>${esc(p.name)}</td><td>${esc(p.type)}</td><td>${esc(p.vintages)}</td><td>${esc(p.size)}</td><td><span class="pill ${esc(p.status)}">${esc(p.status)}</span></td></tr>`).join('') + '</table>';
+}
+
 async function loadListings(){
+  loadMyProjects();
   const { data } = await db.from('listings').select('*').eq('member_id', USER.id).order('validated_at',{ascending:false});
   const el = document.getElementById('listingsList');
   if (!data || !data.length) { el.textContent = 'No listings yet — validated reports appear here automatically.'; return; }
