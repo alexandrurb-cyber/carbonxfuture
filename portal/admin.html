@@ -91,7 +91,11 @@ async function notifyMember(type, to, data) {
         <input id="pjType" placeholder="Type" value="Waste oil re-refining" style="padding:8px;border:0.5px solid var(--slate-200);border-radius:7px;font-family:'Inter',sans-serif;font-size:12.5px;"/>
         <input id="pjVintages" placeholder="Vintages (e.g. 2027–2036)" style="padding:8px;border:0.5px solid var(--slate-200);border-radius:7px;font-family:'Inter',sans-serif;font-size:12.5px;"/>
         <input id="pjSize" placeholder="Indicative size (e.g. ~425k tCO₂e/yr, pre-operational)" style="padding:8px;border:0.5px solid var(--slate-200);border-radius:7px;font-family:'Inter',sans-serif;font-size:12.5px;"/>
+        <input id="pjAnnual" type="number" min="0" placeholder="Annual volume (tCO₂e/yr, e.g. 425000)" oninput="pjCalc()" style="padding:8px;border:0.5px solid var(--slate-200);border-radius:7px;font-family:'Inter',sans-serif;font-size:12.5px;"/>
+        <input id="pjPrice" type="number" min="0" step="0.01" placeholder="Indicative price ($/tCO₂e, e.g. 21.50)" oninput="pjCalc()" style="padding:8px;border:0.5px solid var(--slate-200);border-radius:7px;font-family:'Inter',sans-serif;font-size:12.5px;"/>
+        <input id="pjYears" type="number" min="1" max="30" placeholder="Term (years, e.g. 10)" oninput="pjCalc()" style="padding:8px;border:0.5px solid var(--slate-200);border-radius:7px;font-family:'Inter',sans-serif;font-size:12.5px;"/>
       </div>
+      <p class="muted" style="margin-bottom:8px;">Total project value: <b id="pjTotal" style="color:var(--forest);">—</b> <span id="pjTotalDetail"></span> · leave the three value fields empty if you don't want the project shown in the marketplace.</p>
       <button class="act ok" onclick="publishProject()">Publish to website</button>
       <div id="cxfprojects" class="muted" style="margin-top:1rem;">Loading…</div>
     </div>`;
@@ -242,14 +246,24 @@ async function loadCxfProjects(){
   const { data, error } = await db.from('cxf_projects').select('*, members(company)').order('created_at',{ascending:false});
   if (error) { el.textContent = 'Error: ' + error.message + ' — did you run schema-projects.sql in Supabase?'; return; }
   if (!data.length) { el.textContent = 'No public projects yet.'; return; }
-  el.innerHTML = `<table><tr><th>Project</th><th>Member</th><th>Country</th><th>Type</th><th>Vintages</th><th>Size</th><th>Status</th><th></th></tr>` +
-    data.map(p => `<tr>
+  el.innerHTML = `<table><tr><th>Project</th><th>Member</th><th>Country</th><th>Type</th><th>Vintages</th><th>Size</th><th>Total value</th><th>Status</th><th></th></tr>` +
+    data.map(p => { const tv = (p.annual_tco2e && p.price_usd && p.term_years) ? p.annual_tco2e * p.price_usd * p.term_years : null; return `<tr>
       <td><b>${esc(p.name)}</b></td><td>${esc(p.members?.company ?? '—')}</td><td>${esc(p.country)}</td>
       <td>${esc(p.type)}</td><td>${esc(p.vintages)}</td><td>${esc(p.size)}</td>
+      <td>${tv ? '<b>$' + tv.toLocaleString('en-US',{maximumFractionDigits:0}) + '</b>' : '—'}</td>
       <td><span class="pill ${esc(p.status)}">${esc(p.status)}</span></td>
       <td>${p.status === 'published' ? `<button class="act ghost" onclick="withdrawProject('${p.id}')">Withdraw</button>` : ''}</td>
-    </tr>`).join('') + '</table>';
+    </tr>`;}).join('') + '</table>';
 }
+function pjCalc(){
+  const a = parseFloat(document.getElementById('pjAnnual').value) || 0;
+  const p = parseFloat(document.getElementById('pjPrice').value) || 0;
+  const y = parseInt(document.getElementById('pjYears').value) || 0;
+  const total = a * p * y;
+  document.getElementById('pjTotal').textContent = total > 0 ? '$' + total.toLocaleString('en-US', {maximumFractionDigits:0}) : '—';
+  document.getElementById('pjTotalDetail').textContent = total > 0 ? `(${a.toLocaleString()} tCO₂e/yr × $${p} × ${y} yr = ${(a*y).toLocaleString()} tCO₂e total)` : '';
+}
+
 async function publishProject(){
   const name = document.getElementById('pjName').value.trim();
   if (!name) return alert('Please enter the project name.');
@@ -258,21 +272,27 @@ async function publishProject(){
   const type = document.getElementById('pjType').value.trim() || 'Waste oil re-refining';
   const vintages = document.getElementById('pjVintages').value.trim();
   const size = document.getElementById('pjSize').value.trim();
-  const { error } = await db.from('cxf_projects').insert({ member_id, name, country, type, vintages, size });
-  if (error) return alert('Error: ' + error.message);
+  const annual_tco2e = parseFloat(document.getElementById('pjAnnual').value) || null;
+  const price_usd = parseFloat(document.getElementById('pjPrice').value) || null;
+  const term_years = parseInt(document.getElementById('pjYears').value) || null;
+  const { error } = await db.from('cxf_projects').insert({ member_id, name, country, type, vintages, size, annual_tco2e, price_usd, term_years });
+  if (error) return alert('Error: ' + error.message + (error.message.includes('annual_tco2e') ? ' — did you run schema-project-value.sql in Supabase?' : ''));
   audit('project_published', name);
+  const totalValue = (annual_tco2e && price_usd && term_years) ? annual_tco2e * price_usd * term_years : null;
   // Email the member that their project is live
   if (member_id) {
     const { data: m } = await db.from('members').select('email, contact_name').eq('id', member_id).maybeSingle();
     if (m?.email) {
       await notifyMember('project_published', m.email, {
         name: m.contact_name, project: name,
-        details: [type, country, vintages && ('Vintages ' + vintages), size].filter(Boolean).join(' · ')
+        details: [type, country, vintages && ('Vintages ' + vintages), size,
+          totalValue && ('Indicative total project value $' + totalValue.toLocaleString('en-US',{maximumFractionDigits:0}))].filter(Boolean).join(' · ')
       });
     }
   }
   document.getElementById('pjName').value = ''; document.getElementById('pjVintages').value = ''; document.getElementById('pjSize').value = '';
-  alert('Published — it is now live on the Project Explorer page.');
+  document.getElementById('pjAnnual').value = ''; document.getElementById('pjPrice').value = ''; document.getElementById('pjYears').value = ''; pjCalc();
+  alert('Published — live on the Project Explorer page' + (totalValue ? ' and in the marketplace as a forward offer.' : '.'));
   loadCxfProjects();
 }
 async function withdrawProject(id){
