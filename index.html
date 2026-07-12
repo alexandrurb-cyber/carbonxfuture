@@ -1842,6 +1842,32 @@ renderBlog('all');
       }
     } catch(e) {}
 
+    // Desk-published CXF projects with value fields → forward offers in the marketplace
+    try {
+      const pj = await fetch('https://zohskwbavtzvecqziklq.supabase.co/rest/v1/cxf_projects?select=name,country,type,vintages,annual_tco2e,price_usd,term_years&status=eq.published&annual_tco2e=not.is.null&order=created_at.desc&limit=20', {
+        headers: { apikey: 'sb_publishable_K-4sl6hEk75fByleZEZcfA_f_Zha9aI' }
+      });
+      if (pj.ok) {
+        const projects = await pj.json();
+        const tbp = document.querySelector('#listingsTable tbody');
+        const rows = projects.filter(p => p.annual_tco2e && p.price_usd && p.term_years);
+        if (tbp && rows.length) {
+          tbp.insertAdjacentHTML('afterbegin', rows.map(p => {
+            const total = p.annual_tco2e * p.price_usd * p.term_years;
+            const totalVol = p.annual_tco2e * p.term_years;
+            const totalFmt = total >= 1e6 ? '$' + (total/1e6).toFixed(1) + 'M' : '$' + total.toLocaleString('en-US',{maximumFractionDigits:0});
+            return `
+        <tr data-reg="cxf">
+          <td><div class="td-project"><span class="project-dot cxf"></span><div><div class="td-name">${esc(p.name)}</div><div class="td-sub">Forward offer · ${esc(p.country)} · Total project value ${totalFmt} (indicative)</div></div></div></td>
+          <td><span class="badge cxf">⬡ CXF</span></td>
+          <td class="td-muted">${esc(p.type)} · ${esc(p.term_years)}-yr forward</td><td>${esc(p.vintages || '—')}</td>
+          <td class="td-price">${totalVol.toLocaleString()}</td><td class="td-price">$${Number(p.price_usd).toFixed(2)}</td>
+          <td class="td-action"><button onclick="quoteRequest(this)">Request quote</button></td>
+        </tr>`;}).join(''));
+        }
+      }
+    } catch(e) {}
+
     if (Array.isArray(data.oil) && data.oil.length) {
       const tb = document.querySelector('#oilTable tbody');
       if (tb) tb.innerHTML = data.oil.map(l => `
