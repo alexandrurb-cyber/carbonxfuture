@@ -254,15 +254,23 @@ async function publishProject(){
   const name = document.getElementById('pjName').value.trim();
   if (!name) return alert('Please enter the project name.');
   const member_id = document.getElementById('pjMember').value || null;
-  const { error } = await db.from('cxf_projects').insert({
-    member_id, name,
-    country: document.getElementById('pjCountry').value.trim() || 'USA',
-    type: document.getElementById('pjType').value.trim() || 'Waste oil re-refining',
-    vintages: document.getElementById('pjVintages').value.trim(),
-    size: document.getElementById('pjSize').value.trim()
-  });
+  const country = document.getElementById('pjCountry').value.trim() || 'USA';
+  const type = document.getElementById('pjType').value.trim() || 'Waste oil re-refining';
+  const vintages = document.getElementById('pjVintages').value.trim();
+  const size = document.getElementById('pjSize').value.trim();
+  const { error } = await db.from('cxf_projects').insert({ member_id, name, country, type, vintages, size });
   if (error) return alert('Error: ' + error.message);
   audit('project_published', name);
+  // Email the member that their project is live
+  if (member_id) {
+    const { data: m } = await db.from('members').select('email, contact_name').eq('id', member_id).maybeSingle();
+    if (m?.email) {
+      await notifyMember('project_published', m.email, {
+        name: m.contact_name, project: name,
+        details: [type, country, vintages && ('Vintages ' + vintages), size].filter(Boolean).join(' · ')
+      });
+    }
+  }
   document.getElementById('pjName').value = ''; document.getElementById('pjVintages').value = ''; document.getElementById('pjSize').value = '';
   alert('Published — it is now live on the Project Explorer page.');
   loadCxfProjects();
