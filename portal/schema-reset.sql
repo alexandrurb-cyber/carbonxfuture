@@ -1,0 +1,166 @@
+-- ============================================================
+-- CXF Portal — Schema RESET v1.1 (safe to run multiple times)
+-- Supabase → SQL Editor → paste ALL → Run
+-- ============================================================
+
+-- ---------- 0. Clean slate ----------
+drop table if exists public.audit_log cascade;
+drop table if exists public.listings cascade;
+drop table if exists public.reports cascade;
+drop table if exists public.documents cascade;
+drop table if exists public.members cascade;
+drop function if exists public.protect_member_fields() cascade;
+drop function if exists public.is_admin() cascade;
+drop type if exists review_status cascade;
+drop type if exists member_status cascade;
+drop type if exists member_type cascade;
+
+-- ---------- 1. Types ----------
+create type member_type as enum ('collector','rerefiner','project_developer','buyer');
+create type member_status as enum ('pending','approved','rejected','suspended');
+create type review_status as enum ('submitted','validated','rejected','changes_requested');
+
+-- ---------- 2. Tables ----------
+create table public.members (
+  id uuid primary key references auth.users(id) on delete cascade,
+  email text not null,
+  contact_name text,
+  company text,
+  member_type member_type,
+  status member_status not null default 'pending',
+  created_at timestamptz not null default now()
+);
+
+create table public.documents (
+  id uuid primary key default gen_random_uuid(),
+  member_id uuid not null references public.members(id) on delete cascade,
+  doc_type text,
+  file_name text not null,
+  storage_path text not null,
+  status review_status not null default 'submitted',
+  uploaded_at timestamptz not null default now()
+);
+
+create table public.reports (
+  id uuid primary key default gen_random_uuid(),
+  member_id uuid not null references public.members(id) on delete cascade,
+  period text not null,
+  activity text not null,
+  litres numeric not null check (litres > 0),
+  computed_tco2e numeric not null,
+  evidence_path text,
+  status review_status not null default 'submitted',
+  admin_notes text,
+  created_at timestamptz not null default now()
+);
+
+create table public.listings (
+  id uuid primary key default gen_random_uuid(),
+  member_id uuid references public.members(id) on delete set null,
+  report_id uuid references public.reports(id),
+  name text not null,
+  reg text not null default 'cxf',
+  badge text not null default '⬡ CXF',
+  type text not null default 'Waste oil',
+  vintage text not null,
+  volume numeric not null,
+  price numeric,
+  registry_serial text,
+  status text not null default 'published',
+  validated_at timestamptz not null default now()
+);
+
+create table public.audit_log (
+  id bigint generated always as identity primary key,
+  actor text not null,
+  action text not null,
+  target text,
+  at timestamptz not null default now()
+);
+
+-- ---------- 3. Admin check ----------
+create or replace function public.is_admin() returns boolean
+language sql stable as $$
+  select coalesce(auth.jwt() ->> 'email', '')
+         in ('desk@carbonxfuture.com','alexandrurb@icloud.com')
+$$;
+
+-- ---------- 4. Row Level Security ----------
+alter table public.members   enable row level security;
+alter table public.documents enable row level security;
+alter table public.reports   enable row level security;
+alter table public.listings  enable row level security;
+alter table public.audit_log enable row level security;
+
+create policy "members_select" on public.members for select
+  using (auth.uid() = id or public.is_admin());
+create policy "members_insert_own_pending" on public.members for insert
+  with check (auth.uid() = id and status = 'pending');
+create policy "members_update" on public.members for update
+  using (auth.uid() = id or public.is_admin());
+
+create or replace function public.protect_member_fields() returns trigger
+language plpgsql security definer as $$
+begin
+  if not public.is_admin() then
+    new.status      := old.status;
+    new.member_type := coalesce(old.member_type, new.member_type);
+    new.email       := old.email;
+  end if;
+  return new;
+end $$;
+create trigger trg_protect_member before update on public.members
+  for each row execute function public.protect_member_fields();
+
+create policy "documents_select" on public.documents for select
+  using (member_id = auth.uid() or public.is_admin());
+create policy "documents_insert" on public.documents for insert
+  with check (member_id = auth.uid());
+create policy "documents_admin_update" on public.documents for update
+  using (public.is_admin());
+
+create policy "reports_select" on public.reports for select
+  using (member_id = auth.uid() or public.is_admin());
+create policy "reports_insert" on public.reports for insert
+  with check (member_id = auth.uid());
+create policy "reports_admin_update" on public.reports for update
+  using (public.is_admin());
+
+create policy "listings_public_read" on public.listings for select
+  using (status = 'published' or member_id = auth.uid() or public.is_admin());
+create policy "listings_admin_insert" on public.listings for insert
+  with check (public.is_admin());
+create policy "listings_admin_update" on public.listings for update
+  using (public.is_admin());
+
+create policy "audit_admin_read" on public.audit_log for select
+  using (public.is_admin());
+create policy "audit_insert" on public.audit_log for insert
+  with check (auth.uid() is not null);
+
+-- ---------- 5. Storage (guarded — never fails the script) ----------
+insert into storage.buckets (id, name, public)
+values ('member-docs','member-docs', false)
+on conflict (id) do nothing;
+
+do $$ begin
+  create policy "storage_upload_own_folder" on storage.objects for insert
+    with check (bucket_id = 'member-docs'
+                and auth.uid()::text = (storage.foldername(name))[1]);
+exception
+  when duplicate_object then null;
+  when insufficient_privilege then
+    raise notice 'STORAGE POLICY SKIPPED — create it in Dashboard: Storage -> Policies';
+end $$;
+
+do $$ begin
+  create policy "storage_read_own_or_admin" on storage.objects for select
+    using (bucket_id = 'member-docs'
+           and (auth.uid()::text = (storage.foldername(name))[1] or public.is_admin()));
+exception
+  when duplicate_object then null;
+  when insufficient_privilege then
+    raise notice 'STORAGE POLICY SKIPPED — create it in Dashboard: Storage -> Policies';
+end $$;
+
+select 'CXF Portal schema installed successfully' as result;

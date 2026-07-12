@@ -52,6 +52,22 @@ const esc = s => String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').repl
 async function signOut(){ await db.auth.signOut(); location.href='/portal/'; }
 async function audit(action, target){ try { await db.from('audit_log').insert({actor: USER.email, action, target}); } catch(e){} }
 
+async function notifyMember(type, to, data) {
+  try {
+    const { data: s } = await db.auth.getSession();
+    const res = await fetch('/api/notify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + s.session.access_token },
+      body: JSON.stringify({ type, to, data })
+    });
+    if (!res.ok) throw new Error((await res.json()).error || ('HTTP ' + res.status));
+    return true;
+  } catch (e) {
+    alert('Action saved, but the notification email failed (' + e.message + ') — please email the member manually from desk@carbonxfuture.com.');
+    return false;
+  }
+}
+
 (async function init(){
   const { data } = await db.auth.getSession();
   if (!data.session) { location.href = '/portal/'; return; }
@@ -87,10 +103,14 @@ async function loadMembers(){
 }
 async function setStatus(id, status){
   if (!confirm('Set member status to "' + status + '"?')) return;
+  const { data: m } = await db.from('members').select('email, contact_name, company').eq('id', id).single();
   const { error } = await db.from('members').update({ status }).eq('id', id);
   if (error) return alert('Error: ' + error.message);
   audit('member_status:' + status, id);
-  alert('Done. Note: notify the member by email from desk@carbonxfuture.com (automatic emails come in Phase 2).');
+  let sent = null;
+  if (m && status === 'approved') sent = await notifyMember('member_approved', m.email, { name: m.contact_name, company: m.company });
+  if (m && status === 'rejected') sent = await notifyMember('member_rejected', m.email, { name: m.contact_name, company: m.company });
+  if (sent) alert('Done — the member has been notified by email.');
   loadMembers();
 }
 
@@ -115,7 +135,7 @@ async function loadReports(){
 }
 
 async function validateReport(id){
-  const { data: r, error: e1 } = await db.from('reports').select('*, members(company)').eq('id', id).single();
+  const { data: r, error: e1 } = await db.from('reports').select('*, members(company, email, contact_name)').eq('id', id).single();
   if (e1) return alert('Error: ' + e1.message);
   const priceStr = prompt('Validate ' + r.computed_tco2e + ' tCO₂e for "' + r.members.company + '".\nIndicative ask price per tCO₂e in USD (leave empty for "on request"):');
   if (priceStr === null) return;
@@ -130,22 +150,32 @@ async function validateReport(id){
   });
   if (e3) return alert('Report validated but listing failed: ' + e3.message);
   audit('validate_report+list', id);
-  alert('Validated and published to the marketplace.');
+  const sent = await notifyMember('report_validated', r.members.email, {
+    name: r.members.contact_name, company: r.members.company,
+    period: r.period, volume: r.computed_tco2e, price: price ? price.toFixed(2) : null
+  });
+  alert('Validated and published to the marketplace.' + (sent ? ' The member has been notified by email.' : ''));
   loadReports(); loadListings();
 }
 async function requestChanges(id){
   const note = prompt('What should the member fix / add?');
   if (note === null) return;
+  const { data: r } = await db.from('reports').select('period, members(email, contact_name, company)').eq('id', id).single();
   const { error } = await db.from('reports').update({ status: 'changes_requested', admin_notes: note }).eq('id', id);
   if (error) return alert('Error: ' + error.message);
-  audit('report_changes_requested', id); loadReports();
+  audit('report_changes_requested', id);
+  if (r) await notifyMember('report_changes', r.members.email, { name: r.members.contact_name, company: r.members.company, period: r.period, note });
+  loadReports();
 }
 async function rejectReport(id){
   const note = prompt('Rejection reason (visible to the member):');
   if (note === null) return;
+  const { data: r } = await db.from('reports').select('period, members(email, contact_name, company)').eq('id', id).single();
   const { error } = await db.from('reports').update({ status: 'rejected', admin_notes: note }).eq('id', id);
   if (error) return alert('Error: ' + error.message);
-  audit('report_rejected', id); loadReports();
+  audit('report_rejected', id);
+  if (r) await notifyMember('report_rejected', r.members.email, { name: r.members.contact_name, company: r.members.company, period: r.period, note });
+  loadReports();
 }
 
 /* ---------- Documents ---------- */
