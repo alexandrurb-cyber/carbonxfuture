@@ -56,6 +56,17 @@ const TEMPLATES = {
        <p style="background:#FDF3E3;padding:12px 16px;border-radius:8px;">${esc(d.note)}</p>
        <p>Please update and resubmit in the portal.</p>`)
   }),
+  new_member_admin: d => ({
+    subject: '🔔 New member application: ' + (d.company || 'Unknown company'),
+    html: wrap('New application awaiting your review',
+      `<p>A new member just completed onboarding:</p>
+       <p><b>Company:</b> ${esc(d.company)}<br/>
+          <b>Contact:</b> ${esc(d.name)}<br/>
+          <b>Email:</b> ${esc(d.email)}<br/>
+          <b>Type:</b> ${esc(d.member_type)}</p>
+       <p>Review and approve/reject in the Desk Admin panel.</p>
+       <p><a href="https://www.carbonxfuture.com/portal/admin.html" style="background:#1E1E1A;color:#ffffff;text-decoration:none;padding:10px 22px;border-radius:8px;font-size:13px;">Open Desk Admin</a></p>`)
+  }),
   report_rejected: d => ({
     subject: 'Your report could not be validated',
     html: wrap('Report not validated',
@@ -63,8 +74,42 @@ const TEMPLATES = {
        <p>Unfortunately your <b>${esc(d.period)}</b> report for <b>${esc(d.company)}</b> could not be validated:</p>
        <p style="background:#FBEAEA;padding:12px 16px;border-radius:8px;">${esc(d.note)}</p>
        <p>If you have questions, reply to this email.</p>`)
+  }),
+  application_received: d => ({
+    subject: 'We received your CarbonXFuture application',
+    html: wrap('Application received ✓',
+      `<p>Hi ${esc(d.name)},</p>
+       <p>Thank you — your application for <b>${esc(d.company)}</b> has been received by the CarbonXFuture desk.</p>
+       <p>Our team reviews every application individually. You will receive a decision by email, typically within 24–48 business hours.</p>`)
+  }),
+  report_received: d => ({
+    subject: 'Your activity report was submitted',
+    html: wrap('Report submitted ✓',
+      `<p>Hi ${esc(d.name)},</p>
+       <p>Your <b>${esc(d.period)}</b> activity report for <b>${esc(d.company)}</b> was submitted successfully.</p>
+       <p><b>Indicative volume:</b> ${esc(d.volume)} tCO₂e (subject to desk validation).</p>
+       <p>The CarbonXFuture desk will review it. You will receive another email once it is validated or if changes are needed.</p>`)
+  }),
+  document_received: d => ({
+    subject: 'Your document was uploaded',
+    html: wrap('Document received ✓',
+      `<p>Hi ${esc(d.name)},</p>
+       <p>Your document <b>${esc(d.filename)}</b> was uploaded successfully and is now with the CarbonXFuture desk for review.</p>
+       <p>No further action is needed from you at this point. You will be notified after review.</p>`)
+  }),
+  project_published: d => ({
+    subject: '🎉 Your project is live on carbonxfuture.com',
+    html: wrap('Project published on the website',
+      `<p>Hi ${esc(d.name)},</p>
+       <p>Congratulations — the CarbonXFuture desk has published your project on the public Project Explorer:</p>
+       <p style="background:#EAF2EC;padding:12px 16px;border-radius:8px;"><b>${esc(d.project)}</b><br/>${esc(d.details)}</p>
+       <p>It is now visible with the ⬡ CXF badge at <a href="https://www.carbonxfuture.com/projects.html">carbonxfuture.com/projects.html</a>.</p>`)
   })
 };
+
+// Types a signed-in member may trigger about their OWN activity.
+// The recipient is always forced to the member's own email.
+const SELF_TYPES = ['application_received', 'report_received', 'document_received'];
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
@@ -79,11 +124,21 @@ export default async function handler(req, res) {
   });
   if (!u.ok) return res.status(401).json({ error: 'Invalid session' });
   const user = await u.json();
-  if (!ADMIN_EMAILS.includes((user.email || '').toLowerCase())) {
+
+  const { type, data } = req.body || {};
+  let { to } = req.body || {};
+
+  // 'new_member_admin' may be triggered by any signed-in member (their own
+  // onboarding); the recipient is always forced to the desk. SELF_TYPES are
+  // confirmations a member triggers about their own activity; the recipient
+  // is always forced to their own email. All other types require ADMIN.
+  if (type === 'new_member_admin') {
+    to = 'desk@carbonxfuture.com';
+  } else if (SELF_TYPES.includes(type)) {
+    to = user.email;
+  } else if (!ADMIN_EMAILS.includes((user.email || '').toLowerCase())) {
     return res.status(403).json({ error: 'Not authorized' });
   }
-
-  const { type, to, data } = req.body || {};
   const template = TEMPLATES[type];
   if (!template || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(to || '')) {
     return res.status(400).json({ error: 'Invalid payload' });
