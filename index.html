@@ -2130,12 +2130,20 @@ async function subscribeNews() {
   btn.disabled = true;
   btn.textContent = 'Subscribing…';
   try {
-    const res = await fetch('https://formsubmit.co/ajax/desk@carbonxfuture.com', {
+    // Store in the subscriber database (drives the automated Desk Note sends).
+    // 201 = subscribed, 409 = already subscribed — both fine.
+    const res = await fetch('https://zohskwbavtzvecqziklq.supabase.co/rest/v1/newsletter_subscribers', {
+      method: 'POST',
+      headers: { apikey: 'sb_publishable_K-4sl6hEk75fByleZEZcfA_f_Zha9aI', 'Content-Type': 'application/json', Prefer: 'return=minimal' },
+      body: JSON.stringify({ email })
+    });
+    if (!res.ok && res.status !== 409) throw new Error();
+    // Also notify the desk inbox (non-blocking)
+    fetch('https://formsubmit.co/ajax/desk@carbonxfuture.com', {
       method: 'POST',
       headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
       body: JSON.stringify({ _subject: 'Desk Note subscription: ' + email, email, source: 'newsletter' })
-    });
-    if (!res.ok) throw new Error();
+    }).catch(()=>{});
     btn.textContent = '✓ Subscribed';
     input.value = '';
     note.textContent = 'Welcome aboard — the next Desk Note lands in your inbox.';
