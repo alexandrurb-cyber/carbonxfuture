@@ -98,8 +98,15 @@ async function notifyMember(type, to, data) {
       <p class="muted" style="margin-bottom:8px;">Total project value: <b id="pjTotal" style="color:var(--forest);">—</b> <span id="pjTotalDetail"></span> · leave the three value fields empty if you don't want the project shown in the marketplace.</p>
       <button class="act ok" onclick="publishProject()">Publish to website</button>
       <div id="cxfprojects" class="muted" style="margin-top:1rem;">Loading…</div>
+    </div>
+    <div class="card"><h2>Newsletter — Desk Note</h2>
+      <p class="muted" style="margin-bottom:0.75rem;">Subscribers: <b id="nlCount">…</b> · sends individually via Resend (recipients never see each other).</p>
+      <input id="nlSubject" placeholder="Subject (e.g. Desk Note — July 13, 2026)" style="width:100%;padding:9px;border:0.5px solid var(--slate-200);border-radius:7px;font-family:'Inter',sans-serif;font-size:12.5px;margin-bottom:8px;"/>
+      <textarea id="nlBody" rows="10" placeholder="Paste the newsletter text here (blank line = new paragraph)…" style="width:100%;padding:9px;border:0.5px solid var(--slate-200);border-radius:7px;font-family:'Inter',sans-serif;font-size:12.5px;margin-bottom:8px;resize:vertical;"></textarea>
+      <button class="act ok" id="nlBtn" onclick="sendNewsletter()">Send to all subscribers</button>
+      <span id="nlStatus" class="muted" style="margin-left:10px;"></span>
     </div>`;
-  loadMembers(); loadReports(); loadDocs(); loadListings(); loadCxfProjects();
+  loadMembers(); loadReports(); loadDocs(); loadListings(); loadCxfProjects(); loadSubscriberCount();
 })();
 
 /* ---------- Members ---------- */
@@ -307,6 +314,34 @@ async function withdrawProject(id){
   const { error } = await db.from('cxf_projects').update({ status: 'withdrawn' }).eq('id', id);
   if (error) return alert('Error: ' + error.message);
   audit('project_withdrawn', id); loadCxfProjects();
+}
+
+/* ---------- Newsletter ---------- */
+async function loadSubscriberCount(){
+  const { count, error } = await db.from('newsletter_subscribers').select('*', { count: 'exact', head: true }).eq('status','active');
+  document.getElementById('nlCount').textContent = error ? '— (run schema-newsletter.sql?)' : count;
+}
+async function sendNewsletter(){
+  const subject = document.getElementById('nlSubject').value.trim();
+  const body = document.getElementById('nlBody').value.trim();
+  const btn = document.getElementById('nlBtn');
+  const st = document.getElementById('nlStatus');
+  if (!subject || !body) return alert('Please fill in the subject and the newsletter text.');
+  if (!confirm('Send this newsletter to ALL active subscribers now?')) return;
+  btn.disabled = true; st.textContent = 'Sending…';
+  try {
+    const { data: s } = await db.auth.getSession();
+    const res = await fetch('/api/newsletter', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + s.session.access_token },
+      body: JSON.stringify({ subject, body })
+    });
+    const out = await res.json();
+    if (!res.ok) throw new Error(out.error || ('HTTP ' + res.status));
+    st.textContent = `✓ Sent to ${out.sent}/${out.total} subscribers` + (out.failed?.length ? ` — failed: ${out.failed.join(', ')}` : '');
+    audit('newsletter_sent', subject + ' → ' + out.sent + ' subscribers');
+  } catch(e) { st.textContent = ''; alert('Send failed: ' + e.message); }
+  btn.disabled = false;
 }
 
 async function withdrawListing(id){
