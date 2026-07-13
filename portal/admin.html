@@ -275,7 +275,14 @@ async function publishProject(){
   const annual_tco2e = parseFloat(document.getElementById('pjAnnual').value) || null;
   const price_usd = parseFloat(document.getElementById('pjPrice').value) || null;
   const term_years = parseInt(document.getElementById('pjYears').value) || null;
-  const { error } = await db.from('cxf_projects').insert({ member_id, name, country, type, vintages, size, annual_tco2e, price_usd, term_years });
+  const row = { member_id, name, country, type, vintages, size, annual_tco2e, price_usd, term_years };
+  let { error } = await db.from('cxf_projects').insert(row);
+  // Transient network failure (Safari "Load failed" / Chrome "Failed to fetch")
+  // on the first request after idle — wait a moment and retry once automatically.
+  if (error && /load failed|failed to fetch|network/i.test(error.message)) {
+    await new Promise(r => setTimeout(r, 1200));
+    ({ error } = await db.from('cxf_projects').insert(row));
+  }
   if (error) return alert('Error: ' + error.message + (error.message.includes('annual_tco2e') ? ' — did you run schema-project-value.sql in Supabase?' : ''));
   audit('project_published', name);
   const totalValue = (annual_tco2e && price_usd && term_years) ? annual_tco2e * price_usd * term_years : null;
