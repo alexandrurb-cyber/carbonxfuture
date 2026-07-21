@@ -104,6 +104,30 @@ const TEMPLATES = {
        <p>Congratulations — the CarbonXFuture desk has published your project on the public Project Explorer:</p>
        <p style="background:#EAF2EC;padding:12px 16px;border-radius:8px;"><b>${esc(d.project)}</b><br/>${esc(d.details)}</p>
        <p>It is now visible with the ⬡ CXF badge at <a href="https://www.carbonxfuture.com/projects.html">carbonxfuture.com/projects.html</a>.</p>`)
+  }),
+  rfq_quote: d => ({
+    subject: 'Your quote from the CarbonXFuture desk — ' + (d.listing || ''),
+    html: wrap('Indicative quote from the desk',
+      `<p>Hi ${esc(d.name)},</p>
+       <p>Following your request on behalf of <b>${esc(d.company)}</b>, the CarbonXFuture desk quotes:</p>
+       <p style="background:#EAF2EC;padding:12px 16px;border-radius:8px;">
+         <b>${esc(d.listing)}</b><br/>
+         ${d.volume ? 'Volume: ' + esc(d.volume) + ' tCO₂e<br/>' : ''}
+         <b>Indicative price: $${esc(d.price)}/tCO₂e</b>
+         ${d.notes ? '<br/>' + esc(d.notes) : ''}</p>
+       <p>This quote is indicative and subject to final confirmation and documentation. Reply to this email to proceed or discuss terms.</p>`)
+  }),
+  certificate_issued: d => ({
+    subject: 'Your CXF retirement certificate — ' + (d.serial || ''),
+    html: wrap('Retirement certificate issued',
+      `<p>Hi ${esc(d.name)},</p>
+       <p>Your CXF platform credits have been retired and a certificate has been issued:</p>
+       <p style="background:#EAF2EC;padding:12px 16px;border-radius:8px;">
+         <b>Serial: ${esc(d.serial)}</b><br/>
+         Project: ${esc(d.project)}<br/>
+         Volume: ${esc(d.volume)} tCO₂e</p>
+       <p>View and print your certificate: <a href="https://www.carbonxfuture.com/certificate.html?serial=${encodeURIComponent(d.serial || '')}">carbonxfuture.com/certificate.html?serial=${esc(d.serial)}</a></p>
+       <p>Anyone can verify it independently at <a href="https://www.carbonxfuture.com/verify.html">carbonxfuture.com/verify.html</a>.</p>`)
   })
 };
 
