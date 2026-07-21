@@ -24,6 +24,8 @@ td{padding:9px 10px;border-bottom:0.5px solid var(--slate-100);vertical-align:mi
 .pill{font-size:10.5px;font-weight:600;padding:3px 10px;border-radius:100px;text-transform:uppercase;}
 .pill.pending,.pill.submitted{background:var(--amber-pale);color:var(--amber);}
 .pill.approved,.pill.validated,.pill.published{background:var(--forest-pale);color:var(--forest);}
+.pill.sold,.pill.won{background:var(--forest);color:#fff;}
+.pill.new{background:var(--amber-pale);color:var(--amber);}
 .pill.rejected,.pill.suspended{background:#FBEAEA;color:#A33;}
 button.act{border:none;border-radius:7px;padding:6px 13px;font-size:12px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;margin:2px;}
 .ok{background:var(--forest);color:#fff;}
@@ -78,10 +80,24 @@ async function notifyMember(type, to, data) {
   }
   document.getElementById('app').innerHTML = `
     <h1>Desk Admin</h1>
+    <div class="card"><h2>RFQ desk — quote requests</h2><div id="rfqs" class="muted">Loading…</div></div>
     <div class="card"><h2>Members</h2><div id="members" class="muted">Loading…</div></div>
     <div class="card"><h2>Reports awaiting validation</h2><div id="reports" class="muted">Loading…</div></div>
     <div class="card"><h2>Documents</h2><div id="docs" class="muted">Loading…</div></div>
     <div class="card"><h2>Published listings</h2><div id="listings" class="muted">Loading…</div></div>
+    <div class="card"><h2>Retirement certificates</h2>
+      <p class="muted" style="margin-bottom:0.75rem;">Issue a numbered certificate when credits are retired for a buyer. Serials are public and verifiable at /verify.html — never put private data in these fields.</p>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px;">
+        <input id="ctBuyer" placeholder="Retired for (e.g. Acme Corp — or 'Confidential')" style="padding:8px;border:0.5px solid var(--slate-200);border-radius:7px;font-family:'Inter',sans-serif;font-size:12.5px;"/>
+        <input id="ctProject" placeholder="Project (e.g. World Trade Petroleum — Re-Refinery)" style="padding:8px;border:0.5px solid var(--slate-200);border-radius:7px;font-family:'Inter',sans-serif;font-size:12.5px;"/>
+        <input id="ctVolume" type="number" min="1" placeholder="Volume (tCO₂e)" style="padding:8px;border:0.5px solid var(--slate-200);border-radius:7px;font-family:'Inter',sans-serif;font-size:12.5px;"/>
+        <input id="ctVintage" placeholder="Vintage (e.g. 2026)" style="padding:8px;border:0.5px solid var(--slate-200);border-radius:7px;font-family:'Inter',sans-serif;font-size:12.5px;"/>
+        <input id="ctDate" type="date" style="padding:8px;border:0.5px solid var(--slate-200);border-radius:7px;font-family:'Inter',sans-serif;font-size:12.5px;"/>
+        <input id="ctEmail" type="email" placeholder="Buyer email for the certificate (optional)" style="padding:8px;border:0.5px solid var(--slate-200);border-radius:7px;font-family:'Inter',sans-serif;font-size:12.5px;"/>
+      </div>
+      <button class="act ok" onclick="issueCertificate()">Issue certificate</button>
+      <div id="certs" class="muted" style="margin-top:1rem;">Loading…</div>
+    </div>
     <div class="card"><h2>Public projects — website Project Explorer</h2>
       <p class="muted" style="margin-bottom:0.75rem;">Publish a validated member project to the public Project Explorer page (shown with the ⬡ CXF badge).</p>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px;">
@@ -107,7 +123,112 @@ async function notifyMember(type, to, data) {
       <span id="nlStatus" class="muted" style="margin-left:10px;"></span>
     </div>`;
   loadMembers(); loadReports(); loadDocs(); loadListings(); loadCxfProjects(); loadSubscriberCount();
+  loadRfqs(); loadCertificates(); capturePriceSnapshot();
 })();
+
+/* ---------- Price index snapshot (auto-archive on every admin visit) ---------- */
+async function capturePriceSnapshot(){
+  try {
+    const p = await (await fetch('/prices.json', {cache:'no-store'})).json();
+    if (!p || !p.lastUpdated || !p.prices) return;
+    const { data } = await db.from('price_history').select('date').eq('date', p.lastUpdated).maybeSingle();
+    if (!data) { await db.from('price_history').insert({ date: p.lastUpdated, prices: p.prices }); }
+  } catch(e) {}
+}
+
+/* ---------- RFQ desk ---------- */
+async function loadRfqs(){
+  const el = document.getElementById('rfqs');
+  const { data, error } = await db.from('rfqs').select('*').neq('status','archived').order('created_at',{ascending:false}).limit(100);
+  if (error) { el.textContent = 'Error: ' + error.message + ' — did you run schema-market-suite.sql?'; return; }
+  if (!data.length) { el.textContent = 'No open quote requests.'; return; }
+  el.innerHTML = `<table><tr><th>Received</th><th>Listing</th><th>Volume</th><th>Target</th><th>Company / Contact</th><th>Status</th><th>Actions</th></tr>` +
+    data.map(q => `<tr>
+      <td class="muted">${new Date(q.created_at).toLocaleDateString('en-US')}</td>
+      <td><b>${esc(q.listing_name)}</b>${q.notes ? '<div class="muted">' + esc(q.notes) + '</div>' : ''}</td>
+      <td>${q.volume_tco2e ? Number(q.volume_tco2e).toLocaleString() : '—'}</td>
+      <td>${q.target_price ? '$' + Number(q.target_price).toFixed(2) : '—'}</td>
+      <td>${esc(q.company)}<div class="muted">${esc(q.contact_name)} · <a href="mailto:${esc(q.email)}">${esc(q.email)}</a>${q.timeframe ? ' · ' + esc(q.timeframe) : ''}</div></td>
+      <td><span class="pill ${q.status === 'new' ? 'pending' : q.status === 'quoted' ? 'approved' : q.status === 'won' ? 'validated' : 'rejected'}">${esc(q.status)}</span>${q.quote_price ? '<div class="muted">quoted $' + Number(q.quote_price).toFixed(2) + '</div>' : ''}</td>
+      <td>
+        ${q.status === 'new' || q.status === 'quoted' ? `<button class="act ok" onclick="quoteRfq('${q.id}')">Send quote</button>` : ''}
+        ${q.status === 'quoted' ? `<button class="act warn" onclick="setRfqStatus('${q.id}','won')">Won</button><button class="act bad" onclick="setRfqStatus('${q.id}','lost')">Lost</button>` : ''}
+        <button class="act ghost" onclick="setRfqStatus('${q.id}','archived')">Archive</button>
+      </td></tr>`).join('') + '</table>';
+}
+async function quoteRfq(id){
+  const { data: q } = await db.from('rfqs').select('*').eq('id', id).maybeSingle();
+  if (!q) return;
+  const price = prompt('Indicative price for "' + q.listing_name + '" ($/tCO₂e):', q.target_price || '');
+  if (price === null || !parseFloat(price)) return;
+  const notes = prompt('Optional note to include in the quote email:', '') || '';
+  const { error } = await db.from('rfqs').update({ status: 'quoted', quote_price: parseFloat(price), quote_notes: notes, quoted_at: new Date().toISOString() }).eq('id', id);
+  if (error) return alert('Error: ' + error.message);
+  await notifyMember('rfq_quote', q.email, {
+    name: q.contact_name, company: q.company, listing: q.listing_name,
+    volume: q.volume_tco2e ? Number(q.volume_tco2e).toLocaleString('en-US') : '',
+    price: parseFloat(price).toFixed(2), notes
+  });
+  audit('rfq_quoted', q.listing_name + ' @ $' + price + ' → ' + q.email);
+  loadRfqs();
+}
+async function setRfqStatus(id, status){
+  const { error } = await db.from('rfqs').update({ status }).eq('id', id);
+  if (error) return alert('Error: ' + error.message);
+  audit('rfq_' + status, id); loadRfqs();
+}
+
+/* ---------- Retirement certificates ---------- */
+async function nextSerial(){
+  const year = new Date().getFullYear();
+  const { data } = await db.from('certificates').select('serial').like('serial', 'CXF-' + year + '-%').order('serial',{ascending:false}).limit(1);
+  const last = data && data[0] ? parseInt(data[0].serial.split('-')[2]) || 0 : 0;
+  return 'CXF-' + year + '-' + String(last + 1).padStart(4, '0');
+}
+async function issueCertificate(){
+  const buyer_display = document.getElementById('ctBuyer').value.trim();
+  const project_name = document.getElementById('ctProject').value.trim();
+  const volume_tco2e = parseFloat(document.getElementById('ctVolume').value);
+  const vintage = document.getElementById('ctVintage').value.trim();
+  const retirement_date = document.getElementById('ctDate').value || new Date().toISOString().slice(0,10);
+  const buyerEmail = document.getElementById('ctEmail').value.trim();
+  if (!buyer_display || !project_name || !volume_tco2e || volume_tco2e <= 0) return alert('Please fill in buyer, project and a valid volume.');
+  const serial = await nextSerial();
+  if (!confirm('Issue certificate ' + serial + ' — ' + volume_tco2e.toLocaleString() + ' tCO₂e retired for "' + buyer_display + '"?')) return;
+  let { error } = await db.from('certificates').insert({ serial, buyer_display, project_name, volume_tco2e, vintage, retirement_date });
+  if (error && /load failed|failed to fetch|network/i.test(error.message)) {
+    await new Promise(r => setTimeout(r, 1200));
+    ({ error } = await db.from('certificates').insert({ serial, buyer_display, project_name, volume_tco2e, vintage, retirement_date }));
+  }
+  if (error) return alert('Error: ' + error.message + (error.message.includes('certificates') ? ' — did you run schema-market-suite.sql?' : ''));
+  audit('certificate_issued', serial + ' · ' + volume_tco2e + ' tCO₂e · ' + buyer_display);
+  if (buyerEmail) {
+    await notifyMember('certificate_issued', buyerEmail, { name: buyer_display, serial, project: project_name, volume: volume_tco2e.toLocaleString('en-US') });
+  }
+  ['ctBuyer','ctProject','ctVolume','ctVintage','ctEmail'].forEach(i => document.getElementById(i).value = '');
+  alert('Issued ' + serial + ' — printable at /certificate.html?serial=' + serial);
+  loadCertificates();
+}
+async function loadCertificates(){
+  const el = document.getElementById('certs');
+  const { data, error } = await db.from('certificates').select('*').order('created_at',{ascending:false}).limit(50);
+  if (error) { el.textContent = 'Error: ' + error.message + ' — did you run schema-market-suite.sql?'; return; }
+  if (!data.length) { el.textContent = 'No certificates issued yet.'; return; }
+  el.innerHTML = `<table><tr><th>Serial</th><th>Retired for</th><th>Project</th><th>Volume</th><th>Date</th><th>Status</th><th></th></tr>` +
+    data.map(c => `<tr>
+      <td><b>${esc(c.serial)}</b></td><td>${esc(c.buyer_display)}</td><td>${esc(c.project_name)}</td>
+      <td>${Number(c.volume_tco2e).toLocaleString()}</td><td>${esc(c.retirement_date)}</td>
+      <td><span class="pill ${c.status === 'active' ? 'validated' : 'rejected'}">${esc(c.status)}</span></td>
+      <td><a href="/certificate.html?serial=${encodeURIComponent(c.serial)}" target="_blank">Open</a>
+          ${c.status === 'active' ? ` <button class="act bad" onclick="revokeCertificate('${c.id}','${esc(c.serial)}')">Revoke</button>` : ''}</td>
+    </tr>`).join('') + '</table>';
+}
+async function revokeCertificate(id, serial){
+  if (!confirm('Revoke certificate ' + serial + '? It will show as REVOKED on public verification.')) return;
+  const { error } = await db.from('certificates').update({ status: 'revoked' }).eq('id', id);
+  if (error) return alert('Error: ' + error.message);
+  audit('certificate_revoked', serial); loadCertificates();
+}
 
 /* ---------- Members ---------- */
 async function loadMembers(){
@@ -241,8 +362,14 @@ async function loadListings(){
       <td>${esc(l.vintage)}</td><td>${Number(l.volume).toLocaleString()} tCO₂e</td>
       <td>${l.price ? '$' + Number(l.price).toFixed(2) : 'on request'}</td>
       <td><span class="pill ${esc(l.status)}">${esc(l.status)}</span></td>
-      <td>${l.status === 'published' ? `<button class="act ghost" onclick="withdrawListing('${l.id}')">Withdraw</button>` : ''}</td>
+      <td>${l.status === 'published' ? `<button class="act ok" onclick="markSold('${l.id}')">Mark sold</button><button class="act ghost" onclick="withdrawListing('${l.id}')">Withdraw</button>` : ''}</td>
     </tr>`).join('') + '</table>';
+}
+async function markSold(id){
+  if (!confirm('Mark this listing as SOLD? It leaves the public marketplace and shows as sold in the member portfolio.')) return;
+  const { error } = await db.from('listings').update({ status: 'sold' }).eq('id', id);
+  if (error) return alert('Error: ' + error.message);
+  audit('listing_sold', id); loadListings();
 }
 /* ---------- Public projects (website showcase) ---------- */
 async function loadCxfProjects(){

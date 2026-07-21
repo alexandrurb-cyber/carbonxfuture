@@ -38,6 +38,7 @@ td{padding:9px 10px;border-bottom:0.5px solid var(--slate-100);vertical-align:mi
 .pill{font-size:10.5px;font-weight:600;padding:3px 10px;border-radius:100px;text-transform:uppercase;letter-spacing:0.4px;}
 .pill.submitted{background:var(--amber-pale);color:var(--amber);}
 .pill.validated,.pill.published{background:var(--forest-pale);color:var(--forest);}
+.pill.sold{background:var(--forest);color:#fff;}
 .pill.rejected{background:#FBEAEA;color:#A33;}
 .pill.changes_requested{background:var(--amber-pale);color:var(--amber);}
 .center{max-width:520px;margin:4rem auto;text-align:center;}
@@ -154,6 +155,7 @@ function renderDashboard(){
     <button class="tab ${canReport ? '' : 'active'}" data-p="reports">My reports</button>
     <button class="tab" data-p="docs">Documents</button>
     <button class="tab" data-p="listings">My listings</button>
+    <button class="tab" data-p="portfolio">Portfolio</button>
   </div>
 
   ${canReport ? `
@@ -190,6 +192,18 @@ function renderDashboard(){
   <div class="panel" id="p-listings">
     <div class="card"><h2>My marketplace listings</h2><div id="listingsList" class="muted">Loading…</div></div>
     <div class="card"><h2>My public projects</h2><div id="projectsList" class="muted">Loading…</div></div>
+  </div>
+  <div class="panel" id="p-portfolio">
+    <div class="card">
+      <h2>Portfolio overview</h2>
+      <div id="pfCards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:1.25rem;"></div>
+      <div id="pfHoldings" class="muted">Loading…</div>
+      <div style="margin-top:1rem;display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="primary" onclick="exportPortfolioCSV()">Export CSV</button>
+        <button class="primary" style="background:var(--slate-800);" onclick="printStatement()">Print statement</button>
+      </div>
+      <p class="muted" style="margin-top:0.75rem;">Volumes are CXF platform credits under the CXF Methodology. Values are indicative desk marks, not a valuation or financial advice.</p>
+    </div>
   </div>`;
 
   document.querySelectorAll('.tab').forEach(b => b.addEventListener('click', () => {
@@ -198,7 +212,63 @@ function renderDashboard(){
     b.classList.add('active');
     document.getElementById('p-' + b.dataset.p).classList.add('active');
   }));
-  loadReports(); loadDocs(); loadListings();
+  loadReports(); loadDocs(); loadListings(); loadPortfolio();
+}
+
+/* ---------- Portfolio ---------- */
+let PF = { reports: [], listings: [] };
+async function loadPortfolio(){
+  const [{ data: reps }, { data: lst }] = await Promise.all([
+    db.from('reports').select('*').order('created_at',{ascending:false}),
+    db.from('listings').select('*').eq('member_id', USER.id).order('validated_at',{ascending:false})
+  ]);
+  PF.reports = reps || []; PF.listings = lst || [];
+  const validated = PF.reports.filter(r => r.status === 'validated').reduce((s,r) => s + Number(r.computed_tco2e || 0), 0);
+  const pending = PF.reports.filter(r => r.status === 'submitted').reduce((s,r) => s + Number(r.computed_tco2e || 0), 0);
+  const listed = PF.listings.filter(l => l.status === 'published').reduce((s,l) => s + Number(l.volume || 0), 0);
+  const sold = PF.listings.filter(l => l.status === 'sold').reduce((s,l) => s + Number(l.volume || 0), 0);
+  const listedValue = PF.listings.filter(l => l.status === 'published' && l.price).reduce((s,l) => s + Number(l.volume||0) * Number(l.price||0), 0);
+  const card = (k,v,d) => `<div style="background:var(--forest-pale);border-radius:10px;padding:0.8rem 1rem;">
+      <div style="font-size:10.5px;text-transform:uppercase;letter-spacing:0.5px;color:var(--slate-600);">${k}</div>
+      <div style="font-size:1.35rem;font-weight:600;color:var(--forest);">${v}</div>
+      <div style="font-size:11px;color:var(--slate-400);">${d}</div></div>`;
+  document.getElementById('pfCards').innerHTML =
+    card('Validated credits', validated.toLocaleString('en-US', {maximumFractionDigits:1}), 'tCO₂e, desk-validated') +
+    card('Pending validation', pending.toLocaleString('en-US', {maximumFractionDigits:1}), 'tCO₂e, submitted') +
+    card('Listed on market', listed.toLocaleString('en-US', {maximumFractionDigits:1}), 'tCO₂e, live listings') +
+    card('Sold', sold.toLocaleString('en-US', {maximumFractionDigits:1}), 'tCO₂e, settled via desk') +
+    card('Indicative listed value', '$' + listedValue.toLocaleString('en-US', {maximumFractionDigits:0}), 'volume × listed price');
+  const el = document.getElementById('pfHoldings');
+  if (!PF.listings.length && !PF.reports.length) { el.textContent = 'Nothing in the portfolio yet — submit your first activity report.'; return; }
+  el.innerHTML = `<table><tr><th>Item</th><th>Vintage / Period</th><th>Volume (tCO₂e)</th><th>Price</th><th>Status</th></tr>` +
+    PF.listings.map(l => `<tr><td><b>${esc(l.name)}</b></td><td>${esc(l.vintage || '—')}</td><td>${Number(l.volume).toLocaleString()}</td><td>${l.price ? '$' + Number(l.price).toFixed(2) : '—'}</td><td><span class="pill ${esc(l.status)}">${esc(l.status)}</span></td></tr>`).join('') +
+    PF.reports.map(r => `<tr><td>Report ${esc(r.period)}</td><td>${esc(r.period)}</td><td>${Number(r.computed_tco2e).toLocaleString()}</td><td>—</td><td><span class="pill ${esc(r.status)}">${esc(r.status.replace('_',' '))}</span></td></tr>`).join('') + '</table>';
+}
+function exportPortfolioCSV(){
+  const rows = [['type','name','vintage_or_period','volume_tco2e','price_usd','status'].join(',')];
+  PF.listings.forEach(l => rows.push(['listing', '"' + String(l.name).replace(/"/g,'""') + '"', l.vintage || '', l.volume, l.price || '', l.status].join(',')));
+  PF.reports.forEach(r => rows.push(['report', 'Activity report', r.period, r.computed_tco2e, '', r.status].join(',')));
+  const blob = new Blob([rows.join('\n')], { type: 'text/csv' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = 'cxf-portfolio-' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click(); URL.revokeObjectURL(a.href);
+}
+function printStatement(){
+  const w = window.open('', '_blank');
+  const today = new Date().toISOString().slice(0,10);
+  w.document.write(`<!DOCTYPE html><html><head><title>CXF Portfolio Statement — ${esc(MEMBER.company)}</title>
+    <style>body{font-family:Arial,Helvetica,sans-serif;color:#1E1E1A;padding:40px;max-width:720px;margin:0 auto;font-size:13px;line-height:1.6;}
+    h1{font-size:20px;color:#1A4A2E;margin-bottom:2px;} .sub{color:#8A8A82;font-size:12px;margin-bottom:24px;}
+    table{width:100%;border-collapse:collapse;margin-top:14px;} th{font-size:10px;text-transform:uppercase;text-align:left;color:#8A8A82;border-bottom:1px solid #C8C8C2;padding:6px 8px;}
+    td{padding:6px 8px;border-bottom:0.5px solid #E8E8E4;} .cards div{display:inline-block;margin-right:24px;} .k{font-size:10px;text-transform:uppercase;color:#8A8A82;}
+    .v{font-size:17px;font-weight:bold;color:#1A4A2E;} .foot{margin-top:28px;font-size:10.5px;color:#8A8A82;border-top:1px solid #E8E8E4;padding-top:10px;}</style></head><body>
+    <h1>⬡ CarbonXFuture — Portfolio Statement</h1>
+    <div class="sub">${esc(MEMBER.company)} · ${esc(MEMBER.contact_name)} · generated ${today}</div>
+    <div class="cards">${document.getElementById('pfCards').innerHTML.replace(/style="[^"]*"/g, (m) => m.includes('font-size:1.35rem') ? 'class="v"' : m.includes('font-size:10.5px') ? 'class="k"' : '')}</div>
+    ${document.getElementById('pfHoldings').innerHTML}
+    <div class="foot">CXF platform credits are desk-validated under the CXF Methodology and are not registry credits. Values shown are indicative desk marks; this statement is informational and is not a valuation, audit or financial advice. CarbonXFuture Markets, Inc. · Fort Lauderdale, Florida · desk@carbonxfuture.com</div>
+    <script>window.print();<\/script></body></html>`);
+  w.document.close();
 }
 
 function calcPreview(){
