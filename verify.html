@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Verify a Certificate | CarbonXFuture</title>
+<meta name="description" content="Independently verify any CXF retirement certificate by its serial number. Live check against the CarbonXFuture platform ledger."/>
+<link rel="canonical" href="https://www.carbonxfuture.com/verify.html"/>
+<link rel="icon" href="/favicon.ico" sizes="48x48"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--forest:#1A4A2E;--forest-light:#2D6B45;--forest-pale:#EAF2EC;--slate-50:#F5F5F3;--slate-100:#E8E8E4;--slate-200:#C8C8C2;--slate-400:#8A8A82;--slate-600:#4A4A45;--slate-800:#1E1E1A;}
+body{font-family:'Inter',sans-serif;color:var(--slate-800);font-size:15px;line-height:1.65;background:var(--slate-50);min-height:100vh;}
+.topbar{background:var(--forest);padding:14px 1.5rem;}
+.topbar a{color:#fff;text-decoration:none;font-size:13px;font-weight:500;}
+.wrap{max-width:560px;margin:0 auto;padding:4rem 1.5rem 5rem;}
+.eyebrow{font-size:11px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--forest-light);margin-bottom:0.75rem;text-align:center;}
+h1{font-family:'Playfair Display',serif;font-size:2rem;font-weight:400;text-align:center;margin-bottom:0.5rem;}
+.sub{color:var(--slate-600);text-align:center;margin-bottom:2rem;font-size:14px;}
+.card{background:#fff;border:0.5px solid var(--slate-100);border-radius:14px;padding:1.75rem;}
+.row{display:flex;gap:8px;}
+input{flex:1;border:0.5px solid var(--slate-200);border-radius:8px;padding:12px 14px;font-size:15px;font-family:'Inter',sans-serif;outline:none;text-transform:uppercase;}
+input:focus{border-color:var(--forest-light);}
+button{background:var(--forest);color:#fff;border:none;border-radius:8px;padding:12px 22px;font-size:14px;font-family:'Inter',sans-serif;cursor:pointer;}
+button:hover{background:var(--forest-light);}
+.result{margin-top:1.5rem;display:none;border-radius:12px;padding:1.5rem;font-size:14px;}
+.result.valid{display:block;background:var(--forest-pale);border:1px solid var(--forest-light);}
+.result.invalid{display:block;background:#FBEAEA;border:1px solid #C88;}
+.result h2{font-size:1.1rem;margin-bottom:0.75rem;}
+.result table{width:100%;border-collapse:collapse;font-size:13.5px;}
+.result td{padding:5px 0;vertical-align:top;}
+.result td:first-child{color:var(--slate-400);width:150px;font-size:11.5px;text-transform:uppercase;letter-spacing:0.5px;padding-top:8px;}
+.muted{color:var(--slate-400);font-size:12px;margin-top:1.5rem;text-align:center;}
+.foot{margin-top:3rem;text-align:center;font-size:12.5px;color:var(--slate-400);}
+.foot a{color:var(--forest-light);}
+</style>
+</head>
+<body>
+<div class="topbar"><a href="/">&larr; CarbonXFuture</a></div>
+<div class="wrap">
+<div class="eyebrow">Certificate Verification</div>
+<h1>Verify a CXF certificate</h1>
+<p class="sub">Every CXF retirement certificate carries a unique serial. Enter it below to check it live against the CarbonXFuture platform ledger.</p>
+
+<div class="card">
+  <div class="row">
+    <input id="serial" placeholder="CXF-2026-0001" onkeydown="if(event.key==='Enter')check()"/>
+    <button onclick="check()">Verify</button>
+  </div>
+  <div class="result" id="result"></div>
+</div>
+
+<p class="muted">Verification is public and free — no account required. If a certificate does not appear here, it was not issued by CarbonXFuture or has been revoked.</p>
+<div class="foot">© 2026 CarbonXFuture Markets, Inc. · <a href="/">Home</a> · <a href="/contracts.html">Contracts</a> · <a href="/methodology.html">Methodology</a></div>
+</div>
+
+<script>
+const SB = 'https://zohskwbavtzvecqziklq.supabase.co';
+const KEY = 'sb_publishable_K-4sl6hEk75fByleZEZcfA_f_Zha9aI';
+const esc = s => String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+async function check() {
+  const serial = document.getElementById('serial').value.trim().toUpperCase();
+  const el = document.getElementById('result');
+  el.className = 'result'; el.innerHTML = '';
+  if (!serial) return;
+  el.className = 'result valid'; el.innerHTML = 'Checking…';
+  try {
+    const r = await fetch(SB + '/rest/v1/certificates?select=serial,buyer_display,project_name,volume_tco2e,vintage,retirement_date,status&serial=eq.' + encodeURIComponent(serial), { headers: { apikey: KEY } });
+    const rows = await r.json();
+    const c = rows[0];
+    if (!c) {
+      el.className = 'result invalid';
+      el.innerHTML = '<h2>✕ Not found</h2><p>No certificate with serial <b>' + esc(serial) + '</b> exists on the CarbonXFuture ledger. Check the serial or contact desk@carbonxfuture.com.</p>';
+      return;
+    }
+    if (c.status !== 'active') {
+      el.className = 'result invalid';
+      el.innerHTML = '<h2>✕ Revoked</h2><p>Certificate <b>' + esc(c.serial) + '</b> exists but has been <b>revoked</b> and is no longer valid. Contact desk@carbonxfuture.com for details.</p>';
+      return;
+    }
+    el.className = 'result valid';
+    el.innerHTML = `<h2>✓ Valid certificate</h2>
+      <table>
+        <tr><td>Serial</td><td><b>${esc(c.serial)}</b></td></tr>
+        <tr><td>Retired for</td><td>${esc(c.buyer_display)}</td></tr>
+        <tr><td>Project</td><td>${esc(c.project_name)}</td></tr>
+        <tr><td>Volume</td><td><b>${Number(c.volume_tco2e).toLocaleString('en-US')} tCO₂e</b> (CXF platform credits)</td></tr>
+        <tr><td>Vintage</td><td>${esc(c.vintage || '—')}</td></tr>
+        <tr><td>Retirement date</td><td>${esc(c.retirement_date)}</td></tr>
+      </table>
+      <p style="margin-top:1rem;"><a href="/certificate.html?serial=${encodeURIComponent(c.serial)}" style="color:var(--forest-light);font-weight:500;">Open printable certificate →</a></p>`;
+  } catch(e) {
+    el.className = 'result invalid';
+    el.innerHTML = '<h2>Connection error</h2><p>Could not reach the ledger — please try again.</p>';
+  }
+}
+// Support /verify.html?serial=CXF-2026-0001
+const q = new URLSearchParams(location.search).get('serial');
+if (q) { document.getElementById('serial').value = q; check(); }
+</script>
+</body>
+</html>

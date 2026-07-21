@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="robots" content="noindex, follow"/>
+<title>CXF Retirement Certificate | CarbonXFuture</title>
+<link rel="icon" href="/favicon.ico" sizes="48x48"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--forest:#1A4A2E;--forest-light:#2D6B45;--forest-pale:#EAF2EC;--slate-100:#E8E8E4;--slate-400:#8A8A82;--slate-600:#4A4A45;--slate-800:#1E1E1A;--gold:#B8740A;}
+body{font-family:'Inter',sans-serif;background:#EDEDEA;color:var(--slate-800);min-height:100vh;}
+.bar{background:var(--forest);padding:12px 1.5rem;display:flex;justify-content:space-between;align-items:center;}
+.bar a{color:#fff;text-decoration:none;font-size:13px;}
+.bar button{background:rgba(255,255,255,0.15);color:#fff;border:none;border-radius:7px;padding:8px 18px;font-size:12.5px;cursor:pointer;font-family:'Inter',sans-serif;}
+.sheet-wrap{padding:2.5rem 1rem;display:flex;justify-content:center;}
+.sheet{background:#fff;width:100%;max-width:800px;border:1px solid var(--slate-100);box-shadow:0 8px 40px rgba(0,0,0,0.08);padding:3.5rem 3rem;position:relative;}
+.frame{border:2px solid var(--forest);padding:2.75rem 2.5rem;position:relative;}
+.frame:before{content:'';position:absolute;inset:6px;border:0.5px solid var(--forest-light);pointer-events:none;}
+.head{text-align:center;margin-bottom:2rem;}
+.mark{font-size:1.6rem;color:var(--forest);}
+.brand{font-size:13px;letter-spacing:3px;text-transform:uppercase;color:var(--slate-600);margin-top:4px;}
+.title{font-family:'Playfair Display',serif;font-size:1.9rem;font-weight:500;margin:1.25rem 0 0.25rem;color:var(--forest);}
+.subtitle{font-size:12px;color:var(--slate-400);letter-spacing:1px;text-transform:uppercase;}
+.body-text{text-align:center;font-size:14px;color:var(--slate-600);max-width:520px;margin:1.5rem auto;}
+.holder{text-align:center;font-family:'Playfair Display',serif;font-size:1.6rem;margin:0.5rem 0 1.5rem;}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--slate-100);border:0.5px solid var(--slate-100);margin:1.5rem 0;}
+.cell{background:#fff;padding:0.9rem 1.1rem;}
+.cell .k{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--slate-400);}
+.cell .v{font-size:15px;font-weight:600;margin-top:2px;}
+.serial-box{text-align:center;margin-top:1.75rem;}
+.serial{display:inline-block;font-size:13px;letter-spacing:2px;border:1px solid var(--forest);color:var(--forest);padding:8px 22px;border-radius:100px;font-weight:600;}
+.verify-note{text-align:center;font-size:11px;color:var(--slate-400);margin-top:1.25rem;line-height:1.6;}
+.sig-row{display:flex;justify-content:space-between;margin-top:2.5rem;padding-top:1rem;}
+.sig{width:45%;text-align:center;font-size:11px;color:var(--slate-400);}
+.sig .line{border-top:0.5px solid var(--slate-400);margin-bottom:6px;padding-top:6px;}
+.status-banner{display:none;text-align:center;padding:1rem;border-radius:8px;margin-bottom:1.5rem;font-weight:600;}
+.status-banner.revoked{display:block;background:#FBEAEA;color:#A33;}
+.status-banner.notfound{display:block;background:#FBEAEA;color:#A33;}
+.center-msg{text-align:center;padding:4rem 1rem;color:var(--slate-400);}
+@media print {
+  .bar{display:none;}
+  body{background:#fff;}
+  .sheet-wrap{padding:0;}
+  .sheet{box-shadow:none;border:none;max-width:none;padding:1.5rem;}
+}
+</style>
+</head>
+<body>
+<div class="bar">
+  <a href="/verify.html">&larr; Certificate verification</a>
+  <button onclick="window.print()">Print / Save as PDF</button>
+</div>
+<div class="sheet-wrap"><div class="sheet" id="sheet"><p class="center-msg">Loading certificate…</p></div></div>
+
+<script>
+const SB = 'https://zohskwbavtzvecqziklq.supabase.co';
+const KEY = 'sb_publishable_K-4sl6hEk75fByleZEZcfA_f_Zha9aI';
+const esc = s => String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+(async function(){
+  const serial = (new URLSearchParams(location.search).get('serial') || '').trim().toUpperCase();
+  const sheet = document.getElementById('sheet');
+  if (!serial) { sheet.innerHTML = '<p class="center-msg">No serial provided. Use /certificate.html?serial=CXF-2026-0001</p>'; return; }
+  try {
+    const r = await fetch(SB + '/rest/v1/certificates?select=*&serial=eq.' + encodeURIComponent(serial), { headers: { apikey: KEY } });
+    const c = (await r.json())[0];
+    if (!c) { sheet.innerHTML = '<p class="center-msg">Certificate <b>' + esc(serial) + '</b> was not found on the CarbonXFuture ledger.</p>'; return; }
+    const revoked = c.status !== 'active';
+    document.title = c.serial + ' | CXF Retirement Certificate';
+    sheet.innerHTML = `
+    ${revoked ? '<div class="status-banner revoked">⚠ THIS CERTIFICATE HAS BEEN REVOKED AND IS NO LONGER VALID</div>' : ''}
+    <div class="frame">
+      <div class="head">
+        <div class="mark">⬡</div>
+        <div class="brand">CarbonXFuture Markets, Inc.</div>
+        <div class="title">Certificate of Retirement</div>
+        <div class="subtitle">CXF Platform Credits · Waste-Oil Circular Economy</div>
+      </div>
+      <p class="body-text">This certifies that CXF platform credits in the quantity stated below have been permanently retired on the CarbonXFuture platform ledger and withdrawn from further transfer, for the benefit of</p>
+      <div class="holder">${esc(c.buyer_display)}</div>
+      <div class="grid">
+        <div class="cell"><div class="k">Volume retired</div><div class="v">${Number(c.volume_tco2e).toLocaleString('en-US')} tCO₂e</div></div>
+        <div class="cell"><div class="k">Retirement date</div><div class="v">${esc(c.retirement_date)}</div></div>
+        <div class="cell"><div class="k">Project</div><div class="v" style="font-size:13.5px;">${esc(c.project_name)}</div></div>
+        <div class="cell"><div class="k">Vintage</div><div class="v">${esc(c.vintage || '—')}</div></div>
+      </div>
+      <div class="serial-box"><span class="serial">${esc(c.serial)}</span></div>
+      <p class="verify-note">Credits quantified under the CXF Methodology (carbonxfuture.com/methodology.html). CXF platform credits are desk-validated instruments of CarbonXFuture Markets, Inc. and are not registry credits.<br/>
+      Verify this certificate at any time: <b>carbonxfuture.com/verify.html?serial=${esc(c.serial)}</b></p>
+      <div class="sig-row">
+        <div class="sig"><div class="line">CarbonXFuture Desk</div>Authorized validation</div>
+        <div class="sig"><div class="line">${esc(c.retirement_date)}</div>Date of issue</div>
+      </div>
+    </div>`;
+  } catch(e) {
+    sheet.innerHTML = '<p class="center-msg">Could not reach the ledger — please refresh.</p>';
+  }
+})();
+</script>
+</body>
+</html>

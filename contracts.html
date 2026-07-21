@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Standardized Contracts | CarbonXFuture</title>
+<meta name="description" content="CXF standardized contract specifications for waste-oil carbon credits: CXF-CO (Collection), CXF-RR (Re-refining) and CXF-FC (Full Chain) — quantification, vintages, evidence, settlement."/>
+<link rel="canonical" href="https://www.carbonxfuture.com/contracts.html"/>
+<link rel="icon" href="/favicon.ico" sizes="48x48"/>
+<link rel="apple-touch-icon" href="/apple-touch-icon.png"/>
+<meta property="og:title" content="CXF Standardized Contracts — CarbonXFuture"/>
+<meta property="og:description" content="Contract specifications for CXF waste-oil carbon credits: quantification factors, vintage rules, evidence requirements and desk settlement."/>
+<meta property="og:image" content="https://www.carbonxfuture.com/og-banner.png"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--forest:#1A4A2E;--forest-light:#2D6B45;--forest-pale:#EAF2EC;--slate-50:#F5F5F3;--slate-100:#E8E8E4;--slate-200:#C8C8C2;--slate-400:#8A8A82;--slate-600:#4A4A45;--slate-800:#1E1E1A;--gold:#B8740A;--gold-pale:#FDF3E3;}
+body{font-family:'Inter',sans-serif;color:var(--slate-800);font-size:15px;line-height:1.65;background:#fff;}
+.topbar{background:var(--forest);padding:14px 1.5rem;}
+.topbar a{color:#fff;text-decoration:none;font-size:13px;font-weight:500;}
+.wrap{max-width:900px;margin:0 auto;padding:3.5rem 1.5rem 5rem;}
+.eyebrow{font-size:11px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--forest-light);margin-bottom:0.75rem;}
+h1{font-family:'Playfair Display',serif;font-size:clamp(1.8rem,4vw,2.6rem);font-weight:400;line-height:1.15;margin-bottom:0.75rem;}
+.sub{max-width:680px;color:var(--slate-600);margin-bottom:1.5rem;}
+.jump{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:2.5rem;}
+.jump a{font-size:12px;padding:6px 14px;border-radius:100px;border:0.5px solid var(--slate-200);color:var(--slate-600);text-decoration:none;}
+.jump a:hover{background:var(--forest);color:#fff;border-color:var(--forest);}
+.spec{border:0.5px solid var(--slate-100);border-radius:14px;overflow:hidden;margin-bottom:2.5rem;}
+.spec-head{background:var(--forest);color:#fff;padding:1.25rem 1.5rem;display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;}
+.spec-head h2{font-size:1.15rem;font-weight:600;}
+.spec-head .code{font-size:12px;background:rgba(255,255,255,0.15);padding:3px 12px;border-radius:100px;letter-spacing:0.5px;}
+table{width:100%;border-collapse:collapse;font-size:13.5px;}
+th{width:220px;text-align:left;vertical-align:top;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:var(--slate-400);font-weight:600;padding:12px 16px;border-bottom:0.5px solid var(--slate-100);background:var(--slate-50);}
+td{padding:12px 16px;border-bottom:0.5px solid var(--slate-100);vertical-align:top;color:var(--slate-600);}
+tr:last-child th,tr:last-child td{border-bottom:none;}
+td b{color:var(--slate-800);}
+.notice{background:var(--gold-pale);border-left:3px solid var(--gold);padding:1rem 1.25rem;border-radius:8px;font-size:13px;margin-bottom:2.5rem;color:var(--slate-600);}
+.foot{margin-top:3rem;padding-top:1.5rem;border-top:0.5px solid var(--slate-100);font-size:12.5px;color:var(--slate-400);}
+.foot a{color:var(--forest-light);}
+@media (max-width:640px){ th{width:130px;} }
+</style>
+</head>
+<body>
+<div class="topbar"><a href="/">&larr; CarbonXFuture</a></div>
+<div class="wrap">
+
+<div class="eyebrow">Standardized Contracts</div>
+<h1>CXF contract specifications</h1>
+<p class="sub">Standardized specifications give buyers and sellers a common language for CXF waste-oil carbon credits — what one unit represents, how it is quantified, what evidence stands behind it, and how it settles. All CXF credits are desk-validated under the <a href="/methodology.html" style="color:var(--forest-light);">CXF Methodology</a>.</p>
+
+<div class="jump">
+  <a href="#cxf-co">CXF-CO · Collection</a>
+  <a href="#cxf-rr">CXF-RR · Re-refining</a>
+  <a href="#cxf-fc">CXF-FC · Full Chain</a>
+</div>
+
+<div class="notice"><b>Important.</b> CXF contracts are bilateral, desk-settled instruments on the CarbonXFuture platform. They are not exchange-traded futures, not registered securities, and CXF platform credits are not registry credits (Verra, Gold Standard, ACR, CAR). Prices shown anywhere on this site are indicative desk marks. Nothing on this page is an offer or financial advice.</div>
+
+<div class="spec" id="cxf-co">
+  <div class="spec-head"><h2>CXF Collection Credit</h2><span class="code">CXF-CO</span></div>
+  <table>
+    <tr><th>Unit</th><td><b>1 tCO₂e avoided</b> through verified collection of used lubricating oil, diverting it from improper disposal or uncontrolled burning.</td></tr>
+    <tr><th>Quantification</th><td><b>2.85 tCO₂e per 1,000 litres</b> collected (CXF Methodology, Module A operational screening; derived from ACR-published emission equations with an 18.867% leakage deduction).</td></tr>
+    <tr><th>Eligible activity</th><td>Licensed used-oil collectors operating in the United States with documented chain of custody from generator to storage/processing facility.</td></tr>
+    <tr><th>Vintage</th><td>Calendar month of physical collection, evidenced by weighbridge tickets or delivery receipts. Credits carry the year-month vintage of the underlying activity.</td></tr>
+    <tr><th>Evidence / MRV</th><td>Monthly activity report in the CXF member portal; weighbridge tickets, manifests or delivery receipts; operating license (state/FDEP); desk review of volumes against facility capacity.</td></tr>
+    <tr><th>Validation</th><td>Each report is individually reviewed and validated by the CarbonXFuture desk before credits are attributed and listed. Rejected or amended reports carry desk notes.</td></tr>
+    <tr><th>Settlement</th><td>Bilateral, via the CarbonXFuture desk. Payment against documentation; transfer recorded on the platform ledger and eligible for a numbered CXF retirement certificate on retirement.</td></tr>
+    <tr><th>Minimum lot</th><td>500 tCO₂e (indicative; smaller lots at desk discretion).</td></tr>
+  </table>
+</div>
+
+<div class="spec" id="cxf-rr">
+  <div class="spec-head"><h2>CXF Re-refining Credit</h2><span class="code">CXF-RR</span></div>
+  <table>
+    <tr><th>Unit</th><td><b>1 tCO₂e avoided</b> through collection <b>plus re-refining</b> of used oil into base oil, displacing virgin crude-derived production.</td></tr>
+    <tr><th>Quantification</th><td><b>5.1 tCO₂e per 1,000 litres</b> processed (CXF Methodology, Module A; collection + re-refining displacement factors, net of leakage).</td></tr>
+    <tr><th>Eligible activity</th><td>Permitted re-refineries processing used lubricating oil into Group I/II/III base oils, with EPA/state authorization and documented input-output balances.</td></tr>
+    <tr><th>Vintage</th><td>Calendar month of processing. Forward vintages (pre-operational facilities) may be listed as forward offers, clearly labelled, and settle only upon actual production.</td></tr>
+    <tr><th>Evidence / MRV</th><td>Monthly volumes via the member portal; input receipts and production logs; facility permits; lab certificates where applicable; desk cross-check against nameplate capacity.</td></tr>
+    <tr><th>Validation</th><td>Desk-validated per report. Pre-operational projects additionally undergo dossier review (engineering, permits, financing) before any forward listing.</td></tr>
+    <tr><th>Settlement</th><td>Bilateral via the desk. Spot: payment against documentation. Forward: staged delivery-versus-payment per contract schedule; no funds are pooled or held by CarbonXFuture beyond agreed escrow terms.</td></tr>
+    <tr><th>Minimum lot</th><td>1,000 tCO₂e spot · 10,000 tCO₂e/yr forward (indicative).</td></tr>
+  </table>
+</div>
+
+<div class="spec" id="cxf-fc">
+  <div class="spec-head"><h2>CXF Full Chain Credit</h2><span class="code">CXF-FC</span></div>
+  <table>
+    <tr><th>Unit</th><td><b>1 tCO₂e avoided</b> across the full circular chain: collection, re-refining and distribution of finished re-refined products back to market.</td></tr>
+    <tr><th>Quantification</th><td><b>6.8 tCO₂e per 1,000 litres</b> (CXF Methodology, Module A; full-chain displacement, net of leakage).</td></tr>
+    <tr><th>Eligible activity</th><td>Vertically integrated operators (or documented consortia) covering collection through distribution, with chain-of-custody at each step.</td></tr>
+    <tr><th>Vintage</th><td>Calendar month of final distribution.</td></tr>
+    <tr><th>Evidence / MRV</th><td>All CXF-RR evidence plus distribution records (sales invoices, shipping documents) demonstrating finished product returned to market.</td></tr>
+    <tr><th>Validation</th><td>Desk-validated per report, with annual review of the operator's full-chain documentation.</td></tr>
+    <tr><th>Settlement</th><td>Bilateral via the desk, as for CXF-RR.</td></tr>
+    <tr><th>Minimum lot</th><td>1,000 tCO₂e (indicative).</td></tr>
+  </table>
+</div>
+
+<p class="sub" style="margin-top:0;">Questions about a specification, or need a bespoke structure (multi-year offtake, portfolio mix)? Write to <a href="mailto:desk@carbonxfuture.com" style="color:var(--forest-light);">desk@carbonxfuture.com</a> or submit an RFQ from the <a href="/#marketplace" style="color:var(--forest-light);">marketplace</a>.</p>
+
+<div class="foot">© 2026 CarbonXFuture Markets, Inc. · <a href="/">Home</a> · <a href="/methodology.html">CXF Methodology</a> · <a href="/prices.html">CXF Price Index</a> · <a href="/verify.html">Verify a certificate</a> · <a href="/terms.html">Terms</a></div>
+</div>
+</body>
+</html>

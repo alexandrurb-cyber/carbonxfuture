@@ -922,6 +922,8 @@ nav.menu-open .nav-signin{border-color:rgba(255,255,255,0.3);text-align:center;m
       </div>
       <a href="#kyc" class="btn-secondary" style="font-size:13px;">Request full access <i class="ti ti-arrow-right" aria-hidden="true"></i></a>
     </div>
+    <div id="marketStats" style="display:none;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:1.5rem;">
+    </div>
     <div class="filters">
       <button class="filter-btn active" onclick="filterTable(this,'all')">All standards</button>
       <button class="filter-btn cxf-filter" onclick="filterTable(this,'cxf')">⬡ CXF credits</button>
@@ -1332,6 +1334,7 @@ nav.menu-open .nav-signin{border-color:rgba(255,255,255,0.3);text-align:center;m
       </div>
     </div>
     <div class="prices-updated" id="priceTimestamp">Prices indicative — updated daily. Not financial advice.</div>
+    <div style="text-align:center;margin-top:1rem;"><a href="/prices.html" style="color:var(--emerald,#059669);font-size:13.5px;font-weight:500;text-decoration:none;">View full price history &amp; download CSV — CXF Price Index →</a></div>
   </div>
 </section>
 
@@ -1476,6 +1479,7 @@ nav.menu-open .nav-signin{border-color:rgba(255,255,255,0.3);text-align:center;m
         <a href="#marketplace">Marketplace</a>
         <a href="#oildesk">Oil desk</a>
         <a href="/projects.html">Project Explorer</a>
+        <a href="/prices.html">CXF Price Index</a>
         <a href="#calculators">Calculators</a>
         <a href="#donate">Volunteers</a>
         <a href="#kyc">Apply for access</a>
@@ -1483,7 +1487,8 @@ nav.menu-open .nav-signin{border-color:rgba(255,255,255,0.3);text-align:center;m
       </div>
       <div class="footer-col">
         <h4>Standards</h4>
-        <a href="#">⬡ CXF Standard</a>
+        <a href="/contracts.html">⬡ CXF Standardized Contracts</a>
+        <a href="/verify.html">Verify a certificate</a>
         <a href="#">Verra VCS</a>
         <a href="#">Gold Standard</a>
         <a href="#">ACR</a>
@@ -1510,6 +1515,53 @@ nav.menu-open .nav-signin{border-color:rgba(255,255,255,0.3);text-align:center;m
     </div>
   </div>
 </footer>
+
+<!-- RFQ modal -->
+<div id="rfqModal" style="display:none;position:fixed;inset:0;background:rgba(20,25,22,0.75);z-index:1000;align-items:center;justify-content:center;padding:1rem;">
+  <div style="background:#fff;color:#1E1E1A;border-radius:16px;max-width:520px;width:100%;max-height:92vh;overflow-y:auto;padding:1.75rem;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
+      <h3 style="font-size:1.15rem;color:#1A4A2E;">Request a quote</h3>
+      <button onclick="closeRfq()" style="background:none;border:none;font-size:1.4rem;cursor:pointer;color:#8A8A82;line-height:1;">×</button>
+    </div>
+    <div id="rfqForm">
+      <p style="font-size:12.5px;color:#8A8A82;margin-bottom:1rem;">The desk replies with an indicative quote, typically within one business day. You'll receive an email confirmation immediately.</p>
+      <input type="hidden" id="rfqReg"/>
+      <input type="text" id="rfqWebsite" autocomplete="off" tabindex="-1" style="position:absolute;left:-5000px;" aria-hidden="true"/>
+      <label style="font-size:11px;font-weight:600;color:#4A4A45;text-transform:uppercase;letter-spacing:0.5px;">Listing</label>
+      <input id="rfqListing" readonly style="width:100%;padding:10px 12px;border:0.5px solid #C8C8C2;border-radius:8px;margin:4px 0 12px;font-size:14px;background:#F5F5F3;"/>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div><label style="font-size:11px;font-weight:600;color:#4A4A45;text-transform:uppercase;letter-spacing:0.5px;">Volume (tCO₂e)</label>
+        <input id="rfqVolume" type="number" min="1" placeholder="e.g. 10000" style="width:100%;padding:10px 12px;border:0.5px solid #C8C8C2;border-radius:8px;margin:4px 0 12px;font-size:14px;"/></div>
+        <div><label style="font-size:11px;font-weight:600;color:#4A4A45;text-transform:uppercase;letter-spacing:0.5px;">Target price ($/t, optional)</label>
+        <input id="rfqPrice" type="number" min="0" step="0.01" placeholder="e.g. 20.00" style="width:100%;padding:10px 12px;border:0.5px solid #C8C8C2;border-radius:8px;margin:4px 0 12px;font-size:14px;"/></div>
+      </div>
+      <label style="font-size:11px;font-weight:600;color:#4A4A45;text-transform:uppercase;letter-spacing:0.5px;">Timeframe</label>
+      <select id="rfqTime" style="width:100%;padding:10px 12px;border:0.5px solid #C8C8C2;border-radius:8px;margin:4px 0 12px;font-size:14px;background:#fff;">
+        <option value="Spot">Spot</option><option value="This quarter">This quarter</option>
+        <option value="Forward — 1-2 years">Forward — 1–2 years</option><option value="Forward — multi-year offtake">Forward — multi-year offtake</option>
+      </select>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div><label style="font-size:11px;font-weight:600;color:#4A4A45;text-transform:uppercase;letter-spacing:0.5px;">Company</label>
+        <input id="rfqCompany" placeholder="Acme Corp" style="width:100%;padding:10px 12px;border:0.5px solid #C8C8C2;border-radius:8px;margin:4px 0 12px;font-size:14px;"/></div>
+        <div><label style="font-size:11px;font-weight:600;color:#4A4A45;text-transform:uppercase;letter-spacing:0.5px;">Contact name</label>
+        <input id="rfqName" placeholder="Jane Doe" style="width:100%;padding:10px 12px;border:0.5px solid #C8C8C2;border-radius:8px;margin:4px 0 12px;font-size:14px;"/></div>
+      </div>
+      <label style="font-size:11px;font-weight:600;color:#4A4A45;text-transform:uppercase;letter-spacing:0.5px;">Business email</label>
+      <input id="rfqEmail" type="email" placeholder="jane@acme.com" style="width:100%;padding:10px 12px;border:0.5px solid #C8C8C2;border-radius:8px;margin:4px 0 12px;font-size:14px;"/>
+      <label style="font-size:11px;font-weight:600;color:#4A4A45;text-transform:uppercase;letter-spacing:0.5px;">Notes (optional)</label>
+      <textarea id="rfqNotes" rows="2" placeholder="Delivery preferences, certifications needed…" style="width:100%;padding:10px 12px;border:0.5px solid #C8C8C2;border-radius:8px;margin:4px 0 12px;font-size:14px;font-family:inherit;resize:vertical;"></textarea>
+      <button id="rfqSubmit" onclick="submitRfq()" style="background:#1A4A2E;color:#fff;border:none;border-radius:8px;padding:12px 24px;font-size:14px;cursor:pointer;width:100%;">Submit request</button>
+      <p id="rfqStatus" style="font-size:12.5px;color:#A33;margin-top:8px;min-height:1em;"></p>
+      <p style="font-size:11px;color:#8A8A82;margin-top:4px;">Quotes are indicative and subject to confirmation and documentation. See <a href="/contracts.html" style="color:#2D6B45;">contract specifications</a>.</p>
+    </div>
+    <div id="rfqDone" style="display:none;text-align:center;padding:1.5rem 0;">
+      <div style="font-size:2rem;">✓</div>
+      <h4 style="color:#1A4A2E;margin:0.5rem 0;">Request received</h4>
+      <p style="font-size:13px;color:#4A4A45;">Check your inbox for confirmation — the desk will come back with an indicative quote, typically within one business day.</p>
+      <button onclick="closeRfq()" style="background:#1A4A2E;color:#fff;border:none;border-radius:8px;padding:10px 24px;font-size:13px;cursor:pointer;margin-top:0.75rem;">Close</button>
+    </div>
+  </div>
+</div>
 
 <script>
 // Nav scroll effect
@@ -1623,13 +1675,73 @@ function filterTable(btn, reg) {
   });
 }
 
+/* ---------- Structured RFQ (request for quote) ---------- */
 function quoteRequest(btn) {
   const row = btn.closest('tr');
   const project = row ? row.querySelector('.td-name').textContent : 'Carbon credit listing';
-  const subject = encodeURIComponent('Quote request — ' + project);
-  const body = encodeURIComponent('Hello CarbonXFuture,\n\nI would like to request a quote for: ' + project + '\n\nVolume (tCO2e):\nCompany:\nName:\n');
-  window.location.href = 'mailto:desk@carbonxfuture.com?subject=' + subject + '&body=' + body;
+  const reg = row ? (row.dataset.reg || 'cxf') : 'cxf';
+  document.getElementById('rfqListing').value = project;
+  document.getElementById('rfqReg').value = reg;
+  document.getElementById('rfqStatus').textContent = '';
+  document.getElementById('rfqForm').style.display = '';
+  document.getElementById('rfqDone').style.display = 'none';
+  document.getElementById('rfqModal').style.display = 'flex';
 }
+function closeRfq(){ document.getElementById('rfqModal').style.display = 'none'; }
+async function submitRfq(){
+  const f = id => document.getElementById(id).value.trim();
+  const status = document.getElementById('rfqStatus');
+  const btn = document.getElementById('rfqSubmit');
+  const payload = {
+    listing_name: f('rfqListing'), reg: document.getElementById('rfqReg').value,
+    volume_tco2e: parseFloat(f('rfqVolume')) || null, target_price: parseFloat(f('rfqPrice')) || null,
+    timeframe: f('rfqTime'), company: f('rfqCompany'), contact_name: f('rfqName'),
+    email: f('rfqEmail'), notes: f('rfqNotes'), website: f('rfqWebsite')
+  };
+  if (!payload.company || !payload.contact_name || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payload.email)) {
+    status.textContent = 'Please fill in company, contact name and a valid email.'; return;
+  }
+  btn.disabled = true; status.textContent = 'Submitting…';
+  try {
+    const res = await fetch('/api/rfq', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
+    const out = await res.json();
+    if (!res.ok) throw new Error(out.error || 'Please try again.');
+    document.getElementById('rfqForm').style.display = 'none';
+    document.getElementById('rfqDone').style.display = 'block';
+  } catch(e) {
+    status.textContent = 'Could not submit (' + e.message + ') — or email desk@carbonxfuture.com directly.';
+  }
+  btn.disabled = false;
+}
+
+/* ---------- Live market stats (public aggregates from the CXF platform) ---------- */
+(async function(){
+  try {
+    const r = await fetch('https://zohskwbavtzvecqziklq.supabase.co/rest/v1/rpc/public_stats', {
+      method: 'POST',
+      headers: { apikey: 'sb_publishable_K-4sl6hEk75fByleZEZcfA_f_Zha9aI', 'Content-Type': 'application/json' },
+      body: '{}'
+    });
+    if (!r.ok) return;
+    const s = await r.json();
+    const items = [
+      ['Desk-validated credits', Number(s.validated_tco2e || 0).toLocaleString('en-US', {maximumFractionDigits:0}), 'tCO₂e'],
+      ['Listed on market', Number(s.published_volume || 0).toLocaleString('en-US', {maximumFractionDigits:0}), 'tCO₂e live'],
+      ['Public CXF projects', Number(s.cxf_projects || 0).toLocaleString('en-US'), 'on Project Explorer'],
+      ['Credits retired', Number(s.retired_tco2e || 0).toLocaleString('en-US', {maximumFractionDigits:0}), 'tCO₂e certified'],
+      ['Approved members', Number(s.approved_members || 0).toLocaleString('en-US'), 'KYC-reviewed']
+    ];
+    const el = document.getElementById('marketStats');
+    if (!el) return;
+    el.innerHTML = items.map(([k,v,d]) => `
+      <div style="border:0.5px solid rgba(255,255,255,0.12);border-radius:12px;padding:0.85rem 1rem;background:rgba(255,255,255,0.03);">
+        <div style="font-size:10.5px;text-transform:uppercase;letter-spacing:0.6px;opacity:0.55;">${k}</div>
+        <div style="font-size:1.35rem;font-weight:600;color:var(--emerald,#059669);">${v}</div>
+        <div style="font-size:11px;opacity:0.45;">${d}</div>
+      </div>`).join('');
+    el.style.display = 'grid';
+  } catch(e) {}
+})();
 
 /* =========================================================
    BLOG ENGINE
