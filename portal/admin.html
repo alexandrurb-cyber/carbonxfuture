@@ -115,6 +115,12 @@ async function notifyMember(type, to, data) {
       <button class="act ok" onclick="publishProject()">Publish to website</button>
       <div id="cxfprojects" class="muted" style="margin-top:1rem;">Loading…</div>
     </div>
+    <div class="card"><h2>Backup</h2>
+      <p class="muted" style="margin-bottom:0.75rem;">Downloads every table (members, reports, listings, RFQs, certificates, price history, subscribers, audit log) as one JSON file. Keep weekly copies in a safe folder. <span id="bkReminder" style="color:var(--amber);font-weight:600;"></span></p>
+      <button class="act ok" id="bkBtn" onclick="downloadBackup()">Download full backup (JSON)</button>
+      <span id="bkStatus" class="muted" style="margin-left:10px;"></span>
+      <p class="muted" style="margin-top:0.5rem;">Note: uploaded PDF files live in Supabase Storage and are not inside this JSON — download important documents from the Documents card.</p>
+    </div>
     <div class="card"><h2>Newsletter — Desk Note</h2>
       <p class="muted" style="margin-bottom:0.75rem;">Subscribers: <b id="nlCount">…</b> · sends individually via Resend (recipients never see each other).</p>
       <input id="nlSubject" placeholder="Subject (e.g. Desk Note — July 13, 2026)" style="width:100%;padding:9px;border:0.5px solid var(--slate-200);border-radius:7px;font-family:'Inter',sans-serif;font-size:12.5px;margin-bottom:8px;"/>
@@ -123,8 +129,42 @@ async function notifyMember(type, to, data) {
       <span id="nlStatus" class="muted" style="margin-left:10px;"></span>
     </div>`;
   loadMembers(); loadReports(); loadDocs(); loadListings(); loadCxfProjects(); loadSubscriberCount();
-  loadRfqs(); loadCertificates(); capturePriceSnapshot();
+  loadRfqs(); loadCertificates(); capturePriceSnapshot(); backupReminder();
 })();
+
+/* ---------- Backup ---------- */
+const BK_TABLES = ['members','reports','documents','listings','cxf_projects','rfqs','certificates','price_history','newsletter_subscribers','audit_log'];
+function backupReminder(){
+  const last = localStorage.getItem('cxf_last_backup');
+  const days = last ? Math.floor((Date.now() - Number(last)) / 86400000) : null;
+  const el = document.getElementById('bkReminder');
+  if (days === null) el.textContent = '⚠ No backup recorded yet on this device — download one now.';
+  else if (days >= 7) el.textContent = '⚠ Last backup was ' + days + ' days ago — time for a fresh one.';
+  else el.textContent = '';
+}
+async function downloadBackup(){
+  const btn = document.getElementById('bkBtn'), st = document.getElementById('bkStatus');
+  btn.disabled = true; st.textContent = 'Exporting…';
+  try {
+    const backup = { exported_at: new Date().toISOString(), exported_by: USER.email, tables: {} };
+    for (const t of BK_TABLES) {
+      const { data, error } = await db.from(t).select('*').limit(10000);
+      backup.tables[t] = error ? { error: error.message } : data;
+      st.textContent = 'Exporting… ' + t + ' (' + (Array.isArray(backup.tables[t]) ? backup.tables[t].length : '!') + ')';
+    }
+    const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'cxf-backup-' + new Date().toISOString().slice(0,10) + '.json';
+    a.click(); URL.revokeObjectURL(a.href);
+    localStorage.setItem('cxf_last_backup', String(Date.now()));
+    backupReminder();
+    const counts = BK_TABLES.map(t => t + ':' + (Array.isArray(backup.tables[t]) ? backup.tables[t].length : 'ERR')).join(' · ');
+    st.textContent = '✓ Saved to Downloads — ' + counts;
+    audit('backup_downloaded', counts);
+  } catch(e) { st.textContent = ''; alert('Backup failed: ' + e.message); }
+  btn.disabled = false;
+}
 
 /* ---------- Price index snapshot (auto-archive on every admin visit) ---------- */
 async function capturePriceSnapshot(){
