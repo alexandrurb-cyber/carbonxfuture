@@ -166,11 +166,18 @@ function renderDashboard(){
       <label>Period</label><input type="month" id="rPeriod"/>
       <label>Activity scope</label>
       <select id="rActivity" onchange="calcPreview()">
-        <option value="collection">Collection only — 2.85 tCO₂e / 1,000 L</option>
-        <option value="collection_rerefining">Collection + re-refining — 5.1 tCO₂e / 1,000 L</option>
-        <option value="full_chain">+ distribution — 6.8 tCO₂e / 1,000 L</option>
+        <option value="collection">Collection only — 10.8 tCO₂e / 1,000 gal</option>
+        <option value="collection_rerefining">Collection + re-refining — 19.3 tCO₂e / 1,000 gal</option>
+        <option value="full_chain">+ distribution — 25.7 tCO₂e / 1,000 gal</option>
       </select>
-      <label>Volume (litres)</label><input type="number" id="rLitres" min="1" placeholder="e.g. 120000" oninput="calcPreview()"/>
+      <label>Volume</label>
+      <div style="display:flex;gap:10px;">
+        <input type="number" id="rLitres" min="1" placeholder="e.g. 32000" oninput="calcPreview()" style="flex:1;"/>
+        <select id="rUnit" onchange="calcPreview()" style="flex:0 0 130px;">
+          <option value="gal">US gallons</option>
+          <option value="l">litres</option>
+        </select>
+      </div>
       <div class="preview">Indicative credits: <b id="rPreview">—</b> tCO₂e <span class="muted">(pending validation)</span></div>
       <label>Evidence (weighbridge tickets, delivery receipts — PDF/image, optional)</label>
       <input type="file" id="rFile" accept=".pdf,.png,.jpg,.jpeg"/>
@@ -271,8 +278,13 @@ function printStatement(){
   w.document.close();
 }
 
+const L_PER_GAL = 3.78541; // 1 US gallon = 3.78541 litres (methodology factors are per litre)
+function volumeInLitres(){
+  const v = parseFloat(document.getElementById('rLitres').value) || 0;
+  return document.getElementById('rUnit').value === 'gal' ? v * L_PER_GAL : v;
+}
 function calcPreview(){
-  const litres = parseFloat(document.getElementById('rLitres').value) || 0;
+  const litres = volumeInLitres();
   const f = CXF_FACTORS[document.getElementById('rActivity').value].factor;
   document.getElementById('rPreview').textContent = litres > 0 ? (litres/1000*f).toFixed(1) : '—';
 }
@@ -280,7 +292,7 @@ function calcPreview(){
 async function submitReport(){
   const period = document.getElementById('rPeriod').value;
   const activity = document.getElementById('rActivity').value;
-  const litres = parseFloat(document.getElementById('rLitres').value);
+  const litres = +volumeInLitres().toFixed(1);
   const file = document.getElementById('rFile').files[0];
   const btn = document.getElementById('rBtn');
   if (!period || !litres || litres <= 0) return alert('Please select the period and enter a valid volume.');
@@ -328,8 +340,8 @@ async function loadReports(){
   const { data } = await db.from('reports').select('*').order('created_at',{ascending:false});
   const el = document.getElementById('reportsList');
   if (!data || !data.length) { el.textContent = 'No reports yet.'; return; }
-  el.innerHTML = `<table><tr><th>Period</th><th>Activity</th><th>Litres</th><th>Indicative tCO₂e</th><th>Status</th></tr>` +
-    data.map(r => `<tr><td>${esc(r.period)}</td><td>${esc(CXF_FACTORS[r.activity]?.label || r.activity)}</td><td>${Number(r.litres).toLocaleString()}</td><td>${r.computed_tco2e}</td><td><span class="pill ${esc(r.status)}">${esc(r.status.replace('_',' '))}</span>${r.admin_notes ? '<div class="muted">'+esc(r.admin_notes)+'</div>' : ''}</td></tr>`).join('') + '</table>';
+  el.innerHTML = `<table><tr><th>Period</th><th>Activity</th><th>Volume</th><th>Indicative tCO₂e</th><th>Status</th></tr>` +
+    data.map(r => `<tr><td>${esc(r.period)}</td><td>${esc(CXF_FACTORS[r.activity]?.label || r.activity)}</td><td>${Math.round(Number(r.litres)/L_PER_GAL).toLocaleString()} gal <span class="muted">(${Number(r.litres).toLocaleString()} L)</span></td><td>${r.computed_tco2e}</td><td><span class="pill ${esc(r.status)}">${esc(r.status.replace('_',' '))}</span>${r.admin_notes ? '<div class="muted">'+esc(r.admin_notes)+'</div>' : ''}</td></tr>`).join('') + '</table>';
 }
 async function loadDocs(){
   const { data } = await db.from('documents').select('*').order('uploaded_at',{ascending:false});

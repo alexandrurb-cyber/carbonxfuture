@@ -411,11 +411,11 @@ async function loadReports(){
   const el = document.getElementById('reports');
   if (error) { el.textContent = 'Error: ' + error.message; return; }
   if (!data.length) { el.textContent = 'No reports yet.'; return; }
-  el.innerHTML = `<table><tr><th>Member</th><th>Period</th><th>Activity</th><th>Litres</th><th>tCO₂e</th><th>Evidence</th><th>Status</th><th>Actions</th></tr>` +
+  el.innerHTML = `<table><tr><th>Member</th><th>Period</th><th>Activity</th><th>Volume</th><th>tCO₂e</th><th>Evidence</th><th>Status</th><th>Actions</th></tr>` +
     data.map(r => `<tr>
       <td><b>${esc(r.members?.company)}</b></td><td>${esc(r.period)}</td>
       <td>${esc(CXF_FACTORS[r.activity]?.label || r.activity)}</td>
-      <td>${Number(r.litres).toLocaleString()}</td><td><b>${r.computed_tco2e}</b></td>
+      <td>${Math.round(Number(r.litres)/3.78541).toLocaleString()} gal <span class="muted">(${Number(r.litres).toLocaleString()} L)</span></td><td><b>${r.computed_tco2e}</b></td>
       <td>${r.evidence_path ? `<a href="#" onclick="openFile('${esc(r.evidence_path)}');return false;">View</a>` : '<span class="muted">none</span>'}</td>
       <td><span class="pill ${esc(r.status)}">${esc(r.status.replace('_',' '))}</span></td>
       <td>${r.status === 'submitted' ? `
