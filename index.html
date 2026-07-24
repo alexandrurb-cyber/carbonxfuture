@@ -1545,9 +1545,9 @@ nav.menu-open .nav-signin{border-color:rgba(255,255,255,0.3);text-align:center;m
       <label style="font-size:11px;font-weight:600;color:#4A4A45;text-transform:uppercase;letter-spacing:0.5px;">Listing</label>
       <input id="rfqListing" readonly style="width:100%;padding:10px 12px;border:0.5px solid #C8C8C2;border-radius:8px;margin:4px 0 12px;font-size:14px;background:#F5F5F3;"/>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-        <div><label style="font-size:11px;font-weight:600;color:#4A4A45;text-transform:uppercase;letter-spacing:0.5px;">Volume (tCO₂e)</label>
+        <div><label id="rfqVolLabel" style="font-size:11px;font-weight:600;color:#4A4A45;text-transform:uppercase;letter-spacing:0.5px;">Volume (tCO₂e)</label>
         <input id="rfqVolume" type="number" min="1" placeholder="e.g. 10000" style="width:100%;padding:10px 12px;border:0.5px solid #C8C8C2;border-radius:8px;margin:4px 0 12px;font-size:14px;"/></div>
-        <div><label style="font-size:11px;font-weight:600;color:#4A4A45;text-transform:uppercase;letter-spacing:0.5px;">Target price ($/t, optional)</label>
+        <div><label id="rfqPriceLabel" style="font-size:11px;font-weight:600;color:#4A4A45;text-transform:uppercase;letter-spacing:0.5px;">Target price ($/t, optional)</label>
         <input id="rfqPrice" type="number" min="0" step="0.01" placeholder="e.g. 20.00" style="width:100%;padding:10px 12px;border:0.5px solid #C8C8C2;border-radius:8px;margin:4px 0 12px;font-size:14px;"/></div>
       </div>
       <label style="font-size:11px;font-weight:600;color:#4A4A45;text-transform:uppercase;letter-spacing:0.5px;">Timeframe</label>
@@ -1694,9 +1694,12 @@ function filterTable(btn, reg) {
 function quoteRequest(btn) {
   const row = btn.closest('tr');
   const project = row ? row.querySelector('.td-name').textContent : 'Carbon credit listing';
-  const reg = row ? (row.dataset.reg || 'cxf') : 'cxf';
+  const isOil = row && row.dataset.oil === '1';
+  const reg = isOil ? 'oil' : (row ? (row.dataset.reg || 'cxf') : 'cxf');
   document.getElementById('rfqListing').value = project;
   document.getElementById('rfqReg').value = reg;
+  document.getElementById('rfqVolLabel').textContent = isOil ? 'Volume (US gallons)' : 'Volume (tCO₂e)';
+  document.getElementById('rfqPriceLabel').textContent = isOil ? 'Target price ($/gal, optional)' : 'Target price ($/t, optional)';
   document.getElementById('rfqStatus').textContent = '';
   document.getElementById('rfqForm').style.display = '';
   document.getElementById('rfqDone').style.display = 'none';
@@ -2015,6 +2018,27 @@ renderBlog('all');
           <td class="td-action"><button onclick="quoteRequest(this)">Request details</button></td>
         </tr>`).join('');
     }
+
+    // Member feedstock listings from the CXF portal (desk-reviewed, published only)
+    try {
+      const or_ = await fetch('https://zohskwbavtzvecqziklq.supabase.co/rest/v1/oil_listings?select=company,oil_type,quantity_gal,availability,location,price_per_gal,notes&status=eq.published&order=published_at.desc&limit=50', {
+        headers: { apikey: 'sb_publishable_K-4sl6hEk75fByleZEZcfA_f_Zha9aI' }
+      });
+      if (or_.ok) {
+        const oils = await or_.json();
+        const tbo = document.querySelector('#oilTable tbody');
+        if (tbo && Array.isArray(oils) && oils.length) {
+          tbo.insertAdjacentHTML('afterbegin', oils.map(o => `
+        <tr data-oil="1">
+          <td><div class="td-project"><span class="project-dot cxf"></span><div><div class="td-name">${esc(o.oil_type)} — ${esc(o.company)}</div><div class="td-sub">Member listing · Desk-reviewed${o.availability === 'Monthly recurring' ? ' · monthly recurring' : ''}</div></div></div></td>
+          <td class="td-muted">${esc(o.location)}</td><td class="td-price">${Number(o.quantity_gal).toLocaleString()} gal</td>
+          <td class="td-muted">—</td><td class="td-muted">${o.notes ? esc(o.notes) : '—'}</td>
+          <td class="td-price">${o.price_per_gal ? '$' + Number(o.price_per_gal).toFixed(2) + '/gal' : 'best offer'}</td>
+          <td class="td-action"><button onclick="quoteRequest(this)">Make offer</button></td>
+        </tr>`).join(''));
+        }
+      }
+    } catch(e) {}
   } catch(e) {}
 })();
 
@@ -2056,6 +2080,7 @@ You help users understand:
 - Registries supported: CXF (proprietary), Verra VCS, Gold Standard, ACR, CAR, Plan Vivo.
 - How to apply: users submit KYC on the platform. 24-48h review. Options: waste oil recycler, corporate buyer, investment fund, trading desk, government entity.
 - Donation program: one-time donations via Stripe (cards, Apple Pay, Google Pay) fund open methodology templates, education on the voluntary carbon market, waste-oil re-refining research and small project grants. No platform fees on donations.
+- FEEDSTOCK MARKET (Oil Desk): approved members (collectors, auto service shops, re-refiners) list physical waste oil for sale — quantity in gallons, location, asking price $/gal or best offer. Listings are desk-reviewed before publishing. Buyers (re-refineries) click "Make offer" on the Oil Desk section of the homepage; transactions settle bilaterally through the desk. Sellers earn twice from the same gallons: the physical sale plus CXF carbon credits via monthly reports. To list oil: apply for access, then use the "Sell waste oil" tab in the member portal.
 - Physical markets: the CarbonXFuture desk trades physical cargoes — waste engine oil, used oil, VGO, Group I/II base oils and diesel blend components — from KYC-verified originators, with lab reports and port logistics.
 
 PLATFORM PAGES you can point users to (use relative links exactly as written):
