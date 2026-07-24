@@ -121,8 +121,8 @@ h2.sec{font-size:1.1rem;font-weight:600;margin:2.5rem 0 0.75rem;}
 // dashboard here once created (Products → Payment Links, 90-day free trial,
 // "Always collect payment method").
 const SUBSCRIBE_LINKS = {
-  collector: '',   // e.g. https://buy.stripe.com/xxxxx
-  processor: ''    // e.g. https://buy.stripe.com/yyyyy
+  collector: 'https://buy.stripe.com/14A4gzb7e2eYd0lg9x1ck01',   // $199/mo — 90-day free trial, card always collected
+  processor: 'https://buy.stripe.com/dRm14ngry9Hqf8t9L91ck02'    // $299/mo — 90-day free trial, card always collected
 };
 for (const [plan, id] of [['collector','ctaCollector'], ['processor','ctaProcessor']]) {
   const a = document.getElementById(id);
