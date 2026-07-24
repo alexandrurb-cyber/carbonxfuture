@@ -149,11 +149,18 @@ function renderPending(){
 /* ---------- Main dashboard ---------- */
 function renderDashboard(){
   const t = MEMBER.member_type;
+  const subOk = !CXF_ENFORCE_SUBSCRIPTION || CXF_SUB_OK.includes(MEMBER.subscription_status || 'launch_free');
   const canReport = (t === 'collector' || t === 'rerefiner' || t === 'service_shop');
-  const canSellOil = (t === 'collector' || t === 'rerefiner' || t === 'service_shop');
+  const canSellOil = (t === 'collector' || t === 'rerefiner' || t === 'service_shop') && subOk;
+  const subBanner = (CXF_ENFORCE_SUBSCRIPTION && !subOk) ? `
+  <div class="notice" style="background:#FBEAEA;border-left-color:#A33;">
+    Your CXF Market Access subscription is <b>${esc(MEMBER.subscription_status || 'inactive')}</b>. Market features (feedstock listings, marketplace) are paused —
+    <a href="/pricing.html" style="color:var(--forest-light);font-weight:600;">reactivate your plan</a> or contact desk@carbonxfuture.com.
+  </div>` : '';
   document.getElementById('app').innerHTML = `
   <h1>${esc(MEMBER.company)}</h1>
   <p class="sub">${esc(MEMBER.contact_name)} · ${esc(t)} · <span class="pill validated">approved</span></p>
+  ${subBanner}
   <div class="tabs">
     ${canReport ? '<button class="tab active" data-p="report">Submit report</button>' : ''}
     <button class="tab ${canReport ? '' : 'active'}" data-p="reports">My reports</button>

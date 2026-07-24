@@ -10,3 +10,9 @@ const CXF_FACTORS = {
   collection_rerefining:   { factor: 5.1,  label: 'Collection + re-refining' },
   full_chain:              { factor: 6.8,  label: 'Collection + re-refining + distribution' }
 };
+
+// Market Access subscriptions ($199 collector / $299 processor, 3-month free trial).
+// While CXF_ENFORCE_SUBSCRIPTION is false (launch period), everyone has full access.
+// Flip to true to require an active/trial/exempt subscription for market features.
+const CXF_ENFORCE_SUBSCRIPTION = false;
+const CXF_SUB_OK = ['launch_free', 'trial', 'active', 'exempt'];

@@ -425,15 +425,33 @@ async function loadMembers(){
   const el = document.getElementById('members');
   if (error) { el.textContent = 'Error: ' + error.message; return; }
   if (!data.length) { el.textContent = 'No members yet.'; return; }
-  el.innerHTML = `<table><tr><th>Company</th><th>Contact</th><th>Email</th><th>Type</th><th>Status</th><th>Actions</th></tr>` +
+  const subPill = s => {
+    const cls = { active:'validated', trial:'approved', launch_free:'approved', exempt:'validated', past_due:'pending', canceled:'rejected' }[s] || 'pending';
+    return `<span class="pill ${cls}">${esc((s || 'launch_free').replace('_',' '))}</span>`;
+  };
+  el.innerHTML = `<table><tr><th>Company</th><th>Contact</th><th>Email</th><th>Type</th><th>Status</th><th>Subscription</th><th>Actions</th></tr>` +
     data.map(m => `<tr>
       <td><b>${esc(m.company)}</b></td><td>${esc(m.contact_name)}</td><td><a href="mailto:${esc(m.email)}">${esc(m.email)}</a></td>
       <td>${esc(m.member_type ?? '—')}</td>
       <td><span class="pill ${esc(m.status)}">${esc(m.status)}</span></td>
+      <td>${subPill(m.subscription_status)}${m.subscription_note ? '<div class="muted">' + esc(m.subscription_note) + '</div>' : ''}</td>
       <td>${m.status !== 'approved' ? `<button class="act ok" onclick="setStatus('${m.id}','approved')">Approve</button>` : ''}
           ${m.status !== 'rejected' ? `<button class="act bad" onclick="setStatus('${m.id}','rejected')">Reject</button>` : ''}
-          ${m.status === 'approved' ? `<button class="act ghost" onclick="setStatus('${m.id}','suspended')">Suspend</button>` : ''}</td>
+          ${m.status === 'approved' ? `<button class="act ghost" onclick="setStatus('${m.id}','suspended')">Suspend</button>` : ''}
+          <button class="act warn" onclick="setSubscription('${m.id}')">Set sub</button></td>
     </tr>`).join('') + '</table>';
+}
+const SUB_STATES = ['launch_free','trial','active','past_due','canceled','exempt'];
+async function setSubscription(id){
+  const s = prompt('Subscription status — one of:\n' + SUB_STATES.join(' | '), 'active');
+  if (s === null) return;
+  const status = s.trim().toLowerCase();
+  if (!SUB_STATES.includes(status)) return alert('Invalid value. Use one of: ' + SUB_STATES.join(', '));
+  const note = prompt('Optional note (e.g. "Stripe sub started 2026-08-01"):', '') || '';
+  const { error } = await db.from('members').update({ subscription_status: status, subscription_note: note }).eq('id', id);
+  if (error) return alert('Error: ' + error.message + (error.message.includes('subscription') ? ' — did you run schema-subscriptions.sql?' : ''));
+  audit('subscription_' + status, id + (note ? ' · ' + note : ''));
+  loadMembers();
 }
 async function setStatus(id, status){
   if (!confirm('Set member status to "' + status + '"?')) return;
