@@ -84,7 +84,9 @@ async function notifyMember(type, to, data) {
     <div class="card"><h2>Members</h2><div id="members" class="muted">Loading…</div></div>
     <div class="card"><h2>Reports awaiting validation</h2><div id="reports" class="muted">Loading…</div></div>
     <div class="card"><h2>Documents</h2><div id="docs" class="muted">Loading…</div></div>
-    <div class="card"><h2>Published listings</h2><div id="listings" class="muted">Loading…</div></div>
+    <div class="card"><h2>Marketplace — live on the website</h2>
+      <p class="muted" style="margin-bottom:0.75rem;">Everything currently visible in the public marketplace, from all three sources.</p>
+      <div id="listings" class="muted">Loading…</div></div>
     <div class="card"><h2>Retirement certificates</h2>
       <p class="muted" style="margin-bottom:0.75rem;">Issue a numbered certificate when credits are retired for a buyer. Serials are public and verifiable at /verify.html — never put private data in these fields.</p>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px;">
@@ -392,11 +394,18 @@ async function openFile(path){
 
 /* ---------- Listings ---------- */
 async function loadListings(){
-  const { data, error } = await db.from('listings').select('*, members(company)').order('validated_at',{ascending:false});
   const el = document.getElementById('listings');
+  const [{ data, error }, { data: projects }] = await Promise.all([
+    db.from('listings').select('*, members(company)').order('validated_at',{ascending:false}),
+    db.from('cxf_projects').select('*, members(company)').eq('status','published').not('annual_tco2e','is',null).order('created_at',{ascending:false})
+  ]);
   if (error) { el.textContent = 'Error: ' + error.message; return; }
-  if (!data.length) { el.textContent = 'No listings yet — validate a report to publish the first one.'; return; }
-  el.innerHTML = `<table><tr><th>Listing</th><th>Member</th><th>Vintage</th><th>Volume</th><th>Price</th><th>Status</th><th>Actions</th></tr>` +
+  let html = '';
+
+  // 1. Desk-validated member listings (from validated reports)
+  html += '<p class="muted" style="margin-bottom:6px;"><b>① Member listings</b> — from validated activity reports:</p>';
+  if (!data.length) html += '<p class="muted" style="margin-bottom:12px;">None yet — validate a report to publish the first one.</p>';
+  else html += `<table style="margin-bottom:14px;"><tr><th>Listing</th><th>Member</th><th>Vintage</th><th>Volume</th><th>Price</th><th>Status</th><th>Actions</th></tr>` +
     data.map(l => `<tr>
       <td><b>${esc(l.name)}</b></td><td>${esc(l.members?.company ?? '—')}</td>
       <td>${esc(l.vintage)}</td><td>${Number(l.volume).toLocaleString()} tCO₂e</td>
@@ -404,6 +413,28 @@ async function loadListings(){
       <td><span class="pill ${esc(l.status)}">${esc(l.status)}</span></td>
       <td>${l.status === 'published' ? `<button class="act ok" onclick="markSold('${l.id}')">Mark sold</button><button class="act ghost" onclick="withdrawListing('${l.id}')">Withdraw</button>` : ''}</td>
     </tr>`).join('') + '</table>';
+
+  // 2. Project forward offers (cxf_projects with value fields) — also live in the marketplace
+  html += '<p class="muted" style="margin-bottom:6px;"><b>② Project forward offers</b> — published projects with value fields (managed in the Public projects card below):</p>';
+  if (!projects || !projects.length) html += '<p class="muted" style="margin-bottom:12px;">None live.</p>';
+  else html += `<table style="margin-bottom:14px;"><tr><th>Project</th><th>Member</th><th>Vintages</th><th>Total volume</th><th>Price</th><th>Total value</th><th></th></tr>` +
+    projects.map(p => { const tv = p.annual_tco2e * (p.price_usd||0) * (p.term_years||0); const tvol = p.annual_tco2e * (p.term_years||0); return `<tr>
+      <td><b>${esc(p.name)}</b></td><td>${esc(p.members?.company ?? '—')}</td><td>${esc(p.vintages || '—')}</td>
+      <td>${tvol ? tvol.toLocaleString() + ' tCO₂e' : '—'}</td>
+      <td>${p.price_usd ? '$' + Number(p.price_usd).toFixed(2) : '—'}</td>
+      <td>${tv ? '<b>$' + tv.toLocaleString('en-US',{maximumFractionDigits:0}) + '</b>' : '—'}</td>
+      <td><button class="act ghost" onclick="withdrawProject('${p.id}')">Withdraw</button></td>
+    </tr>`;}).join('') + '</table>';
+
+  // 3. Static desk rows from listings.json (edited on GitHub)
+  try {
+    const lj = await (await fetch('/listings.json', {cache:'no-store'})).json();
+    const rows = Array.isArray(lj.carbon) ? lj.carbon : [];
+    html += '<p class="muted"><b>③ Static desk rows</b> — from <code>listings.json</code> (edit on GitHub): ' +
+      (rows.length ? rows.map(r => esc(r.name)).join(' · ') : 'none') + '</p>';
+  } catch(e) { html += '<p class="muted">③ Static desk rows: could not read listings.json.</p>'; }
+
+  el.innerHTML = html;
 }
 async function markSold(id){
   if (!confirm('Mark this listing as SOLD? It leaves the public marketplace and shows as sold in the member portfolio.')) return;
