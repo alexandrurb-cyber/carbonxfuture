@@ -39,6 +39,8 @@ td{padding:9px 10px;border-bottom:0.5px solid var(--slate-100);vertical-align:mi
 .pill.submitted{background:var(--amber-pale);color:var(--amber);}
 .pill.validated,.pill.published{background:var(--forest-pale);color:var(--forest);}
 .pill.sold{background:var(--forest);color:#fff;}
+.pill.pending{background:var(--amber-pale);color:var(--amber);}
+.pill.withdrawn{background:var(--slate-100);color:var(--slate-600);}
 .pill.rejected{background:#FBEAEA;color:#A33;}
 .pill.changes_requested{background:var(--amber-pale);color:var(--amber);}
 .center{max-width:520px;margin:4rem auto;text-align:center;}
@@ -99,6 +101,7 @@ function renderOnboarding(){
     <label>I am a</label>
     <select id="obType">
       <option value="collector">Waste oil collector</option>
+      <option value="service_shop">Auto service / repair shop (oil generator)</option>
       <option value="rerefiner">Re-refiner</option>
       <option value="project_developer">Project developer</option>
       <option value="buyer">Corporate buyer</option>
@@ -146,13 +149,15 @@ function renderPending(){
 /* ---------- Main dashboard ---------- */
 function renderDashboard(){
   const t = MEMBER.member_type;
-  const canReport = (t === 'collector' || t === 'rerefiner');
+  const canReport = (t === 'collector' || t === 'rerefiner' || t === 'service_shop');
+  const canSellOil = (t === 'collector' || t === 'rerefiner' || t === 'service_shop');
   document.getElementById('app').innerHTML = `
   <h1>${esc(MEMBER.company)}</h1>
   <p class="sub">${esc(MEMBER.contact_name)} · ${esc(t)} · <span class="pill validated">approved</span></p>
   <div class="tabs">
     ${canReport ? '<button class="tab active" data-p="report">Submit report</button>' : ''}
     <button class="tab ${canReport ? '' : 'active'}" data-p="reports">My reports</button>
+    ${canSellOil ? '<button class="tab" data-p="oil">Sell waste oil</button>' : ''}
     <button class="tab" data-p="docs">Documents</button>
     <button class="tab" data-p="listings">My listings</button>
     <button class="tab" data-p="portfolio">Portfolio</button>
@@ -186,6 +191,29 @@ function renderDashboard(){
   </div>` : ''}
 
   <div class="panel ${canReport ? '' : 'active'}" id="p-reports"><div class="card"><h2>My reports</h2><div id="reportsList" class="muted">Loading…</div></div></div>
+
+  ${canSellOil ? `
+  <div class="panel" id="p-oil">
+    <div class="card">
+      <h2>List waste oil for sale</h2>
+      <div class="notice">Your listing goes to the desk for review first. Once published, it appears on the public Oil Desk with your company name and asking price. Listing is free — transactions settle through the desk. The same gallons also count toward CXF credits via your monthly reports.</div>
+      <label>Oil type</label>
+      <select id="olType">
+        <option>Used motor oil (UMO)</option>
+        <option>Industrial / hydraulic oil</option>
+        <option>Mixed lubricants</option>
+        <option>Other (describe in notes)</option>
+      </select>
+      <label>Quantity (US gallons)</label><input type="number" id="olQty" min="1" placeholder="e.g. 5000"/>
+      <label>Availability</label>
+      <select id="olAvail"><option>One-time lot</option><option>Monthly recurring</option></select>
+      <label>Location (City, State)</label><input id="olLoc" placeholder="e.g. Tampa, FL"/>
+      <label>Asking price ($/gal — leave empty for "best offer")</label><input type="number" id="olPrice" min="0" step="0.01" placeholder="e.g. 0.85"/>
+      <label>Notes (water content, pickup constraints — optional)</label><input id="olNotes" placeholder="e.g. <5% water, loading dock available"/>
+      <button class="primary" id="olBtn" onclick="submitOilListing()">Submit for review</button>
+    </div>
+    <div class="card"><h2>My oil listings</h2><div id="oilList" class="muted">Loading…</div></div>
+  </div>` : ''}
   <div class="panel" id="p-docs">
     <div class="card">
       <h2>Upload document</h2>
@@ -220,6 +248,51 @@ function renderDashboard(){
     document.getElementById('p-' + b.dataset.p).classList.add('active');
   }));
   loadReports(); loadDocs(); loadListings(); loadPortfolio();
+  if (canSellOil) loadOilListings();
+}
+
+/* ---------- Feedstock: sell waste oil ---------- */
+async function submitOilListing(){
+  const oil_type = document.getElementById('olType').value;
+  const quantity_gal = parseFloat(document.getElementById('olQty').value);
+  const availability = document.getElementById('olAvail').value;
+  const location = document.getElementById('olLoc').value.trim();
+  const price_per_gal = parseFloat(document.getElementById('olPrice').value) || null;
+  const notes = document.getElementById('olNotes').value.trim();
+  const btn = document.getElementById('olBtn');
+  if (!quantity_gal || quantity_gal <= 0 || !location) return alert('Please enter the quantity and the location.');
+  btn.disabled = true; btn.textContent = 'Submitting…';
+  let { error } = await db.from('oil_listings').insert({
+    member_id: USER.id, company: MEMBER.company, oil_type, quantity_gal, availability, location, price_per_gal, notes
+  });
+  if (error && /load failed|failed to fetch|network/i.test(error.message)) {
+    await new Promise(r => setTimeout(r, 1200));
+    ({ error } = await db.from('oil_listings').insert({
+      member_id: USER.id, company: MEMBER.company, oil_type, quantity_gal, availability, location, price_per_gal, notes
+    }));
+  }
+  if (error) { alert('Error: ' + error.message + (error.message.includes('oil_listings') ? ' — has the desk run schema-feedstock.sql?' : '')); btn.disabled = false; btn.textContent = 'Submit for review'; return; }
+  const d = { name: MEMBER.contact_name, company: MEMBER.company, oil_type, qty: quantity_gal.toLocaleString('en-US'), availability, location, price: price_per_gal, notes };
+  notifySelf('oil_listing_received', d);
+  notifySelf('oil_listing_admin', d); // recipient forced to desk by the server
+  btn.textContent = '✓ Submitted for review';
+  ['olQty','olLoc','olPrice','olNotes'].forEach(i => document.getElementById(i).value = '');
+  setTimeout(() => { btn.disabled = false; btn.textContent = 'Submit for review'; }, 2500);
+  loadOilListings();
+}
+async function loadOilListings(){
+  const el = document.getElementById('oilList');
+  if (!el) return;
+  const { data, error } = await db.from('oil_listings').select('*').eq('member_id', USER.id).order('created_at',{ascending:false});
+  if (error) { el.textContent = 'Error: ' + error.message; return; }
+  if (!data || !data.length) { el.textContent = 'No oil listings yet.'; return; }
+  el.innerHTML = `<table><tr><th>Type</th><th>Quantity</th><th>Availability</th><th>Location</th><th>Asking</th><th>Status</th></tr>` +
+    data.map(o => `<tr>
+      <td>${esc(o.oil_type)}</td><td>${Number(o.quantity_gal).toLocaleString()} gal</td>
+      <td>${esc(o.availability)}</td><td>${esc(o.location)}</td>
+      <td>${o.price_per_gal ? '$' + Number(o.price_per_gal).toFixed(2) + '/gal' : 'best offer'}</td>
+      <td><span class="pill ${esc(o.status)}">${esc(o.status)}</span></td>
+    </tr>`).join('') + '</table>';
 }
 
 /* ---------- Portfolio ---------- */

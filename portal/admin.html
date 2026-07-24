@@ -91,6 +91,9 @@ async function notifyMember(type, to, data) {
       <div id="members" class="muted">Loading…</div></div>
     <div class="card" id="c-reports"><h2>Reports awaiting validation</h2><div id="reports" class="muted">Loading…</div></div>
     <div class="card" id="c-docs"><h2>Documents</h2><div id="docs" class="muted">Loading…</div></div>
+    <div class="card" id="c-oil"><h2>Feedstock — waste-oil listings (Oil Desk)</h2>
+      <p class="muted" style="margin-bottom:0.75rem;">Member listings of physical waste oil. Approve to publish on the public Oil Desk; buyers respond through the RFQ desk.</p>
+      <div id="oillistings" class="muted">Loading…</div></div>
     <div class="card" id="c-market"><h2>Marketplace — live on the website</h2>
       <p class="muted" style="margin-bottom:0.75rem;">Everything currently visible in the public marketplace, from all three sources.</p>
       <div id="listings" class="muted">Loading…</div></div>
@@ -143,22 +146,62 @@ async function notifyMember(type, to, data) {
     </div>`;
   loadMembers(); loadReports(); loadDocs(); loadListings(); loadCxfProjects(); loadSubscriberCount();
   loadRfqs(); loadCertificates(); capturePriceSnapshot(); backupReminder(); loadOverview(); loadAudit();
+  loadOilAdmin();
 })();
+
+/* ---------- Feedstock (waste-oil listings) ---------- */
+async function loadOilAdmin(){
+  const el = document.getElementById('oillistings');
+  const { data, error } = await db.from('oil_listings').select('*, members(email, contact_name)').neq('status','withdrawn').order('created_at',{ascending:false}).limit(100);
+  if (error) { el.textContent = 'Error: ' + error.message + ' — did you run schema-feedstock.sql?'; return; }
+  if (!data.length) { el.textContent = 'No oil listings yet.'; return; }
+  el.innerHTML = `<table><tr><th>Company</th><th>Type</th><th>Quantity</th><th>Availability</th><th>Location</th><th>Asking</th><th>Status</th><th>Actions</th></tr>` +
+    data.map(o => `<tr>
+      <td><b>${esc(o.company)}</b>${o.notes ? '<div class="muted">' + esc(o.notes) + '</div>' : ''}</td>
+      <td>${esc(o.oil_type)}</td><td>${Number(o.quantity_gal).toLocaleString()} gal</td>
+      <td>${esc(o.availability)}</td><td>${esc(o.location)}</td>
+      <td>${o.price_per_gal ? '$' + Number(o.price_per_gal).toFixed(2) + '/gal' : 'best offer'}</td>
+      <td><span class="pill ${esc(o.status)}">${esc(o.status)}</span></td>
+      <td>
+        ${o.status === 'pending' ? `<button class="act ok" onclick="setOilStatus('${o.id}','published')">Publish</button><button class="act bad" onclick="setOilStatus('${o.id}','rejected')">Reject</button>` : ''}
+        ${o.status === 'published' ? `<button class="act ok" onclick="setOilStatus('${o.id}','sold')">Mark sold</button><button class="act ghost" onclick="setOilStatus('${o.id}','withdrawn')">Withdraw</button>` : ''}
+      </td></tr>`).join('') + '</table>';
+}
+async function setOilStatus(id, status){
+  const verb = { published: 'Publish this listing on the public Oil Desk?', rejected: 'Reject this listing?', sold: 'Mark this listing as SOLD?', withdrawn: 'Withdraw this listing from the Oil Desk?' }[status];
+  if (!confirm(verb)) return;
+  const patch = { status };
+  if (status === 'published') patch.published_at = new Date().toISOString();
+  const { data: o } = await db.from('oil_listings').select('*, members(email, contact_name)').eq('id', id).maybeSingle();
+  const { error } = await db.from('oil_listings').update(patch).eq('id', id);
+  if (error) return alert('Error: ' + error.message);
+  audit('oil_listing_' + status, (o ? o.company + ' · ' + o.quantity_gal + ' gal' : id));
+  if (o && o.members?.email && (status === 'published' || status === 'sold')) {
+    await notifyMember(status === 'published' ? 'oil_listing_published' : 'oil_listing_sold', o.members.email, {
+      name: o.members.contact_name, qty: Number(o.quantity_gal).toLocaleString('en-US'),
+      oil_type: o.oil_type, location: o.location, price: o.price_per_gal
+    });
+  }
+  loadOilAdmin(); loadOverview();
+}
 
 /* ---------- Overview / attention bar ---------- */
 async function loadOverview(){
   const el = document.getElementById('overview');
   const cnt = (t, f) => { let q = db.from(t).select('*', { count: 'exact', head: true }); for (const [k,v] of Object.entries(f||{})) q = q.eq(k, v); return q.then(r => r.count ?? 0).catch(() => 0); };
-  const [mPend, rSub, qNew, dSub, lPub, pPub, cAct, subs] = await Promise.all([
+  const [mPend, rSub, qNew, dSub, lPub, pPub, cAct, subs, oPend, oPub] = await Promise.all([
     cnt('members', {status:'pending'}), cnt('reports', {status:'submitted'}), cnt('rfqs', {status:'new'}),
     cnt('documents', {status:'submitted'}), cnt('listings', {status:'published'}), cnt('cxf_projects', {status:'published'}),
-    cnt('certificates', {status:'active'}), cnt('newsletter_subscribers', {status:'active'})
+    cnt('certificates', {status:'active'}), cnt('newsletter_subscribers', {status:'active'}),
+    cnt('oil_listings', {status:'pending'}), cnt('oil_listings', {status:'published'})
   ]);
   const items = [
     ['New RFQs', qNew, 'c-rfqs', qNew > 0],
     ['Pending members', mPend, 'c-members', mPend > 0],
     ['Reports to review', rSub, 'c-reports', rSub > 0],
+    ['Oil listings to review', oPend, 'c-oil', oPend > 0],
     ['Docs to review', dSub, 'c-docs', dSub > 0],
+    ['Live oil desk', oPub, 'c-oil', false],
     ['Live marketplace', lPub + pPub, 'c-market', false],
     ['Certificates', cAct, 'c-certs', false],
     ['Subscribers', subs, 'c-news', false]
