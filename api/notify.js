@@ -117,6 +117,38 @@ const TEMPLATES = {
          ${d.notes ? '<br/>' + esc(d.notes) : ''}</p>
        <p>This quote is indicative and subject to final confirmation and documentation. Reply to this email to proceed or discuss terms.</p>`)
   }),
+  oil_listing_received: d => ({
+    subject: 'Your waste-oil listing was submitted',
+    html: wrap('Listing submitted ✓',
+      `<p>Hi ${esc(d.name)},</p>
+       <p>Your feedstock listing was submitted for desk review:</p>
+       <p style="background:#EAF2EC;padding:12px 16px;border-radius:8px;"><b>${esc(d.qty)} gal</b> · ${esc(d.oil_type)} · ${esc(d.location)} · ${esc(d.availability)}${d.price ? ' · $' + esc(d.price) + '/gal' : ' · best offer'}</p>
+       <p>The CarbonXFuture desk reviews every listing before it goes live on the Oil Desk. You will receive an email once it is published.</p>`)
+  }),
+  oil_listing_admin: d => ({
+    subject: '🛢 New feedstock listing: ' + (d.qty || '?') + ' gal — ' + (d.company || ''),
+    html: wrap('New waste-oil listing awaiting review',
+      `<p><b>Company:</b> ${esc(d.company)}<br/><b>Type:</b> ${esc(d.oil_type)}<br/>
+          <b>Quantity:</b> ${esc(d.qty)} gal · ${esc(d.availability)}<br/>
+          <b>Location:</b> ${esc(d.location)}<br/>
+          <b>Asking:</b> ${d.price ? '$' + esc(d.price) + '/gal' : 'best offer'}${d.notes ? '<br/><b>Notes:</b> ' + esc(d.notes) : ''}</p>
+       <p><a href="https://www.carbonxfuture.com/portal/admin.html" style="background:#1E1E1A;color:#ffffff;text-decoration:none;padding:10px 22px;border-radius:8px;font-size:13px;">Review in Desk Admin</a></p>`)
+  }),
+  oil_listing_published: d => ({
+    subject: 'Your waste-oil listing is live on the Oil Desk',
+    html: wrap('Listing published ✓',
+      `<p>Hi ${esc(d.name)},</p>
+       <p>Your feedstock listing is now live on the public Oil Desk at <a href="https://www.carbonxfuture.com/#oildesk">carbonxfuture.com</a>:</p>
+       <p style="background:#EAF2EC;padding:12px 16px;border-radius:8px;"><b>${esc(d.qty)} gal</b> · ${esc(d.oil_type)} · ${esc(d.location)}${d.price ? ' · $' + esc(d.price) + '/gal' : ' · best offer'}</p>
+       <p>Buyer enquiries arrive through the desk and we will forward offers to you. Reminder: the same reported gallons also qualify for CXF carbon credits via your monthly activity reports — two revenue lines from one volume.</p>`)
+  }),
+  oil_listing_sold: d => ({
+    subject: 'Your waste-oil listing was marked sold',
+    html: wrap('Listing sold ✓',
+      `<p>Hi ${esc(d.name)},</p>
+       <p>Your feedstock listing (<b>${esc(d.qty)} gal</b> · ${esc(d.location)}) has been marked <b>sold</b> and removed from the public Oil Desk.</p>
+       <p>Don't forget to include the delivered volume in your monthly activity report so the matching CXF credits can be validated.</p>`)
+  }),
   certificate_issued: d => ({
     subject: 'Your CXF retirement certificate — ' + (d.serial || ''),
     html: wrap('Retirement certificate issued',
@@ -133,7 +165,9 @@ const TEMPLATES = {
 
 // Types a signed-in member may trigger about their OWN activity.
 // The recipient is always forced to the member's own email.
-const SELF_TYPES = ['application_received', 'report_received', 'document_received'];
+const SELF_TYPES = ['application_received', 'report_received', 'document_received', 'oil_listing_received'];
+// Types any signed-in member may trigger that alert the desk (recipient forced to desk)
+const DESK_ALERT_TYPES = ['new_member_admin', 'oil_listing_admin'];
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
@@ -156,7 +190,7 @@ export default async function handler(req, res) {
   // onboarding); the recipient is always forced to the desk. SELF_TYPES are
   // confirmations a member triggers about their own activity; the recipient
   // is always forced to their own email. All other types require ADMIN.
-  if (type === 'new_member_admin') {
+  if (DESK_ALERT_TYPES.includes(type)) {
     to = 'desk@carbonxfuture.com';
   } else if (SELF_TYPES.includes(type)) {
     to = user.email;
