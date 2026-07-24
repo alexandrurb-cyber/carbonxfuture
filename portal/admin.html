@@ -239,13 +239,47 @@ async function downloadBackup(){
 }
 
 /* ---------- Price index snapshot (auto-archive on every admin visit) ---------- */
+const PRICE_LABELS = { 'cxf-usgulf':'CXF US Gulf', 'cxf-rerefining':'CXF Re-refining', 'verra-redd':'Verra REDD+', 'verra-blue':'Verra Blue Carbon', 'gold-solar':'GS Solar', 'gold-cookstoves':'GS Cookstoves', 'acr-car':'ACR/CAR', 'planvivo-agro':'Plan Vivo Agroforestry' };
 async function capturePriceSnapshot(){
   try {
     const p = await (await fetch('/prices.json', {cache:'no-store'})).json();
     if (!p || !p.lastUpdated || !p.prices) return;
     const { data } = await db.from('price_history').select('date').eq('date', p.lastUpdated).maybeSingle();
-    if (!data) { await db.from('price_history').insert({ date: p.lastUpdated, prices: p.prices }); }
+    if (!data) {
+      const { error } = await db.from('price_history').insert({ date: p.lastUpdated, prices: p.prices });
+      if (!error) offerPriceAlert(p);
+    }
   } catch(e) {}
+}
+// New desk marks just archived → offer a one-click prefilled price alert
+async function offerPriceAlert(p){
+  const { data: prev } = await db.from('price_history').select('date, prices').lt('date', p.lastUpdated).order('date',{ascending:false}).limit(1);
+  const old = prev && prev[0] ? prev[0].prices : {};
+  const lines = Object.entries(p.prices).map(([k, v]) => {
+    const label = PRICE_LABELS[k] || k;
+    const o = old[k];
+    const chg = (typeof o === 'number' && o !== 0) ? (((v - o) / o * 100 >= 0 ? ' (+' : ' (') + ((v - o) / o * 100).toFixed(1) + '% w/w)') : '';
+    return label + ': $' + Number(v).toFixed(2) + '/tCO2e' + chg;
+  }).join('\n');
+  const banner = document.createElement('div');
+  banner.style.cssText = 'background:var(--forest-pale);border:1px solid var(--forest-light);border-radius:12px;padding:0.9rem 1.2rem;margin-bottom:1.5rem;font-size:13px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;';
+  banner.innerHTML = `<span>📈 <b>New desk marks archived (${esc(p.lastUpdated)}).</b> Want to notify subscribers?</span>
+    <span><button class="act ok" id="paBtn">Prefill price alert</button>
+    <button class="act ghost" onclick="this.closest('div[style]').remove()">Dismiss</button></span>`;
+  document.getElementById('app').prepend(banner);
+  document.getElementById('paBtn').onclick = () => {
+    document.getElementById('nlSubject').value = 'CXF Price Update — ' + p.lastUpdated;
+    document.getElementById('nlBody').value =
+`The CarbonXFuture desk has updated its indicative marks (${p.lastUpdated}):
+
+${lines}
+
+Full history, chart and CSV: https://www.carbonxfuture.com/prices.html
+
+Marks are indicative desk assessments, not exchange prices. Not financial advice.`;
+    banner.remove();
+    document.getElementById('c-news').scrollIntoView({behavior:'smooth'});
+  };
 }
 
 /* ---------- RFQ desk ---------- */
