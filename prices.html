@@ -87,6 +87,13 @@ tr:last-child td{border-bottom:none;}
 <p class="sub" style="margin-bottom:1rem;">What CXF credits add on top of the physical value of used oil, at current desk marks. This is the number that turns collection volumes into a second revenue line.</p>
 <div class="cards" id="upliftCards"></div>
 
+<div id="eiaSection" style="display:none;">
+<h2>Physical market references</h2>
+<p class="sub" style="margin-bottom:1rem;">Daily benchmarks for the physical side of the business — crude and diesel set the cost backdrop for collectors and the price backdrop for re-refined products. Public-domain data from the U.S. Energy Information Administration, refreshed daily.</p>
+<div class="cards" id="eiaCards"></div>
+<p class="muted" style="margin-top:0.25rem;">Source: U.S. EIA (api.eia.gov) · spot prices, latest trading day · sparklines show the last 30 observations.</p>
+</div>
+
 <h2>Open data</h2>
 <p class="sub" style="margin-bottom:0.75rem;">The CXF Price Index is open for research and integration. Pull the full history programmatically (JSON) or download the CSV above. Attribution required: "Source: CXF Price Index — carbonxfuture.com".</p>
 <div style="background:var(--slate-50);border:0.5px solid var(--slate-100);border-radius:10px;padding:0.9rem 1.1rem;font-size:12px;font-family:monospace;overflow-x:auto;white-space:nowrap;margin-bottom:0.5rem;">
@@ -227,6 +234,33 @@ function downloadCSV() {
 }
 
 load();
+
+/* ---------- Physical market references (EIA) ---------- */
+function sparkline(points, color) {
+  if (!points || points.length < 2) return '';
+  const vals = points.map(p => p.value);
+  const min = Math.min(...vals), max = Math.max(...vals), range = max - min || 1;
+  const step = 100 / (points.length - 1);
+  const coords = points.map((p, i) => (i * step).toFixed(1) + ',' + (26 - (p.value - min) / range * 22).toFixed(1)).join(' ');
+  return `<svg viewBox="0 0 100 28" width="100%" height="28" preserveAspectRatio="none" style="margin-top:6px;"><polyline points="${coords}" fill="none" stroke="${color}" stroke-width="1.5"/></svg>`;
+}
+(async function loadEIA(){
+  try {
+    const r = await fetch('/api/eia');
+    if (!r.ok) return; // key not configured yet or upstream down — section stays hidden
+    const d = await r.json();
+    if (!d.series) return;
+    const chg = v => v === null ? '' : `<span class="${v >= 0 ? 'chg-up' : 'chg-dn'}">${v >= 0 ? '▲' : '▼'} ${Math.abs(v).toFixed(1)}%</span>`;
+    document.getElementById('eiaCards').innerHTML = Object.values(d.series).map(s => `
+      <div class="pcard">
+        <div class="k">${s.label}</div>
+        <div class="v">$${Number(s.latest).toFixed(2)}<span style="font-size:0.8rem;color:var(--slate-400);font-weight:400;"> ${s.unit.replace('$','')}</span></div>
+        <div class="d">${s.latest_date} ${chg(s.change_1d_pct)} <span style="color:var(--slate-200);">·</span> 30d ${chg(s.change_30d_pct)}</div>
+        ${sparkline(s.points, '#1A4A2E')}
+      </div>`).join('');
+    document.getElementById('eiaSection').style.display = '';
+  } catch(e) {}
+})();
 </script>
 </body>
 </html>
