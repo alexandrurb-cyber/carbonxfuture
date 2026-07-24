@@ -80,14 +80,21 @@ async function notifyMember(type, to, data) {
   }
   document.getElementById('app').innerHTML = `
     <h1>Desk Admin</h1>
-    <div class="card"><h2>RFQ desk — quote requests</h2><div id="rfqs" class="muted">Loading…</div></div>
-    <div class="card"><h2>Members</h2><div id="members" class="muted">Loading…</div></div>
-    <div class="card"><h2>Reports awaiting validation</h2><div id="reports" class="muted">Loading…</div></div>
-    <div class="card"><h2>Documents</h2><div id="docs" class="muted">Loading…</div></div>
-    <div class="card"><h2>Marketplace — live on the website</h2>
+    <div id="overview" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:1.5rem;"></div>
+    <div class="card" id="c-rfqs"><h2>RFQ desk — quote requests</h2>
+      <input placeholder="Filter…" oninput="filterCard('rfqs', this.value)" style="padding:7px 12px;border:0.5px solid var(--slate-200);border-radius:7px;font-family:'Inter',sans-serif;font-size:12px;margin-bottom:8px;width:220px;"/>
+      <button class="act ghost" onclick="exportCardCSV('rfqs','cxf-rfqs')" style="float:right;">Export CSV</button>
+      <div id="rfqs" class="muted">Loading…</div></div>
+    <div class="card" id="c-members"><h2>Members</h2>
+      <input placeholder="Filter…" oninput="filterCard('members', this.value)" style="padding:7px 12px;border:0.5px solid var(--slate-200);border-radius:7px;font-family:'Inter',sans-serif;font-size:12px;margin-bottom:8px;width:220px;"/>
+      <button class="act ghost" onclick="exportCardCSV('members','cxf-members')" style="float:right;">Export CSV</button>
+      <div id="members" class="muted">Loading…</div></div>
+    <div class="card" id="c-reports"><h2>Reports awaiting validation</h2><div id="reports" class="muted">Loading…</div></div>
+    <div class="card" id="c-docs"><h2>Documents</h2><div id="docs" class="muted">Loading…</div></div>
+    <div class="card" id="c-market"><h2>Marketplace — live on the website</h2>
       <p class="muted" style="margin-bottom:0.75rem;">Everything currently visible in the public marketplace, from all three sources.</p>
       <div id="listings" class="muted">Loading…</div></div>
-    <div class="card"><h2>Retirement certificates</h2>
+    <div class="card" id="c-certs"><h2>Retirement certificates</h2>
       <p class="muted" style="margin-bottom:0.75rem;">Issue a numbered certificate when credits are retired for a buyer. Serials are public and verifiable at /verify.html — never put private data in these fields.</p>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px;">
         <input id="ctBuyer" placeholder="Retired for (e.g. Acme Corp — or 'Confidential')" style="padding:8px;border:0.5px solid var(--slate-200);border-radius:7px;font-family:'Inter',sans-serif;font-size:12.5px;"/>
@@ -100,7 +107,7 @@ async function notifyMember(type, to, data) {
       <button class="act ok" onclick="issueCertificate()">Issue certificate</button>
       <div id="certs" class="muted" style="margin-top:1rem;">Loading…</div>
     </div>
-    <div class="card"><h2>Public projects — website Project Explorer</h2>
+    <div class="card" id="c-projects"><h2>Public projects — website Project Explorer</h2>
       <p class="muted" style="margin-bottom:0.75rem;">Publish a validated member project to the public Project Explorer page (shown with the ⬡ CXF badge).</p>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px;">
         <select id="pjMember" style="padding:8px;border:0.5px solid var(--slate-200);border-radius:7px;font-family:'Inter',sans-serif;font-size:12.5px;"><option value="">— member (optional) —</option></select>
@@ -117,22 +124,85 @@ async function notifyMember(type, to, data) {
       <button class="act ok" onclick="publishProject()">Publish to website</button>
       <div id="cxfprojects" class="muted" style="margin-top:1rem;">Loading…</div>
     </div>
-    <div class="card"><h2>Backup</h2>
+    <div class="card" id="c-backup"><h2>Backup</h2>
       <p class="muted" style="margin-bottom:0.75rem;">Downloads every table (members, reports, listings, RFQs, certificates, price history, subscribers, audit log) as one JSON file. Keep weekly copies in a safe folder. <span id="bkReminder" style="color:var(--amber);font-weight:600;"></span></p>
       <button class="act ok" id="bkBtn" onclick="downloadBackup()">Download full backup (JSON)</button>
       <span id="bkStatus" class="muted" style="margin-left:10px;"></span>
       <p class="muted" style="margin-top:0.5rem;">Note: uploaded PDF files live in Supabase Storage and are not inside this JSON — download important documents from the Documents card.</p>
     </div>
-    <div class="card"><h2>Newsletter — Desk Note</h2>
+    <div class="card" id="c-news"><h2>Newsletter — Desk Note</h2>
       <p class="muted" style="margin-bottom:0.75rem;">Subscribers: <b id="nlCount">…</b> · sends individually via Resend (recipients never see each other).</p>
       <input id="nlSubject" placeholder="Subject (e.g. Desk Note — July 13, 2026)" style="width:100%;padding:9px;border:0.5px solid var(--slate-200);border-radius:7px;font-family:'Inter',sans-serif;font-size:12.5px;margin-bottom:8px;"/>
       <textarea id="nlBody" rows="10" placeholder="Paste the newsletter text here (blank line = new paragraph)…" style="width:100%;padding:9px;border:0.5px solid var(--slate-200);border-radius:7px;font-family:'Inter',sans-serif;font-size:12.5px;margin-bottom:8px;resize:vertical;"></textarea>
       <button class="act ok" id="nlBtn" onclick="sendNewsletter()">Send to all subscribers</button>
       <span id="nlStatus" class="muted" style="margin-left:10px;"></span>
+    </div>
+    <div class="card" id="c-audit"><h2>Activity log</h2>
+      <p class="muted" style="margin-bottom:0.75rem;">Every desk action is recorded — the last 30 entries. <button class="act ghost" onclick="loadAudit()">Refresh</button></p>
+      <div id="auditlog" class="muted">Loading…</div>
     </div>`;
   loadMembers(); loadReports(); loadDocs(); loadListings(); loadCxfProjects(); loadSubscriberCount();
-  loadRfqs(); loadCertificates(); capturePriceSnapshot(); backupReminder();
+  loadRfqs(); loadCertificates(); capturePriceSnapshot(); backupReminder(); loadOverview(); loadAudit();
 })();
+
+/* ---------- Overview / attention bar ---------- */
+async function loadOverview(){
+  const el = document.getElementById('overview');
+  const cnt = (t, f) => { let q = db.from(t).select('*', { count: 'exact', head: true }); for (const [k,v] of Object.entries(f||{})) q = q.eq(k, v); return q.then(r => r.count ?? 0).catch(() => 0); };
+  const [mPend, rSub, qNew, dSub, lPub, pPub, cAct, subs] = await Promise.all([
+    cnt('members', {status:'pending'}), cnt('reports', {status:'submitted'}), cnt('rfqs', {status:'new'}),
+    cnt('documents', {status:'submitted'}), cnt('listings', {status:'published'}), cnt('cxf_projects', {status:'published'}),
+    cnt('certificates', {status:'active'}), cnt('newsletter_subscribers', {status:'active'})
+  ]);
+  const items = [
+    ['New RFQs', qNew, 'c-rfqs', qNew > 0],
+    ['Pending members', mPend, 'c-members', mPend > 0],
+    ['Reports to review', rSub, 'c-reports', rSub > 0],
+    ['Docs to review', dSub, 'c-docs', dSub > 0],
+    ['Live marketplace', lPub + pPub, 'c-market', false],
+    ['Certificates', cAct, 'c-certs', false],
+    ['Subscribers', subs, 'c-news', false]
+  ];
+  el.innerHTML = items.map(([label, n, target, attention]) => `
+    <div onclick="document.getElementById('${target}').scrollIntoView({behavior:'smooth'})"
+      style="cursor:pointer;border-radius:12px;padding:0.7rem 0.9rem;border:0.5px solid ${attention ? 'var(--amber)' : 'var(--slate-100)'};background:${attention ? 'var(--amber-pale)' : '#fff'};">
+      <div style="font-size:1.35rem;font-weight:600;color:${attention ? 'var(--amber)' : 'var(--forest)'};">${n}</div>
+      <div style="font-size:10.5px;text-transform:uppercase;letter-spacing:0.4px;color:var(--slate-400);">${label}${attention ? ' ⚠' : ''}</div>
+    </div>`).join('');
+}
+
+/* ---------- Card helpers: filter + CSV export ---------- */
+function filterCard(containerId, text){
+  const t = text.trim().toLowerCase();
+  document.querySelectorAll('#' + containerId + ' table tr').forEach((row, i) => {
+    if (i === 0) return; // header
+    row.style.display = !t || row.textContent.toLowerCase().includes(t) ? '' : 'none';
+  });
+}
+function exportCardCSV(containerId, filename){
+  const rows = [...document.querySelectorAll('#' + containerId + ' table tr')];
+  if (!rows.length) return alert('Nothing to export.');
+  const csv = rows.map(r => [...r.querySelectorAll('th,td')].slice(0, -1)
+    .map(c => '"' + c.innerText.replace(/"/g, '""').replace(/\n/g, ' · ') + '"').join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = filename + '-' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click(); URL.revokeObjectURL(a.href);
+}
+
+/* ---------- Activity log ---------- */
+async function loadAudit(){
+  const el = document.getElementById('auditlog');
+  const { data, error } = await db.from('audit_log').select('*').order('at', {ascending:false}).limit(30);
+  if (error) { el.textContent = 'Error: ' + error.message; return; }
+  if (!data.length) { el.textContent = 'No activity recorded yet.'; return; }
+  el.innerHTML = `<table><tr><th>When</th><th>Who</th><th>Action</th><th>Target</th></tr>` +
+    data.map(a => `<tr>
+      <td class="muted" style="white-space:nowrap;">${new Date(a.at).toLocaleString('en-US', {month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'})}</td>
+      <td>${esc(a.actor)}</td><td><b>${esc(a.action.replace(/_/g,' '))}</b></td>
+      <td class="muted">${esc(a.target ?? '—')}</td>
+    </tr>`).join('') + '</table>';
+}
 
 /* ---------- Backup ---------- */
 const BK_TABLES = ['members','reports','documents','listings','cxf_projects','rfqs','certificates','price_history','newsletter_subscribers','audit_log'];
@@ -280,7 +350,7 @@ async function loadMembers(){
   if (!data.length) { el.textContent = 'No members yet.'; return; }
   el.innerHTML = `<table><tr><th>Company</th><th>Contact</th><th>Email</th><th>Type</th><th>Status</th><th>Actions</th></tr>` +
     data.map(m => `<tr>
-      <td><b>${esc(m.company)}</b></td><td>${esc(m.contact_name)}</td><td>${esc(m.email)}</td>
+      <td><b>${esc(m.company)}</b></td><td>${esc(m.contact_name)}</td><td><a href="mailto:${esc(m.email)}">${esc(m.email)}</a></td>
       <td>${esc(m.member_type ?? '—')}</td>
       <td><span class="pill ${esc(m.status)}">${esc(m.status)}</span></td>
       <td>${m.status !== 'approved' ? `<button class="act ok" onclick="setStatus('${m.id}','approved')">Approve</button>` : ''}
