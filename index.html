@@ -763,15 +763,21 @@ nav.menu-open .nav-signin{border-color:rgba(255,255,255,0.3);text-align:center;m
         <h3>Waste oil recycling</h3>
         <p class="calc-desc">Credits from used-oil collection under the CXF methodology.</p>
         <div class="calc-row">
-          <label>Annual volume collected (litres)</label>
-          <input type="number" id="calcWoVol" min="0" placeholder="e.g. 250,000" oninput="calcWasteOil()"/>
+          <label>Annual volume collected</label>
+          <div style="display:flex;gap:8px;">
+            <input type="number" id="calcWoVol" min="0" placeholder="e.g. 66,000" oninput="calcWasteOil()" style="flex:1;"/>
+            <select id="calcWoUnit" onchange="calcWasteOil()" style="flex:0 0 110px;">
+              <option value="gal">US gallons</option>
+              <option value="l">litres</option>
+            </select>
+          </div>
         </div>
         <div class="calc-row">
           <label>Activity scope</label>
           <select id="calcWoScope" onchange="calcWasteOil()">
-            <option value="2.85">Collection only — 2.85 tCO₂e / 1,000 L</option>
-            <option value="5.1">Collection + re-refining — 5.1 tCO₂e / 1,000 L</option>
-            <option value="6.8">+ distribution network — 6.8 tCO₂e / 1,000 L</option>
+            <option value="2.85">Collection only — 10.8 tCO₂e / 1,000 gal</option>
+            <option value="5.1">Collection + re-refining — 19.3 tCO₂e / 1,000 gal</option>
+            <option value="6.8">+ distribution network — 25.7 tCO₂e / 1,000 gal</option>
           </select>
         </div>
         <div class="calc-result">
@@ -1387,13 +1393,13 @@ nav.menu-open .nav-signin{border-color:rgba(255,255,255,0.3);text-align:center;m
           </select>
         </div>
         <div class="form-row">
-          <label>Annual waste oil volume (litres) or credit volume (tCO₂e)</label>
+          <label>Annual waste oil volume (US gallons) or credit volume (tCO₂e)</label>
           <select id="kycVolume">
             <option value="">Select range</option>
-            <option>Under 100,000 L / 1,000 tCO₂e</option>
-            <option>100,000–500,000 L / 1,000–10,000 tCO₂e</option>
-            <option>500,000–2M L / 10,000–100,000 tCO₂e</option>
-            <option>2M+ L / 100,000+ tCO₂e</option>
+            <option>Under 25,000 gal / 1,000 tCO₂e</option>
+            <option>25,000–150,000 gal / 1,000–10,000 tCO₂e</option>
+            <option>150,000–500,000 gal / 10,000–100,000 tCO₂e</option>
+            <option>500,000+ gal / 100,000+ tCO₂e</option>
           </select>
         </div>
         <button class="btn-white" id="kycBtn" onclick="handleKYC()">
@@ -1777,7 +1783,7 @@ const ARTICLES = [
     title: 'Introducing CXF: how waste oil recycling generates verified carbon credits',
     summary: 'CarbonXFuture launches its proprietary CXF carbon credit standard — the first methodology specifically designed for used oil collection and re-refining infrastructure.',
     body: `
-      <p style="margin-bottom:1.25rem;">The voluntary carbon market has long overlooked one of the most impactful sectors in the circular economy: <strong>waste oil recycling</strong>. Every litre of used motor oil that is collected, re-refined and returned to service prevents the equivalent of approximately 28 litres of crude oil from being extracted — avoiding significant upstream emissions.</p>
+      <p style="margin-bottom:1.25rem;">The voluntary carbon market has long overlooked one of the most impactful sectors in the circular economy: <strong>waste oil recycling</strong>. Every gallon of used motor oil that is collected, re-refined and returned to service prevents the equivalent of approximately 28 gallons of crude oil from being extracted — avoiding significant upstream emissions.</p>
       <p style="margin-bottom:1.25rem;">CarbonXFuture has developed the <strong>CXF Methodology</strong> to quantify, verify and monetise these emission reductions in a rigorous, auditable framework. The methodology covers three activity types:</p>
       <ul style="margin:0 0 1.25rem 1.5rem;display:flex;flex-direction:column;gap:8px;">
         <li><strong>Used oil collection:</strong> Credits issued for volumes collected and diverted from disposal or incineration.</li>
@@ -1844,9 +1850,9 @@ const ARTICLES = [
       <p style="margin-bottom:1.25rem;"><strong>Baseline emission factor:</strong> The CXF methodology uses a conservative baseline of 2.85 kg CO₂e per litre of used oil collected and diverted from uncontrolled disposal. This figure reflects the weighted average emission intensity of alternative disposal routes (incineration, illegal dumping, and road oiling) in the applicable geographic zones.</p>
       <p style="margin-bottom:1.25rem;"><strong>Expected credit yield:</strong></p>
       <ul style="margin:0 0 1.25rem 1.5rem;display:flex;flex-direction:column;gap:8px;">
-        <li>Collection only: approximately 2.85 tCO₂e per 1,000 litres collected</li>
-        <li>Collection + re-refining: approximately 5.1 tCO₂e per 1,000 litres processed</li>
-        <li>Collection + re-refining + distribution network: up to 6.8 tCO₂e per 1,000 litres</li>
+        <li>Collection only: approximately 10.8 tCO₂e per 1,000 US gallons collected (2.85 per 1,000 litres)</li>
+        <li>Collection + re-refining: approximately 19.3 tCO₂e per 1,000 US gallons processed (5.1 per 1,000 litres)</li>
+        <li>Collection + re-refining + distribution network: up to 25.7 tCO₂e per 1,000 US gallons (6.8 per 1,000 litres)</li>
       </ul>
       <p style="margin-bottom:1.25rem;"><strong>MRV requirements:</strong> Monthly volume logs with chain-of-custody documentation, quarterly third-party audits, and annual verification reports. CarbonXFuture provides a digital MRV dashboard for all registered applicants.</p>
       <p>Interested collectors and recyclers can pre-register now to be included in the first issuance cycle, targeted for Q4 2025.</p>
@@ -2046,7 +2052,7 @@ You help users understand:
 - CXF credits: CarbonXFuture's proprietary carbon credit standard for waste oil recycling and collection. 1 CXF credit = 1 tonne CO2 equivalent avoided. Credits are digital, issued on the CarbonXFuture registry and tradeable on the platform.
 - How to earn CXF credits: waste oil collectors and recyclers apply, submit monthly volume data, pass third-party verification, then receive digital CXF credits to sell on the marketplace.
 - Current indicative prices and live listings: use ONLY the numbers in the CURRENT PLATFORM DATA section appended at the end of this prompt. Always note prices are indicative.
-- The CXF methodology: covers used oil collection, re-refining, and infrastructure development. ~2.85 tCO2e per 1,000 litres collected. Third-party audited, MRV-compliant.
+- The CXF methodology: covers used oil collection, re-refining, and infrastructure development. Factors: ~10.8 tCO2e per 1,000 US gallons collected (2.85 per 1,000 litres); re-refining 19.3/1,000 gal (5.1/1,000 L); full chain 25.7/1,000 gal (6.8/1,000 L). US industry speaks in gallons — quote gallons first, litres in parentheses. 1 US gallon = 3.78541 litres.
 - Registries supported: CXF (proprietary), Verra VCS, Gold Standard, ACR, CAR, Plan Vivo.
 - How to apply: users submit KYC on the platform. 24-48h review. Options: waste oil recycler, corporate buyer, investment fund, trading desk, government entity.
 - Donation program: one-time donations via Stripe (cards, Apple Pay, Google Pay) fund open methodology templates, education on the voluntary carbon market, waste-oil re-refining research and small project grants. No platform fees on donations.
@@ -2221,8 +2227,11 @@ function calcSet(numId, valId, credits, priceKey) {
   valEl.textContent = '≈ $' + calcFmt(credits * calcPrice(priceKey)) + ' indicative value';
 }
 
+const L_PER_GAL = 3.78541; // 1 US gallon = 3.78541 litres
 function calcWasteOil() {
-  const litres = parseFloat(document.getElementById('calcWoVol').value) || 0;
+  const vol = parseFloat(document.getElementById('calcWoVol').value) || 0;
+  const unit = document.getElementById('calcWoUnit').value;
+  const litres = unit === 'gal' ? vol * L_PER_GAL : vol;
   const factor = parseFloat(document.getElementById('calcWoScope').value);
   calcSet('calcWoNum', 'calcWoVal', litres / 1000 * factor, 'cxf-usgulf');
 }

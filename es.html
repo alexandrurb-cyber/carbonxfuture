@@ -11,7 +11,7 @@
 <link rel="icon" href="/favicon.ico" sizes="48x48"/>
 <link rel="apple-touch-icon" href="/apple-touch-icon.png"/>
 <meta property="og:title" content="Créditos de carbono por reciclaje de aceite usado — CarbonXFuture"/>
-<meta property="og:description" content="Recolectores y re-refinadores: sus litros valen créditos de carbono. Aplique hoy — validación del desk en Florida."/>
+<meta property="og:description" content="Recolectores y re-refinadores: sus galones valen créditos de carbono. Aplique hoy — validación del desk en Florida."/>
 <meta property="og:image" content="https://www.carbonxfuture.com/og-banner.png"/>
 <meta property="og:locale" content="es_US"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
@@ -60,7 +60,7 @@ a{color:var(--forest-light);}
 <div class="hero"><div class="hero-inner">
   <div class="eyebrow">Para recolectores y re-refinadores · Florida, EE. UU.</div>
   <h1>Su aceite usado vale créditos de carbono</h1>
-  <p>Cada 1.000 litros de aceite lubricante usado que usted recolecta o re-refina evita emisiones medibles de CO₂. CarbonXFuture convierte esa actividad en <b>créditos CXF validados</b> — y los lista en un marketplace institucional donde compradores corporativos los buscan.</p>
+  <p>Cada 1.000 galones de aceite lubricante usado que usted recolecta o re-refina evita emisiones medibles de CO₂. CarbonXFuture convierte esa actividad en <b>créditos CXF validados</b> — y los lista en un marketplace institucional donde compradores corporativos los buscan.</p>
   <a class="btn" href="/#kyc">Aplicar para acceso</a>
   <a class="btn ghost" href="mailto:desk@carbonxfuture.com">Hablar con el desk</a>
 </div></div>
@@ -70,21 +70,21 @@ a{color:var(--forest-light);}
 <h2>¿Cuántos créditos genera su operación?</h2>
 <div class="calc-box">
   <div class="row">
-    <div><label>Litros por mes</label><input type="number" id="litros" min="0" placeholder="ej. 100000" oninput="calc()"/></div>
+    <div><label>Galones por mes</label><input type="number" id="litros" min="0" placeholder="ej. 26000" oninput="calc()"/></div>
     <div><label>Actividad</label>
       <select id="actividad" onchange="calc()">
-        <option value="2.85">Solo recolección — 2,85 tCO₂e / 1.000 L</option>
-        <option value="5.1">Recolección + re-refinación — 5,1 tCO₂e / 1.000 L</option>
-        <option value="6.8">Cadena completa (+ distribución) — 6,8 tCO₂e / 1.000 L</option>
+        <option value="2.85">Solo recolección — 10,8 tCO₂e / 1.000 gal</option>
+        <option value="5.1">Recolección + re-refinación — 19,3 tCO₂e / 1.000 gal</option>
+        <option value="6.8">Cadena completa (+ distribución) — 25,7 tCO₂e / 1.000 gal</option>
       </select></div>
   </div>
-  <div class="calc-result">Créditos indicativos: <b id="resultado">—</b> tCO₂e/mes <span style="font-size:12px;color:var(--slate-400);">(sujeto a validación del desk · galones × 3,785 = litros)</span></div>
+  <div class="calc-result">Créditos indicativos: <b id="resultado">—</b> tCO₂e/mes <span style="font-size:12px;color:var(--slate-400);">(sujeto a validación del desk · 1 galón = 3,785 litros)</span></div>
 </div>
 
 <h2>Cómo funciona</h2>
 <div class="steps">
   <div class="step"><div class="n">1</div><div><h3>Aplique para acceso</h3><p>Complete el formulario — el desk revisa cada solicitud individualmente (KYC), normalmente en 24–48 horas hábiles. Recibirá confirmación por email en cada paso.</p></div></div>
-  <div class="step"><div class="n">2</div><div><h3>Reporte sus volúmenes</h3><p>Cada mes registra litros y sube evidencia (tickets de báscula, recibos de entrega) en su portal privado. La plataforma calcula los créditos indicativos automáticamente según la <a href="/methodology.html">Metodología CXF</a>.</p></div></div>
+  <div class="step"><div class="n">2</div><div><h3>Reporte sus volúmenes</h3><p>Cada mes registra galones y sube evidencia (tickets de báscula, recibos de entrega) en su portal privado. La plataforma calcula los créditos indicativos automáticamente según la <a href="/methodology.html">Metodología CXF</a>.</p></div></div>
   <div class="step"><div class="n">3</div><div><h3>El desk valida</h3><p>Cada reporte se revisa individualmente. Al validarse, sus créditos se listan automáticamente en el <a href="/#marketplace">marketplace público</a> con la insignia ⬡ CXF.</p></div></div>
   <div class="step"><div class="n">4</div><div><h3>Venda y cobre</h3><p>Los compradores envían solicitudes de cotización; la transacción se liquida bilateralmente a través del desk — pago contra documentación. Los créditos retirados reciben un <a href="/verify.html">certificado numerado verificable públicamente</a>.</p></div></div>
 </div>
@@ -101,7 +101,7 @@ a{color:var(--forest-light);}
 
 <div class="cta">
   <h2>Empiece hoy</h2>
-  <p>La aplicación toma 2 minutos. Si recolecta o re-refina aceite usado en EE. UU., sus litros ya valen algo más.</p>
+  <p>La aplicación toma 2 minutos. Si recolecta o re-refina aceite usado en EE. UU., sus galones ya valen algo más.</p>
   <a class="btn" href="/#kyc">Aplicar para acceso</a>
   <a class="btn ghost" href="/portal/">Ya soy miembro — iniciar sesión</a>
 </div>
@@ -111,9 +111,10 @@ a{color:var(--forest-light);}
 
 <script>
 function calc(){
-  const l = parseFloat(document.getElementById('litros').value) || 0;
+  const gal = parseFloat(document.getElementById('litros').value) || 0;
+  const litros = gal * 3.78541; // 1 galón US = 3,78541 litros
   const f = parseFloat(document.getElementById('actividad').value);
-  document.getElementById('resultado').textContent = l > 0 ? (l/1000*f).toLocaleString('es-US', {maximumFractionDigits:1}) : '—';
+  document.getElementById('resultado').textContent = gal > 0 ? (litros/1000*f).toLocaleString('es-US', {maximumFractionDigits:1}) : '—';
 }
 </script>
 </body>
