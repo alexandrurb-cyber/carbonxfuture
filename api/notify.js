@@ -31,7 +31,14 @@ const TEMPLATES = {
     html: wrap('Welcome aboard — your account is approved',
       `<p>Hi ${esc(d.name)},</p>
        <p>Good news: the CarbonXFuture desk has reviewed and <b>approved</b> the account for <b>${esc(d.company)}</b>.</p>
-       <p>You can now sign in to your member portal to upload documents, submit activity reports and track your listings.</p>`)
+       <p><b>Your first steps:</b></p>
+       <p style="background:#EAF2EC;padding:14px 18px;border-radius:8px;line-height:2;">
+         1. <b>Sign in</b> to your portal and upload your operating license under Documents.<br/>
+         2. <b>Submit your first monthly report</b> (gallons collected or processed) — we calculate your indicative CXF credits automatically.<br/>
+         3. <b>List waste oil for sale</b> on the Oil Desk from the "Sell waste oil" tab — same gallons, second revenue line.<br/>
+         4. Review the <a href="https://www.carbonxfuture.com/contracts.html">contract specifications</a> and the <a href="https://www.carbonxfuture.com/prices.html">CXF Price Index</a> so you know what your volumes are worth.</p>
+       <p><b>Market Access:</b> your first 3 months are free — secure your plan (card on file, cancel anytime during the trial) at <a href="https://www.carbonxfuture.com/pricing.html">carbonxfuture.com/pricing</a>.</p>
+       <p>Questions any time: just reply to this email — a person answers, not a bot.</p>`)
   }),
   member_rejected: d => ({
     subject: 'Update on your CarbonXFuture application',
