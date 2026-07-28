@@ -87,6 +87,12 @@ tr:last-child td{border-bottom:none;}
 <p class="sub" style="margin-bottom:1rem;">What CXF credits add on top of the physical value of used oil, at current desk marks. This is the number that turns collection volumes into a second revenue line.</p>
 <div class="cards" id="upliftCards"></div>
 
+<div id="benchSection" style="display:none;">
+<h2>Compliance market benchmarks</h2>
+<p class="sub" style="margin-bottom:1rem;">Where regulated carbon markets trade — context for CXF desk marks. Levels are desk-observed weekly from public market reporting, with the as-of date shown.</p>
+<div class="cards" id="benchCards"></div>
+</div>
+
 <div id="eiaSection" style="display:none;">
 <h2>Physical market references</h2>
 <p class="sub" style="margin-bottom:1rem;">Daily benchmarks for the physical side of the business — crude and diesel set the cost backdrop for collectors and the price backdrop for re-refined products. Public-domain data from the U.S. Energy Information Administration, refreshed daily.</p>
@@ -135,6 +141,16 @@ async function load() {
     if (p && p.prices && p.lastUpdated && !HISTORY.some(h => h.date === p.lastUpdated)) {
       HISTORY.push({ date: p.lastUpdated, prices: p.prices });
       HISTORY.sort((a,b) => a.date.localeCompare(b.date));
+    }
+    // Compliance benchmarks (weekly, desk-observed from public reporting)
+    if (p && p.benchmarks) {
+      const el = document.getElementById('benchCards');
+      el.innerHTML = Object.values(p.benchmarks).map(b => `
+        <div class="pcard"><div class="k">${b.label}</div>
+          <div class="v">${b.unit.startsWith('EUR') ? '€' : '$'}${Number(b.value).toFixed(2)}<span style="font-size:0.8rem;color:var(--slate-400);font-weight:400;"> /t</span></div>
+          <div class="d">as of ${b.asof} · ${b.source}</div>
+        </div>`).join('');
+      document.getElementById('benchSection').style.display = '';
     }
   } catch(e) {}
   if (!HISTORY.length) {
