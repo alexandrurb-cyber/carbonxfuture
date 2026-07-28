@@ -1,8 +1,8 @@
 {
   "lastUpdated": "2026-07-08",
   "carbon": [
-    { "reg": "cxf",   "badge": "⬡ CXF",        "name": "Used Oil Collection — US Gulf",  "sub": "Texas, USA · Waste oil re-refining",          "type": "Waste oil",         "vintage": "2025", "volume": "38,000",  "price": 21.50 },
-    { "reg": "cxf",   "badge": "⬡ CXF",        "name": "CXF Industrial Re-refining",     "sub": "Used oil re-refining · Vintage 2025",         "type": "Waste oil",         "vintage": "2025", "volume": "12,400",  "price": 19.80 },
+    { "reg": "cxf",   "badge": "⬡ CXF",        "name": "Used Oil Collection — US Gulf",  "sub": "Texas, USA · Indicative offer — pending registry issuance", "type": "Waste oil",         "vintage": "2025", "volume": "38,000",  "price": 21.50 },
+    { "reg": "cxf",   "badge": "⬡ CXF",        "name": "CXF Industrial Re-refining",     "sub": "Re-refining · Indicative offer — pending registry issuance", "type": "Waste oil",         "vintage": "2025", "volume": "12,400",  "price": 19.80 },
     { "reg": "verra", "badge": "Verra VCS",     "name": "Kasigau Corridor REDD+",         "sub": "Kenya · Forest conservation",                 "type": "REDD+",             "vintage": "2023", "volume": "42,000",  "price": 14.85 },
     { "reg": "gold",  "badge": "Gold Standard", "name": "Sichuan Household Biogas",       "sub": "China · Household biogas",                    "type": "Biogas",            "vintage": "2024", "volume": "18,500",  "price": 19.20 },
     { "reg": "acr",   "badge": "ACR",           "name": "Cascadia IFM",                   "sub": "Oregon, USA · Improved forest management",    "type": "IFM",               "vintage": "2022", "volume": "25,000",  "price": 24.10 },

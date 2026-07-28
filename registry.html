@@ -42,6 +42,7 @@ tr:last-child td{border-bottom:none;}
 .pill.transferred{background:var(--gold-pale);color:var(--gold);}
 .pill.retired{background:var(--forest);color:#fff;}
 .pill.revoked{background:#FBEAEA;color:#A33;}
+.pill.split{background:#EFEFEA;color:#4A4A45;}
 .muted{color:var(--slate-400);font-size:12px;}
 .empty{display:none;text-align:center;padding:3rem;color:var(--slate-400);}
 .note{margin-top:2rem;font-size:12px;color:var(--slate-400);max-width:840px;line-height:1.7;}
@@ -56,7 +57,7 @@ a{color:var(--forest-light);}
 
 <div class="eyebrow">CXF Registry</div>
 <h1>Public unit registry</h1>
-<p class="sub">Every serialized CXF unit batch, with its live status. This is the platform's double-counting guarantee: a batch has exactly one status, retirement is terminal, and anyone — including your auditor — can check it here without an account. Ownership and commercial terms are private by design; see the <a href="/registry-rules.html">Registry Rules</a>.</p>
+<p class="sub">Every serialized CXF unit batch, with its live status. This registry implements CXF's internal double-issuance controls: each validated activity report supports at most one batch, every serial is unique, statuses are singular, and anyone — including your auditor — can check them here without an account. Members additionally attest that the same activity has not been claimed under another carbon program. Ownership and commercial terms are private by design; see the <a href="/registry-rules.html">Registry Rules</a>.</p>
 
 <div class="statbar" id="statbar"></div>
 
@@ -69,6 +70,7 @@ a{color:var(--forest-light);}
     <option value="transferred">Transferred</option>
     <option value="retired">Retired</option>
     <option value="revoked">Revoked</option>
+    <option value="split">Split</option>
   </select>
 </div>
 
@@ -80,7 +82,7 @@ a{color:var(--forest-light);}
 <div class="empty" id="empty">No batches match this filter.</div>
 </div>
 
-<p class="note"><b>About this registry.</b> CXF units are proprietary, desk-validated platform instruments of CarbonXFuture Markets, Inc. — they are not registry credits issued by Verra, Gold Standard, ACR or CAR. Batches are issued only from desk-validated activity reports with documentary evidence; serials are unique and never reused; retirement links to a numbered public certificate verifiable at <a href="/verify.html">/verify</a>; revocations remain visible with a public reason. Some project labels are generic at the member's request — the underlying operator identity and evidence are held privately by the desk and available to counterparties in diligence. Issuance, transfer, retirement and revocation are governed by the <a href="/registry-rules.html">CXF Registry Rules</a>.</p>
+<p class="note"><b>About this registry.</b> CXF units are proprietary, desk-validated platform instruments of CarbonXFuture Markets, Inc. — they are not registry credits issued by Verra, Gold Standard, ACR or CAR. Batches are issued only from desk-validated activity reports with documentary evidence; serials are unique and never reused; retirement links to a numbered public certificate verifiable at <a href="/verify.html">/verify</a>; revocations remain visible with a public reason — including revocation of a previously retired batch if its evidence is later found materially false. For partial transfers or retirements, a batch is split into child batches (serial suffix ‑A, ‑B, …) whose quantities always sum to the parent; the parent remains visible with status "split". Some project labels are generic at the member's request — the underlying operator identity and evidence are held privately by the desk and available to counterparties in diligence. Issuance, transfer, retirement and revocation are governed by the <a href="/registry-rules.html">CXF Registry Rules</a>.</p>
 
 <div class="foot">© 2026 CarbonXFuture Markets, Inc. · <a href="/">Home</a> · <a href="/registry-rules.html">Registry Rules</a> · <a href="/verify.html">Verify a certificate</a> · <a href="/contracts.html">Contract specifications</a> · <a href="/methodology.html">Methodology</a></div>
 </div>

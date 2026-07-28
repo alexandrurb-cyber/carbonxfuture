@@ -26,7 +26,7 @@ li{margin-bottom:0.35rem;}
 <div class="wrap">
 <a class="back" href="/registry.html">&larr; Back to the CXF Registry</a>
 <h1>CXF Registry Rules</h1>
-<p class="date">Version 1.0 (pilot) · Effective July 28, 2026 · CarbonXFuture Markets, Inc., Fort Lauderdale, Florida, USA</p>
+<p class="date">Version 1.1 (pilot) · Effective July 28, 2026 · CarbonXFuture Markets, Inc., Fort Lauderdale, Florida, USA<br/>v1.1 changes: post-retirement revocation clarified; batch splitting, administrative corrections, security &amp; backups, and conflict-of-interest sections added.</p>
 
 <div class="notice"><b>Pilot status.</b> The CXF Registry records proprietary, desk-validated platform units of CarbonXFuture Markets, Inc. These are not registry credits issued by Verra, Gold Standard, ACR or CAR. These Rules describe the current pilot framework and will be versioned; material changes are announced on this page with an effective date and never applied retroactively to retired units.</div>
 
@@ -37,15 +37,22 @@ li{margin-bottom:0.35rem;}
 <p>A batch is issued only when all of the following exist: (a) an approved (KYC-reviewed) member account; (b) a monthly activity report submitted through the member portal; (c) documentary evidence for the reported volumes (weighbridge tickets, manifests, delivery receipts, permits or production logs); and (d) item-by-item validation of that report by the CarbonXFuture desk. Quantity follows the published contract factor applied to the validated volume. Each batch records an internal link to its source report and evidence file.</p>
 
 <h2>3. Statuses and transfers</h2>
-<p>Each batch has exactly one status at any time: <b>issued → listed → transferred → retired</b> (or <b>revoked</b> at any pre-retirement point). Transfers are recorded by the desk upon bilateral settlement between counterparties; the acquirer's identity is recorded privately. A batch cannot be listed or transferred while retired or revoked.</p>
+<p>Each batch has exactly one status at any time: <b>issued → listed → transferred → retired</b>, plus <b>revoked</b> (any status — see Section 5) and <b>split</b> (see Section 6). Transfers are recorded by the desk upon bilateral settlement between counterparties; the acquirer's identity is recorded privately. A batch cannot be listed or transferred while retired, revoked or split.</p>
 
 <h2>4. Retirement</h2>
-<p>Retirement is <b>terminal</b>: a retired batch can never be re-listed, re-transferred or re-issued. On retirement, a numbered public certificate (CXF-YYYY-NNNN) is created showing the beneficiary (or "Confidential" at the beneficiary's request), project label, quantity, vintage and date — verifiable by anyone at <a href="/verify.html">/verify</a>. The registry entry links to its certificate.</p>
+<p>Retirement is <b>operationally terminal</b>: a retired batch can never be re-listed, re-transferred or re-issued. On retirement, a numbered public certificate (CXF-YYYY-NNNN) is created showing the beneficiary (or "Confidential" at the beneficiary's request), project label, quantity, vintage and date — verifiable by anyone at <a href="/verify.html">/verify</a>. The registry entry links to its certificate. Terminality does not shield fraud: a retired batch remains subject to revocation under Section 5 if its underlying evidence is later found materially false.</p>
 
 <h2>5. Revocation</h2>
-<p>The desk revokes a batch if its underlying evidence proves materially wrong, duplicated or fraudulent. Revoked batches remain permanently visible in the registry with a public reason. If a revoked batch was already transferred, the desk notifies the counterparties and works to unwind or replace the position; certificates linked to revoked evidence are marked revoked at <a href="/verify.html">/verify</a>.</p>
+<p>The desk revokes a batch — <b>at any status, including after retirement</b> — if its underlying evidence proves materially wrong, duplicated or fraudulent. Revoked batches remain permanently visible in the registry with a public reason; a previously retired batch carries a note identifying the invalidated certificate, and that certificate is marked revoked at <a href="/verify.html">/verify</a>. If a revoked batch was already transferred, the desk notifies the counterparties and works to unwind or replace the position. Revocation is reserved for materially false, duplicated or fraudulent evidence — clerical mistakes are handled as administrative corrections under Section 7.</p>
 
-<h2>6. Double-counting prevention</h2>
+<h2>6. Splitting and partial retirement</h2>
+<p>A batch may be transferred or retired in part only by <b>splitting</b> it into child batches. Child serials append a letter suffix to the parent serial (e.g. CXF-B-2026-0001-A, -B, -C); the child quantities must always sum exactly to the parent quantity. Children inherit the parent's project label, contract code, vintage and private ownership links, and each child then follows its own lifecycle independently. The parent batch is marked <b>split</b> — a terminal status that carries no quantity in circulation (all circulating quantity lives in the children) — and remains permanently visible with a note naming its children. Combining batches is not permitted; a purchase across several batches is simply recorded per batch.</p>
+
+<h2>7. Administrative corrections</h2>
+<p>Clerical errors — a mistyped label, a wrong vintage string, a corrected project name — are handled as administrative corrections, not revocations. Corrections never silently overwrite the record: the original value, corrected value, reason, timestamp and acting officer are retained in the internal audit history, and material corrections to public fields are noted in the batch's public status note. A quantity error material to the batch's substance is not correctable — it requires revocation and, where justified, re-issuance under a new serial.</p>
+
+<h2>8. Double-counting prevention</h2>
+<p>These controls prevent double-issuance <b>within the CXF system</b>; claims made outside CXF are addressed through member attestation and evidence review, not guaranteed by this registry:</p>
 <ul>
 <li>One validated report can back at most one issued batch quantity; the report-to-batch link is recorded at issuance.</li>
 <li>Serials are unique and terminal statuses are irreversible.</li>
@@ -53,13 +60,19 @@ li{margin-bottom:0.35rem;}
 <li>Every status change is written to an internal audit log (actor, action, timestamp) and included in the desk's periodic backups.</li>
 </ul>
 
-<h2>7. What is public and what is private</h2>
+<h2>9. What is public and what is private</h2>
 <p><b>Public, for every batch:</b> serial, project label, contract code, vintage, quantity, status, status notes (e.g. revocation reason), issuance date and linked certificate serial. <b>Private:</b> the owner's identity, transfer counterparties, prices, source reports and evidence documents. Members may request a generic public project label (e.g. "Florida collector #003"); the desk retains the full identity and discloses it to a bona fide counterparty in diligence under confidentiality.</p>
 
-<h2>8. Complaints and disputes</h2>
+<h2>10. Security, backups and access</h2>
+<p>The registry database runs on managed infrastructure with automated backups; the desk additionally exports full snapshots of all registry and platform data at least weekly and retains them separately. Every status change is written to an append-only internal audit log recording the actor, action and timestamp. Administrative write access is restricted to authorized desk accounts; members and the public cannot modify registry records. Specific security configurations are not published, but the principles above are binding.</p>
+
+<h2>11. Conflicts of interest</h2>
+<p>CarbonXFuture authors the methodology, validates reports, issues units, operates the registry and marketplace, publishes desk marks and resolves complaints. This concentration is disclosed openly. To mitigate it: every issuance, revocation and dispute outcome is documented in the audit log with its reasons; revocations and complaint outcomes affecting public statuses are themselves public; and where the desk has more than one authorized officer, no batch's issuance, revocation or dispute outcome is approved solely by an officer involved in the commercial negotiation of that batch. During any period in which the desk operates with a single officer, all such decisions remain subject to the public complaints process in Section 12 and to the external expert review noted in Section 13.</p>
+
+<h2>12. Complaints and disputes</h2>
 <p>Anyone may challenge a registry entry by writing to <a href="mailto:desk@carbonxfuture.com">desk@carbonxfuture.com</a> with the serial and the grounds. The desk acknowledges within 2 business days, investigates against the evidence file, and responds with a reasoned outcome — correction, revocation or dismissal — normally within 15 business days. Outcomes that change a public status are visible in the registry.</p>
 
-<h2>9. Governance and versioning</h2>
+<h2>13. Governance and versioning</h2>
 <p>These Rules are maintained by CarbonXFuture Markets, Inc. and versioned on this page. The desk applies the Rules; material rule changes take effect only for actions after their effective date. External expert review of the methodology and registry framework is on the roadmap and its status is disclosed on the <a href="/methodology.html">methodology page</a>.</p>
 
 <p style="margin-top:2rem;font-size:12.5px;color:#8A8A82;">© 2026 CarbonXFuture Markets, Inc. · <a href="/registry.html">Registry</a> · <a href="/terms.html">Terms of Use</a> · <a href="/privacy.html">Privacy</a></p>
