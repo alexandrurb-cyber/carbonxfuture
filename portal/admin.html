@@ -199,7 +199,7 @@ async function loadRegistry(){
   const { data, error } = await db.from('registry_units').select('*, members(company)').order('issued_at',{ascending:false}).limit(100);
   if (error) { el.textContent = 'Error: ' + error.message + ' — did you run schema-registry.sql?'; return; }
   if (!data.length) { el.textContent = 'No units issued yet.'; return; }
-  const pill = s => ({issued:'approved', listed:'published', transferred:'won', retired:'validated', revoked:'rejected'}[s] || 'pending');
+  const pill = s => ({issued:'approved', listed:'published', transferred:'won', retired:'validated', revoked:'rejected', split:'pending'}[s] || 'pending');
   el.innerHTML = `<table><tr><th>Serial</th><th>Owner (private)</th><th>Public label</th><th>Code</th><th>Vintage</th><th>tCO₂e</th><th>Status</th><th>Actions</th></tr>` +
     data.map(u => `<tr>
       <td><b>${esc(u.serial)}</b></td><td>${esc(u.members?.company ?? '—')}</td><td>${esc(u.project_label)}</td>
@@ -208,7 +208,8 @@ async function loadRegistry(){
       <td>${u.status === 'issued' ? `<button class="act ok" onclick="setUnitStatus('${u.id}','listed')">Mark listed</button>` : ''}
           ${['issued','listed'].includes(u.status) ? `<button class="act warn" onclick="setUnitStatus('${u.id}','transferred')">Transfer</button>` : ''}
           ${['issued','listed','transferred'].includes(u.status) ? `<button class="act ok" onclick="retireUnits('${u.id}')">Retire</button>` : ''}
-          ${u.status !== 'revoked' && u.status !== 'retired' ? `<button class="act bad" onclick="revokeUnits('${u.id}','${esc(u.serial)}')">Revoke</button>` : ''}</td>
+          ${['issued','listed'].includes(u.status) ? `<button class="act ghost" onclick="splitUnits('${u.id}')">Split</button>` : ''}
+          ${u.status !== 'revoked' && u.status !== 'split' ? `<button class="act bad" onclick="revokeUnits('${u.id}','${esc(u.serial)}')">Revoke</button>` : ''}</td>
     </tr>`).join('') + '</table>';
 }
 async function setUnitStatus(id, status){
@@ -235,11 +236,49 @@ async function retireUnits(id){
   loadRegistry(); loadCertificates();
 }
 async function revokeUnits(id, serial){
-  const reason = prompt('PUBLIC revocation reason for ' + serial + ' (shown on /registry.html):', '');
-  if (reason === null) return;
-  const { error } = await db.from('registry_units').update({ status: 'revoked', status_note: reason.trim() }).eq('id', id);
+  const { data: u } = await db.from('registry_units').select('*').eq('id', id).maybeSingle();
+  if (!u) return;
+  const wasRetired = u.status === 'retired';
+  const reason = prompt('PUBLIC revocation reason for ' + serial + ' (shown on /registry.html):' + (wasRetired ? '\n\nThis batch is RETIRED — revoking will also mark certificate ' + u.certificate_serial + ' as revoked at /verify.' : ''), '');
+  if (reason === null || !reason.trim()) return alert('A public reason is required — Registry Rules §5.');
+  const note = (wasRetired ? 'Previously retired — certificate ' + u.certificate_serial + ' invalidated. ' : '') + reason.trim();
+  const { error } = await db.from('registry_units').update({ status: 'revoked', status_note: note }).eq('id', id);
   if (error) return alert('Error: ' + error.message);
-  audit('units_revoked', serial + (reason ? ' · ' + reason : '')); loadRegistry();
+  if (wasRetired && u.certificate_serial) {
+    const { error: ce } = await db.from('certificates').update({ status: 'revoked' }).eq('serial', u.certificate_serial);
+    if (ce) alert('Batch revoked, but certificate update failed: ' + ce.message + ' — revoke certificate ' + u.certificate_serial + ' manually.');
+  }
+  audit('units_revoked', serial + ' · ' + note); loadRegistry(); if (wasRetired) loadCertificates();
+}
+async function splitUnits(id){
+  const { data: u } = await db.from('registry_units').select('*').eq('id', id).maybeSingle();
+  if (!u) return;
+  if (u.serial.split('-').length > 4) return alert('Child batches cannot be split again in this pilot — retire or transfer them whole.');
+  const input = prompt('Split ' + u.serial + ' (' + Number(u.quantity_tco2e).toLocaleString() + ' tCO₂e).\nEnter child quantities separated by commas — they must sum exactly to the parent (e.g. "2500, 3000, 4500"):', '');
+  if (input === null) return;
+  const parts = input.split(',').map(s => parseFloat(s.trim())).filter(n => !isNaN(n));
+  if (parts.length < 2) return alert('Enter at least two quantities.');
+  if (parts.some(n => n <= 0)) return alert('All quantities must be positive.');
+  const sum = parts.reduce((a,b) => a + b, 0);
+  if (Math.abs(sum - Number(u.quantity_tco2e)) > 0.001) return alert('Quantities sum to ' + sum.toLocaleString() + ' — they must equal the parent quantity of ' + Number(u.quantity_tco2e).toLocaleString() + '.');
+  const letters = 'ABCDEFGHIJ';
+  const children = parts.map((q, i) => ({
+    serial: u.serial + '-' + letters[i], member_id: u.member_id, project_label: u.project_label,
+    contract_code: u.contract_code, vintage: u.vintage, quantity_tco2e: q, report_id: u.report_id,
+    status: 'issued', status_note: 'Child of ' + u.serial
+  }));
+  const names = children.map(c => c.serial.slice(-1) + ' = ' + c.quantity_tco2e.toLocaleString()).join(', ');
+  if (!confirm('Split ' + u.serial + ' into ' + children.length + ' child batches (' + names + ' tCO₂e)?\n\nThe parent becomes status "split" (public); children appear as newly issued batches.')) return;
+  let { error } = await db.from('registry_units').insert(children);
+  if (error && /load failed|failed to fetch|network/i.test(error.message)) {
+    await new Promise(r => setTimeout(r, 1200));
+    ({ error } = await db.from('registry_units').insert(children));
+  }
+  if (error) return alert('Error inserting children: ' + error.message);
+  ({ error } = await db.from('registry_units').update({ status: 'split', status_note: 'Split into ' + children.map(c => c.serial).join(', ') }).eq('id', id));
+  if (error) return alert('Children created, but parent update failed: ' + error.message);
+  audit('units_split', u.serial + ' → ' + children.map(c => c.serial).join(', '));
+  loadRegistry();
 }
 
 /* ---------- Feedstock (waste-oil listings) ---------- */
