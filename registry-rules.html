@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Registry Rules | CarbonXFuture</title>
+<meta name="description" content="The CXF Registry Rules: how serialized units are issued, transferred, retired and revoked — including double-counting prevention, data visibility and the complaints process."/>
+<link rel="canonical" href="https://www.carbonxfuture.com/registry-rules.html"/>
+<link rel="icon" href="/favicon.ico" sizes="48x48"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Inter',sans-serif;color:#1E1E1A;font-size:15px;line-height:1.75;background:#fff;}
+.wrap{max-width:760px;margin:0 auto;padding:4rem 1.5rem 5rem;}
+a{color:#1A4A2E;}
+h1{font-size:1.8rem;font-weight:600;margin-bottom:0.5rem;}
+h2{font-size:1.1rem;font-weight:600;margin:2rem 0 0.5rem;}
+.date{color:#8A8A82;font-size:13px;margin-bottom:2rem;}
+.back{display:inline-block;margin-bottom:2rem;font-size:13px;text-decoration:none;color:#2D6B45;}
+.notice{background:#FDF3E3;border-left:3px solid #B8740A;padding:1rem 1.25rem;border-radius:8px;font-size:13px;margin:1.5rem 0;color:#4A4A45;}
+ul{margin:0.5rem 0 0.5rem 1.4rem;}
+li{margin-bottom:0.35rem;}
+</style>
+</head>
+<body>
+<div class="wrap">
+<a class="back" href="/registry.html">&larr; Back to the CXF Registry</a>
+<h1>CXF Registry Rules</h1>
+<p class="date">Version 1.0 (pilot) · Effective July 28, 2026 · CarbonXFuture Markets, Inc., Fort Lauderdale, Florida, USA</p>
+
+<div class="notice"><b>Pilot status.</b> The CXF Registry records proprietary, desk-validated platform units of CarbonXFuture Markets, Inc. These are not registry credits issued by Verra, Gold Standard, ACR or CAR. These Rules describe the current pilot framework and will be versioned; material changes are announced on this page with an effective date and never applied retroactively to retired units.</div>
+
+<h2>1. Units and serials</h2>
+<p>A CXF unit represents 1 tCO₂e of desk-validated avoided emissions under the published <a href="/methodology.html">CXF Methodology</a>, quantified per the applicable <a href="/contracts.html">contract specification</a> (CXF-CO, CXF-RR or CXF-FC). Units are issued in batches, each with a unique serial in the form <b>CXF-B-YYYY-NNNN</b>. Serials are never reused, renumbered or deleted — including after revocation.</p>
+
+<h2>2. Issuance</h2>
+<p>A batch is issued only when all of the following exist: (a) an approved (KYC-reviewed) member account; (b) a monthly activity report submitted through the member portal; (c) documentary evidence for the reported volumes (weighbridge tickets, manifests, delivery receipts, permits or production logs); and (d) item-by-item validation of that report by the CarbonXFuture desk. Quantity follows the published contract factor applied to the validated volume. Each batch records an internal link to its source report and evidence file.</p>
+
+<h2>3. Statuses and transfers</h2>
+<p>Each batch has exactly one status at any time: <b>issued → listed → transferred → retired</b> (or <b>revoked</b> at any pre-retirement point). Transfers are recorded by the desk upon bilateral settlement between counterparties; the acquirer's identity is recorded privately. A batch cannot be listed or transferred while retired or revoked.</p>
+
+<h2>4. Retirement</h2>
+<p>Retirement is <b>terminal</b>: a retired batch can never be re-listed, re-transferred or re-issued. On retirement, a numbered public certificate (CXF-YYYY-NNNN) is created showing the beneficiary (or "Confidential" at the beneficiary's request), project label, quantity, vintage and date — verifiable by anyone at <a href="/verify.html">/verify</a>. The registry entry links to its certificate.</p>
+
+<h2>5. Revocation</h2>
+<p>The desk revokes a batch if its underlying evidence proves materially wrong, duplicated or fraudulent. Revoked batches remain permanently visible in the registry with a public reason. If a revoked batch was already transferred, the desk notifies the counterparties and works to unwind or replace the position; certificates linked to revoked evidence are marked revoked at <a href="/verify.html">/verify</a>.</p>
+
+<h2>6. Double-counting prevention</h2>
+<ul>
+<li>One validated report can back at most one issued batch quantity; the report-to-batch link is recorded at issuance.</li>
+<li>Serials are unique and terminal statuses are irreversible.</li>
+<li>Members attest at reporting that the same volumes have not been claimed under any other carbon program; evidence documents identify the physical volumes by date and facility.</li>
+<li>Every status change is written to an internal audit log (actor, action, timestamp) and included in the desk's periodic backups.</li>
+</ul>
+
+<h2>7. What is public and what is private</h2>
+<p><b>Public, for every batch:</b> serial, project label, contract code, vintage, quantity, status, status notes (e.g. revocation reason), issuance date and linked certificate serial. <b>Private:</b> the owner's identity, transfer counterparties, prices, source reports and evidence documents. Members may request a generic public project label (e.g. "Florida collector #003"); the desk retains the full identity and discloses it to a bona fide counterparty in diligence under confidentiality.</p>
+
+<h2>8. Complaints and disputes</h2>
+<p>Anyone may challenge a registry entry by writing to <a href="mailto:desk@carbonxfuture.com">desk@carbonxfuture.com</a> with the serial and the grounds. The desk acknowledges within 2 business days, investigates against the evidence file, and responds with a reasoned outcome — correction, revocation or dismissal — normally within 15 business days. Outcomes that change a public status are visible in the registry.</p>
+
+<h2>9. Governance and versioning</h2>
+<p>These Rules are maintained by CarbonXFuture Markets, Inc. and versioned on this page. The desk applies the Rules; material rule changes take effect only for actions after their effective date. External expert review of the methodology and registry framework is on the roadmap and its status is disclosed on the <a href="/methodology.html">methodology page</a>.</p>
+
+<p style="margin-top:2rem;font-size:12.5px;color:#8A8A82;">© 2026 CarbonXFuture Markets, Inc. · <a href="/registry.html">Registry</a> · <a href="/terms.html">Terms of Use</a> · <a href="/privacy.html">Privacy</a></p>
+</div>
+</body>
+</html>

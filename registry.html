@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CXF Registry | CarbonXFuture</title>
+<meta name="description" content="The public CXF Registry: every serialized unit batch with its status — issued, listed, transferred, retired or revoked. Live double-counting check, no account required."/>
+<link rel="canonical" href="https://www.carbonxfuture.com/registry.html"/>
+<link rel="icon" href="/favicon.ico" sizes="48x48"/>
+<link rel="apple-touch-icon" href="/apple-touch-icon.png"/>
+<meta property="og:title" content="CXF Registry — CarbonXFuture"/>
+<meta property="og:description" content="Public status of every serialized CXF unit batch — verifiable by anyone."/>
+<meta property="og:image" content="https://www.carbonxfuture.com/og-banner.png"/>
+<link rel="preconnect" href="https://zohskwbavtzvecqziklq.supabase.co"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--forest:#1A4A2E;--forest-light:#2D6B45;--forest-pale:#EAF2EC;--slate-50:#F5F5F3;--slate-100:#E8E8E4;--slate-200:#C8C8C2;--slate-400:#8A8A82;--slate-600:#4A4A45;--slate-800:#1E1E1A;--gold:#B8740A;--gold-pale:#FDF3E3;}
+body{font-family:'Inter',sans-serif;color:var(--slate-800);font-size:15px;line-height:1.65;background:#fff;}
+.topbar{background:var(--forest);padding:14px 1.5rem;}
+.topbar a{color:#fff;text-decoration:none;font-size:13px;font-weight:500;}
+.wrap{max-width:1050px;margin:0 auto;padding:3.5rem 1.5rem 5rem;}
+.eyebrow{font-size:11px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--forest-light);margin-bottom:0.75rem;}
+h1{font-family:'Playfair Display',serif;font-size:clamp(1.8rem,4vw,2.6rem);font-weight:400;line-height:1.15;margin-bottom:0.75rem;}
+.sub{max-width:680px;color:var(--slate-600);margin-bottom:2rem;}
+.statbar{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:2rem;}
+.stat{border:0.5px solid var(--slate-100);border-radius:12px;padding:0.9rem 1.1rem;background:var(--slate-50);}
+.stat .v{font-size:1.4rem;font-weight:600;color:var(--forest);}
+.stat .k{font-size:10.5px;text-transform:uppercase;letter-spacing:0.5px;color:var(--slate-400);}
+.controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1rem;align-items:center;}
+input,select{border:0.5px solid var(--slate-200);border-radius:8px;padding:9px 13px;font-size:13.5px;font-family:'Inter',sans-serif;outline:none;}
+input{flex:1;min-width:220px;}
+input:focus{border-color:var(--forest-light);}
+.table-wrap{overflow-x:auto;border:0.5px solid var(--slate-100);border-radius:12px;}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:820px;}
+th{text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:0.6px;color:var(--slate-400);font-weight:600;padding:11px 13px;border-bottom:1px solid var(--slate-100);background:var(--slate-50);white-space:nowrap;}
+td{padding:10px 13px;border-bottom:0.5px solid var(--slate-100);white-space:nowrap;}
+tr:last-child td{border-bottom:none;}
+.pill{font-size:10.5px;font-weight:600;padding:3px 10px;border-radius:100px;text-transform:uppercase;}
+.pill.issued{background:var(--forest-pale);color:var(--forest);}
+.pill.listed{background:#E8EEF5;color:#1A3A5C;}
+.pill.transferred{background:var(--gold-pale);color:var(--gold);}
+.pill.retired{background:var(--forest);color:#fff;}
+.pill.revoked{background:#FBEAEA;color:#A33;}
+.muted{color:var(--slate-400);font-size:12px;}
+.empty{display:none;text-align:center;padding:3rem;color:var(--slate-400);}
+.note{margin-top:2rem;font-size:12px;color:var(--slate-400);max-width:840px;line-height:1.7;}
+.foot{margin-top:3.5rem;padding-top:1.5rem;border-top:0.5px solid var(--slate-100);font-size:12.5px;color:var(--slate-400);}
+.foot a{color:var(--forest-light);}
+a{color:var(--forest-light);}
+</style>
+</head>
+<body>
+<div class="topbar"><a href="/">&larr; CarbonXFuture</a></div>
+<div class="wrap">
+
+<div class="eyebrow">CXF Registry</div>
+<h1>Public unit registry</h1>
+<p class="sub">Every serialized CXF unit batch, with its live status. This is the platform's double-counting guarantee: a batch has exactly one status, retirement is terminal, and anyone — including your auditor — can check it here without an account. Ownership and commercial terms are private by design; see the <a href="/registry-rules.html">Registry Rules</a>.</p>
+
+<div class="statbar" id="statbar"></div>
+
+<div class="controls">
+  <input id="q" placeholder="Search serial, project label or vintage…" oninput="render()"/>
+  <select id="statusFilter" onchange="render()">
+    <option value="all">All statuses</option>
+    <option value="issued">Issued</option>
+    <option value="listed">Listed</option>
+    <option value="transferred">Transferred</option>
+    <option value="retired">Retired</option>
+    <option value="revoked">Revoked</option>
+  </select>
+</div>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>Serial</th><th>Project</th><th>Contract</th><th>Vintage</th><th>Quantity (tCO₂e)</th><th>Status</th><th>Issued</th><th>Certificate</th></tr></thead>
+<tbody id="tbody"></tbody>
+</table>
+<div class="empty" id="empty">No batches match this filter.</div>
+</div>
+
+<p class="note"><b>About this registry.</b> CXF units are proprietary, desk-validated platform instruments of CarbonXFuture Markets, Inc. — they are not registry credits issued by Verra, Gold Standard, ACR or CAR. Batches are issued only from desk-validated activity reports with documentary evidence; serials are unique and never reused; retirement links to a numbered public certificate verifiable at <a href="/verify.html">/verify</a>; revocations remain visible with a public reason. Some project labels are generic at the member's request — the underlying operator identity and evidence are held privately by the desk and available to counterparties in diligence. Issuance, transfer, retirement and revocation are governed by the <a href="/registry-rules.html">CXF Registry Rules</a>.</p>
+
+<div class="foot">© 2026 CarbonXFuture Markets, Inc. · <a href="/">Home</a> · <a href="/registry-rules.html">Registry Rules</a> · <a href="/verify.html">Verify a certificate</a> · <a href="/contracts.html">Contract specifications</a> · <a href="/methodology.html">Methodology</a></div>
+</div>
+
+<script>
+const SB = 'https://zohskwbavtzvecqziklq.supabase.co';
+const KEY = 'sb_publishable_K-4sl6hEk75fByleZEZcfA_f_Zha9aI';
+const esc = s => String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+let UNITS = [];
+
+async function load(){
+  try {
+    const r = await fetch(SB + '/rest/v1/registry_public?select=*&order=issued_at.desc', { headers: { apikey: KEY } });
+    UNITS = r.ok ? await r.json() : [];
+  } catch(e) { UNITS = []; }
+  const sum = st => UNITS.filter(u => st.includes(u.status)).reduce((s,u) => s + Number(u.quantity_tco2e), 0);
+  const stat = (k,v) => `<div class="stat"><div class="v">${v}</div><div class="k">${k}</div></div>`;
+  document.getElementById('statbar').innerHTML =
+    stat('Batches', UNITS.length.toLocaleString()) +
+    stat('Units issued (tCO₂e)', sum(['issued','listed','transferred','retired']).toLocaleString('en-US',{maximumFractionDigits:0})) +
+    stat('Active (tCO₂e)', sum(['issued','listed','transferred']).toLocaleString('en-US',{maximumFractionDigits:0})) +
+    stat('Retired (tCO₂e)', sum(['retired']).toLocaleString('en-US',{maximumFractionDigits:0})) +
+    stat('Revoked (tCO₂e)', sum(['revoked']).toLocaleString('en-US',{maximumFractionDigits:0}));
+  render();
+}
+
+function render(){
+  const q = document.getElementById('q').value.trim().toLowerCase();
+  const st = document.getElementById('statusFilter').value;
+  const rows = UNITS.filter(u =>
+    (st === 'all' || u.status === st) &&
+    (!q || (u.serial + ' ' + u.project_label + ' ' + u.vintage).toLowerCase().includes(q)));
+  document.getElementById('tbody').innerHTML = rows.map(u => `
+    <tr>
+      <td><b>${esc(u.serial)}</b></td>
+      <td>${esc(u.project_label)}${u.status_note ? '<div class="muted">' + esc(u.status_note) + '</div>' : ''}</td>
+      <td>${esc(u.contract_code)}</td>
+      <td>${esc(u.vintage || '—')}</td>
+      <td>${Number(u.quantity_tco2e).toLocaleString()}</td>
+      <td><span class="pill ${esc(u.status)}">${esc(u.status)}</span></td>
+      <td class="muted">${String(u.issued_at).slice(0,10)}</td>
+      <td>${u.certificate_serial ? '<a href="/certificate.html?serial=' + encodeURIComponent(u.certificate_serial) + '">' + esc(u.certificate_serial) + '</a>' : '—'}</td>
+    </tr>`).join('');
+  document.getElementById('empty').style.display = rows.length ? 'none' : 'block';
+}
+load();
+</script>
+</body>
+</html>
