@@ -59,6 +59,7 @@ h2.sec{font-size:1.1rem;font-weight:600;margin:2.5rem 0 0.75rem;}
 <h1>Simple pricing. No transaction commissions.</h1>
 <p class="sub">One monthly subscription covers everything: the feedstock market, the carbon credit program and the desk. We never take a cut of your physical transactions — what you negotiate is yours.</p>
 <div class="trial-banner">🎁 First 3 months free · card on file · cancel anytime before the first charge</div>
+<div id="foundingBanner" style="display:none;max-width:620px;margin:-1.5rem auto 2.5rem;text-align:center;font-size:13px;color:var(--gold);font-weight:600;"></div>
 
 <div class="plans">
   <div class="plan">
@@ -129,6 +130,25 @@ for (const [plan, id] of [['collector','ctaCollector'], ['processor','ctaProcess
   if (SUBSCRIBE_LINKS[plan]) { a.href = SUBSCRIBE_LINKS[plan]; }
   else { a.classList.add('soon'); a.textContent = 'Opening soon — email desk@carbonxfuture.com'; }
 }
+
+// Founding members: the first 25 approved members keep launch terms permanently.
+// The count is the REAL number of approved members (public aggregate).
+(async function(){
+  try {
+    const r = await fetch('https://zohskwbavtzvecqziklq.supabase.co/rest/v1/rpc/public_stats', {
+      method: 'POST',
+      headers: { apikey: 'sb_publishable_K-4sl6hEk75fByleZEZcfA_f_Zha9aI', 'Content-Type': 'application/json' },
+      body: '{}'
+    });
+    if (!r.ok) return;
+    const s = await r.json();
+    const taken = Number(s.approved_members || 0);
+    if (taken >= 25) return; // founding window closed — banner disappears by itself
+    const el = document.getElementById('foundingBanner');
+    el.textContent = '⭐ Founding window: ' + taken + ' of the first 25 member places claimed — founding members keep launch terms permanently.';
+    el.style.display = 'block';
+  } catch(e) {}
+})();
 </script>
 </body>
 </html>
