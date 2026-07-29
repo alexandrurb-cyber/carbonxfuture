@@ -1,30 +1,30 @@
 {
-  "lastUpdated": "2026-07-07",
+  "lastUpdated": "2026-07-29",
   "source": "CarbonXFuture trading desk",
   "prices": {
-    "cxf-usgulf": 21.5,
+    "cxf-usgulf": 21.7,
     "verra-redd": 18.4,
     "gold-solar": 22.1,
     "acr-car": 15.2,
     "verra-blue": 31.5,
     "gold-cookstoves": 16.8,
-    "cxf-rerefining": 19.8,
+    "cxf-rerefining": 19.9,
     "planvivo-agro": 24.0
   },
   "benchmarks": {
     "eua": {
       "label": "EUA — EU ETS (Dec-26)",
-      "value": 80.5,
+      "value": 81.0,
       "unit": "EUR/t",
-      "asof": "2026-07-15",
+      "asof": "2026-07-20",
       "source": "Public market reporting (EEX/ICE levels as reported)"
     },
     "accu": {
       "label": "ACCU — Australia",
       "value": 26.4,
       "unit": "USD/t",
-      "asof": "2026-07-07",
-      "source": "Carbon Pulse AU market coverage (A$38)"
+      "asof": "2026-07-17",
+      "source": "Public AU market coverage (A$38 spot × ~0.695 AUD/USD)"
     }
   }
 }
