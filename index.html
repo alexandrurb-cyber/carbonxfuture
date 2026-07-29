@@ -1026,7 +1026,7 @@ nav.menu-open .nav-signin{border-color:rgba(255,255,255,0.3);text-align:center;m
       </div>
       <a href="#kyc" class="btn-secondary" style="font-size:13px;">Request full access <i class="ti ti-arrow-right" aria-hidden="true"></i></a>
     </div>
-    <p style="max-width:640px;color:var(--slate-600);font-size:15px;margin-bottom:2rem;">Waste engine oil, VGO, base oil and diesel blend components from KYC'd originators — with lab reports and port logistics handled by the CarbonXFuture desk.</p>
+    <p style="max-width:640px;color:var(--slate-600);font-size:15px;margin-bottom:2rem;">The physical side of the platform: KYC'd members list waste engine oil, base oil and related cargoes through the CXF Feedstock Market. Every listing is desk-reviewed before publication; buyers respond through the RFQ desk.</p>
     <div class="table-wrap">
       <table class="listings-table" id="oilTable">
         <thead>
@@ -1041,46 +1041,17 @@ nav.menu-open .nav-signin{border-color:rgba(255,255,255,0.3);text-align:center;m
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td><div class="td-project"><span class="project-dot cxf"></span><div><div class="td-name">Base Oil Group I</div></div></div></td>
-            <td class="td-muted">Houston, USA</td><td class="td-price">220,000 gal</td>
-            <td class="td-muted">300</td><td class="td-muted">0.08%</td><td class="td-price">$3.10</td>
-            <td class="td-action"><button onclick="quoteRequest(this)">Request details</button></td>
-          </tr>
-          <tr>
-            <td><div class="td-project"><span class="project-dot cxf"></span><div><div class="td-name">Waste Engine Oil</div></div></div></td>
-            <td class="td-muted">Singapore</td><td class="td-price">290,000 gal</td>
-            <td class="td-muted">4,100</td><td class="td-muted">2.5%</td><td class="td-price">$1.65</td>
-            <td class="td-action"><button onclick="quoteRequest(this)">Request details</button></td>
-          </tr>
-          <tr>
-            <td><div class="td-project"><span class="project-dot cxf"></span><div><div class="td-name">Diesel Blend Components</div></div></div></td>
-            <td class="td-muted">Florida, USA</td><td class="td-price">410,000 gal</td>
-            <td class="td-muted">1,200</td><td class="td-muted">0.3%</td><td class="td-price">$1.85</td>
-            <td class="td-action"><button onclick="quoteRequest(this)">Request details</button></td>
-          </tr>
-          <tr>
-            <td><div class="td-project"><span class="project-dot cxf"></span><div><div class="td-name">Base Oil Group II</div></div></div></td>
-            <td class="td-muted">Rotterdam, Netherlands</td><td class="td-price">320,000 gal</td>
-            <td class="td-muted">50</td><td class="td-muted">0.05%</td><td class="td-price">$3.40</td>
-            <td class="td-action"><button onclick="quoteRequest(this)">Request details</button></td>
-          </tr>
-          <tr>
-            <td><div class="td-project"><span class="project-dot cxf"></span><div><div class="td-name">VGO</div></div></div></td>
-            <td class="td-muted">Louisiana, USA</td><td class="td-price">500,000 gal</td>
-            <td class="td-muted">8,500</td><td class="td-muted">0.4%</td><td class="td-price">$2.10</td>
-            <td class="td-action"><button onclick="quoteRequest(this)">Request details</button></td>
-          </tr>
-          <tr>
-            <td><div class="td-project"><span class="project-dot cxf"></span><div><div class="td-name">Used Oil</div></div></div></td>
-            <td class="td-muted">California, USA</td><td class="td-price">180,000 gal</td>
-            <td class="td-muted">3,800</td><td class="td-muted">2.8%</td><td class="td-price">$1.55</td>
-            <td class="td-action"><button onclick="quoteRequest(this)">Request details</button></td>
+          <tr class="oil-empty">
+            <td colspan="7" style="text-align:center;padding:2.5rem 1rem;color:var(--slate-400);font-size:14px;">
+              No live cargoes listed yet — the Feedstock Market is open.<br/>
+              <span style="font-size:13px;">Collectors and processors list waste oil and base oil through the member portal; every listing is desk-reviewed before it appears here.</span><br/>
+              <a href="/pricing.html" style="display:inline-block;margin-top:0.9rem;color:var(--forest-light);font-weight:600;font-size:13.5px;">Be the first to list — join the Feedstock Market →</a>
+            </td>
           </tr>
         </tbody>
       </table>
     </div>
-    <p class="oildesk-note">Indicative sample listings — live availability, lab reports and logistics via the desk after KYC.</p>
+    <p class="oildesk-note">Only desk-reviewed member listings are shown — no sample or illustrative rows. Physical price context (WTI, diesel) is published daily on the <a href="/prices.html" style="color:var(--forest-light);">CXF Price Index</a>.</p>
   </div>
 </section>
 
@@ -2023,6 +1994,7 @@ renderBlog('all');
         const oils = await or_.json();
         const tbo = document.querySelector('#oilTable tbody');
         if (tbo && Array.isArray(oils) && oils.length) {
+          const ph = tbo.querySelector('.oil-empty'); if (ph) ph.remove();
           tbo.insertAdjacentHTML('afterbegin', oils.map(o => `
         <tr data-oil="1">
           <td><div class="td-project"><span class="project-dot cxf"></span><div><div class="td-name">${esc(o.oil_type)} — ${esc(o.company)}</div><div class="td-sub">Member listing · Desk-reviewed${o.availability === 'Monthly recurring' ? ' · monthly recurring' : ''}</div></div></div></td>
@@ -2111,9 +2083,11 @@ function buildAgentSystem() {
       live += '\nCarbon listings: ' + window.CXF_LISTINGS.carbon.map(l =>
         l.name + ' (' + l.badge + ', vintage ' + l.vintage + ', ' + l.volume + ' tCO2e @ $' + Number(l.price).toFixed(2) + ')').join('; ') + '.';
     }
-    if (Array.isArray(window.CXF_LISTINGS.oil)) {
+    if (Array.isArray(window.CXF_LISTINGS.oil) && window.CXF_LISTINGS.oil.length) {
       live += '\nOil desk cargoes: ' + window.CXF_LISTINGS.oil.map(l =>
         l.name + ' — ' + l.location + ', ' + l.qty + ' @ ' + l.price + '/gal').join('; ') + '.';
+    } else {
+      live += '\nOil desk: no live cargoes listed at the moment — members list physical waste oil through the Feedstock Market (member portal), desk-reviewed before publication.';
     }
   }
   return AGENT_SYSTEM + live;

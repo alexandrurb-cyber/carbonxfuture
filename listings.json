@@ -9,12 +9,5 @@
     { "reg": "car",   "badge": "CAR",           "name": "Landfill Methane Capture",       "sub": "Pennsylvania, USA · Waste management",        "type": "Methane avoidance", "vintage": "2024", "volume": "90,000",  "price": 9.50 },
     { "reg": "verra", "badge": "Verra VCS",     "name": "Rimba Raya Biodiversity Reserve","sub": "Indonesia · REDD+ / peatland",                "type": "REDD+",             "vintage": "2023", "volume": "12,000",  "price": 16.75 }
   ],
-  "oil": [
-    { "name": "Base Oil Group I",        "location": "Houston, USA",           "qty": "220,000 gal", "sulfur": "300",   "h2o": "0.08%", "price": "$3.10" },
-    { "name": "Waste Engine Oil",        "location": "Singapore",              "qty": "290,000 gal", "sulfur": "4,100", "h2o": "2.5%",  "price": "$1.65" },
-    { "name": "Diesel Blend Components", "location": "Florida, USA",           "qty": "410,000 gal", "sulfur": "1,200", "h2o": "0.3%",  "price": "$1.85" },
-    { "name": "Base Oil Group II",       "location": "Rotterdam, Netherlands", "qty": "320,000 gal", "sulfur": "50",    "h2o": "0.05%", "price": "$3.40" },
-    { "name": "VGO",                     "location": "Louisiana, USA",         "qty": "500,000 gal", "sulfur": "8,500", "h2o": "0.4%",  "price": "$2.10" },
-    { "name": "Used Oil",                "location": "California, USA",        "qty": "180,000 gal", "sulfur": "3,800", "h2o": "2.8%",  "price": "$1.55" }
-  ]
+  "oil": []
 }
