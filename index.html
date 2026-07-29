@@ -447,9 +447,9 @@ footer{background:var(--slate-900);padding:3.5rem 2rem 2rem;}
 @media(max-width:600px){.prices-grid{grid-template-columns:1fr;}.agent-panel{width:calc(100vw - 2rem);right:1rem;}.agent-fab{bottom:1.5rem;right:1rem;}}
 
 /* NAV SIGN IN */
-.nav-signin{border:1px solid rgba(255,255,255,0.35);border-radius:8px;padding:6px 16px !important;margin-left:6px;font-weight:500;}
-nav.scrolled .nav-signin{border-color:var(--slate-200);}
-nav.menu-open .nav-signin{border-color:rgba(255,255,255,0.3);text-align:center;margin-top:6px;}
+.nav-signin{opacity:0.82;margin-left:6px;font-weight:400;}
+.nav-signin:hover{opacity:1;text-decoration:underline;text-underline-offset:4px;}
+nav.menu-open .nav-signin{text-align:center;margin-top:6px;}
 
 /* NEWSLETTER */
 .newsletter{background:var(--forest-pale);border-top:0.5px solid var(--forest-mid);}
@@ -517,7 +517,7 @@ nav.menu-open .nav-signin{border-color:rgba(255,255,255,0.3);text-align:center;m
       <a href="#calculators">Calculators</a>
       <a href="#donate">Volunteers</a>
       <a href="#about">About</a>
-      <a href="/portal/" class="nav-signin">Sign in</a>
+      <a href="/portal/" class="nav-signin">Member login</a>
       <a href="#kyc" class="nav-cta">Apply for Access</a>
     </div>
     <button class="nav-mobile-toggle" aria-label="Menu"><i class="ti ti-menu-2"></i></button>
