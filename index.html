@@ -1837,6 +1837,15 @@ const tagColors = {
   'Physical markets':{ bg: '#F3EEF8', color: 'var(--purple)' },
 };
 
+/* Editorial line-art banners per category — replaces emoji icons */
+const ART_ICONS = {
+  'Market reports': `<svg width="72" height="72" viewBox="0 0 72 72" fill="none" stroke="rgba(255,255,255,0.92)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 54 L26 38 L38 46 L60 20"/><path d="M52 20 L60 20 L60 28"/><line x1="12" y1="60" x2="60" y2="60" opacity="0.45"/><circle cx="26" cy="38" r="2.2"/><circle cx="38" cy="46" r="2.2"/></svg>`,
+  'CXF Methodology': `<svg width="72" height="72" viewBox="0 0 72 72" fill="none" stroke="rgba(255,255,255,0.92)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M36 10 L57 22 L57 48 L36 60 L15 48 L15 22 Z"/><path d="M36 24 C30 30 28 36 31 41 C34 46 41 46 44 41 C47 36 43 29 36 24 Z" opacity="0.85"/></svg>`,
+  'Regulation': `<svg width="72" height="72" viewBox="0 0 72 72" fill="none" stroke="rgba(255,255,255,0.92)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12 H46 L54 20 V60 H20 Z"/><path d="M46 12 V20 H54"/><line x1="27" y1="30" x2="47" y2="30" opacity="0.7"/><line x1="27" y1="38" x2="47" y2="38" opacity="0.7"/><line x1="27" y1="46" x2="39" y2="46" opacity="0.7"/><circle cx="46" cy="50" r="5" opacity="0.85"/></svg>`,
+  'Physical markets': `<svg width="72" height="72" viewBox="0 0 72 72" fill="none" stroke="rgba(255,255,255,0.92)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M36 12 C28 24 22 32 22 41 C22 50 28 56 36 56 C44 56 50 50 50 41 C50 32 44 24 36 12 Z"/><path d="M30 42 C30 47 33 50 37 50" opacity="0.7"/></svg>`
+};
+const artFor = a => ART_ICONS[a.tag] || ART_ICONS['CXF Methodology'];
+
 function renderBlog(filter) {
   const grid = document.getElementById('blogGrid');
   const empty = document.getElementById('blogEmpty');
@@ -1852,7 +1861,7 @@ function renderBlog(filter) {
   grid.innerHTML = filtered.map((a, i) => `
     <div class="blog-card" onclick="openArticle(${ARTICLES.indexOf(a)})" style="cursor:pointer;">
       <div class="blog-img" style="background:${a.bannerBg};">
-        <span style="font-size:44px;">${a.icon}</span>
+        ${artFor(a)}
       </div>
       <div class="blog-body">
         <div class="blog-tag" style="color:${tc[a.tag]?.color||'var(--forest-light)'};">${a.tag}</div>
@@ -1877,7 +1886,7 @@ function openArticle(index) {
   const a = ARTICLES[index];
   const tc = tagColors;
   document.getElementById('modalBanner').style.background = a.bannerBg;
-  document.getElementById('modalBanner').innerHTML = `<span style="font-size:60px;">${a.icon}</span>`;
+  document.getElementById('modalBanner').innerHTML = artFor(a).replace('width="72" height="72"', 'width="92" height="92"');
   document.getElementById('modalTag').textContent = a.tag;
   document.getElementById('modalTag').style.color = tc[a.tag]?.color || 'var(--forest-light)';
   document.getElementById('modalDate').textContent = a.date;
