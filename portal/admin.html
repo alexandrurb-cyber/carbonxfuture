@@ -98,9 +98,10 @@ async function notifyMember(type, to, data) {
       <p class="muted" style="margin-bottom:0.75rem;">Everything currently visible in the public marketplace, from all three sources.</p>
       <div id="listings" class="muted">Loading…</div></div>
     <div class="card" id="c-registry"><h2>CXF Registry — serialized units</h2>
-      <p class="muted" style="margin-bottom:0.75rem;">Issue serialized unit batches from validated activity. Serial, project label, vintage, quantity and status are <b>public</b> on /registry.html — owner and evidence stay private. Use a generic project label if the member wants confidentiality.</p>
+      <p class="muted" style="margin-bottom:0.75rem;">Issue serialized unit batches — <b>only from a validated report</b> (Registry Rules §2). One report backs at most one batch. Serial, project label, vintage, quantity and status are <b>public</b> on /registry.html — owner and evidence stay private. Use a generic project label if the member wants confidentiality.</p>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px;">
-        <select id="ruMember" style="padding:8px;border:0.5px solid var(--slate-200);border-radius:7px;font-family:'Inter',sans-serif;font-size:12.5px;"><option value="">— owner (member) —</option></select>
+        <select id="ruMember" onchange="loadIssuableReports()" style="padding:8px;border:0.5px solid var(--slate-200);border-radius:7px;font-family:'Inter',sans-serif;font-size:12.5px;"><option value="">— owner (member) —</option></select>
+        <select id="ruReport" onchange="prefillFromReport()" style="padding:8px;border:0.5px solid var(--slate-200);border-radius:7px;font-family:'Inter',sans-serif;font-size:12.5px;"><option value="">— validated report (required) —</option></select>
         <input id="ruLabel" placeholder="Public project label (e.g. Florida collector #003)" style="padding:8px;border:0.5px solid var(--slate-200);border-radius:7px;font-family:'Inter',sans-serif;font-size:12.5px;"/>
         <select id="ruCode" style="padding:8px;border:0.5px solid var(--slate-200);border-radius:7px;font-family:'Inter',sans-serif;font-size:12.5px;">
           <option>CXF-CO</option><option>CXF-RR</option><option>CXF-FC</option>
@@ -170,25 +171,69 @@ async function nextBatchSerial(){
   const last = data && data[0] ? parseInt(data[0].serial.split('-')[3]) || 0 : 0;
   return 'CXF-B-' + year + '-' + String(last + 1).padStart(4, '0');
 }
+const ACTIVITY_CODE = { collection: 'CXF-CO', collection_rerefining: 'CXF-RR', full_chain: 'CXF-FC' };
+let ISSUABLE_REPORTS = [];
+
+async function loadIssuableReports(){
+  const sel = document.getElementById('ruReport');
+  sel.innerHTML = '<option value="">— validated report (required) —</option>';
+  ISSUABLE_REPORTS = [];
+  const member_id = document.getElementById('ruMember').value;
+  if (!member_id) return;
+  const { data: reports } = await db.from('reports').select('id, period, activity, litres, computed_tco2e').eq('member_id', member_id).eq('status','validated').order('period',{ascending:false});
+  const { data: used } = await db.from('registry_units').select('report_id').eq('member_id', member_id);
+  const usedIds = new Set((used || []).map(u => u.report_id).filter(Boolean));
+  ISSUABLE_REPORTS = (reports || []).filter(r => !usedIds.has(r.id));
+  if (!ISSUABLE_REPORTS.length) { sel.innerHTML = '<option value="">— no unissued validated reports —</option>'; return; }
+  ISSUABLE_REPORTS.forEach(r => {
+    const o = document.createElement('option');
+    o.value = r.id;
+    o.textContent = r.period + ' · ' + (CXF_FACTORS[r.activity]?.label || r.activity) + ' · ' + r.computed_tco2e + ' tCO₂e';
+    sel.appendChild(o);
+  });
+}
+function prefillFromReport(){
+  const r = ISSUABLE_REPORTS.find(x => x.id === document.getElementById('ruReport').value);
+  if (!r) return;
+  document.getElementById('ruQty').value = r.computed_tco2e;
+  document.getElementById('ruVintage').value = r.period;
+  if (ACTIVITY_CODE[r.activity]) document.getElementById('ruCode').value = ACTIVITY_CODE[r.activity];
+}
+
 async function issueUnits(){
   const member_id = document.getElementById('ruMember').value || null;
+  const report_id = document.getElementById('ruReport').value || null;
   const project_label = document.getElementById('ruLabel').value.trim();
   const contract_code = document.getElementById('ruCode').value;
   const vintage = document.getElementById('ruVintage').value.trim();
   const quantity_tco2e = parseFloat(document.getElementById('ruQty').value);
   if (!member_id) return alert('Select the owning member.');
+  if (!report_id) return alert('Select the validated report backing this batch — issuance without a validated report is not allowed (Registry Rules §2).');
   if (!project_label || !quantity_tco2e || quantity_tco2e <= 0) return alert('Fill in the public project label and a valid quantity.');
+  const rpt = ISSUABLE_REPORTS.find(x => x.id === report_id);
+  if (rpt && quantity_tco2e > Number(rpt.computed_tco2e) + 0.001) return alert('Quantity (' + quantity_tco2e + ') exceeds the validated report quantity (' + rpt.computed_tco2e + ' tCO₂e). A batch cannot exceed its evidence.');
+  // one report → at most one batch (re-check live, Registry Rules §8)
+  const { data: dup } = await db.from('registry_units').select('serial').eq('report_id', report_id).limit(1);
+  if (dup && dup.length) return alert('Report already backs batch ' + dup[0].serial + ' — one report can back only one batch.');
   const serial = await nextBatchSerial();
-  if (!confirm('Issue ' + serial + ' — ' + quantity_tco2e.toLocaleString() + ' tCO₂e (' + contract_code + ', ' + (vintage || 'no vintage') + ') for "' + project_label + '"?\n\nSerial, label, vintage, quantity and status become PUBLIC on /registry.html.')) return;
-  let { error } = await db.from('registry_units').insert({ serial, member_id, project_label, contract_code, vintage, quantity_tco2e });
+  if (!confirm('Issue ' + serial + ' — ' + quantity_tco2e.toLocaleString() + ' tCO₂e (' + contract_code + ', ' + (vintage || 'no vintage') + ') for "' + project_label + '"?\n\nBacked by validated report ' + (rpt ? rpt.period : report_id) + '. Serial, label, vintage, quantity and status become PUBLIC on /registry.html.')) return;
+  let { error } = await db.from('registry_units').insert({ serial, member_id, project_label, contract_code, vintage, quantity_tco2e, report_id });
   if (error && /load failed|failed to fetch|network/i.test(error.message)) {
     await new Promise(r => setTimeout(r, 1200));
-    ({ error } = await db.from('registry_units').insert({ serial, member_id, project_label, contract_code, vintage, quantity_tco2e }));
+    ({ error } = await db.from('registry_units').insert({ serial, member_id, project_label, contract_code, vintage, quantity_tco2e, report_id }));
   }
   if (error) return alert('Error: ' + error.message + (error.message.includes('registry_units') ? ' — did you run schema-registry.sql?' : ''));
-  audit('units_issued', serial + ' · ' + quantity_tco2e + ' tCO₂e · ' + project_label);
+  audit('units_issued', serial + ' · ' + quantity_tco2e + ' tCO₂e · ' + project_label + ' · report ' + report_id);
+  const { data: m } = await db.from('members').select('email, contact_name, company').eq('id', member_id).maybeSingle();
+  if (m) await notifyMember('units_issued', m.email, {
+    name: m.contact_name, company: m.company, serial, code: contract_code,
+    vintage, qty: quantity_tco2e.toLocaleString(), label: project_label
+  });
   ['ruLabel','ruVintage','ruQty'].forEach(i => document.getElementById(i).value = '');
-  alert('Issued ' + serial + ' — now public at /registry.html');
+  document.getElementById('ruReport').innerHTML = '<option value="">— validated report (required) —</option>';
+  loadIssuableReports();
+  if (confirm('Issued ' + serial + ' — now public at /registry.html. The member was emailed their Statement of Issuance link.\n\nOpen the printable Statement of Issuance now?'))
+    window.open('/portal/statement.html?serial=' + encodeURIComponent(serial), '_blank');
   loadRegistry();
 }
 async function loadRegistry(){
@@ -206,7 +251,9 @@ async function loadRegistry(){
       <td>${esc(u.contract_code)}</td><td>${esc(u.vintage || '—')}</td><td>${Number(u.quantity_tco2e).toLocaleString()}</td>
       <td><span class="pill ${pill(u.status)}">${esc(u.status)}</span>${u.certificate_serial ? '<div class="muted">' + esc(u.certificate_serial) + '</div>' : ''}${u.status_note ? '<div class="muted">' + esc(u.status_note) + '</div>' : ''}</td>
       <td>${u.status === 'issued' ? `<button class="act ok" onclick="setUnitStatus('${u.id}','listed')">Mark listed</button>` : ''}
-          ${['issued','listed'].includes(u.status) ? `<button class="act warn" onclick="setUnitStatus('${u.id}','transferred')">Transfer</button>` : ''}
+          ${['issued','listed'].includes(u.status) ? `<button class="act warn" onclick="transferUnits('${u.id}')">Transfer</button>` : ''}
+          ${u.status !== 'revoked' && u.status !== 'split' ? `<button class="act ghost" onclick="window.open('/portal/statement.html?serial=' + encodeURIComponent('${esc(u.serial)}'),'_blank')">Statement</button>` : ''}
+          ${u.status === 'transferred' ? `<button class="act ghost" onclick="transferConfirmation('${esc(u.serial)}')">Confirmation</button>` : ''}
           ${['issued','listed','transferred'].includes(u.status) ? `<button class="act ok" onclick="retireUnits('${u.id}')">Retire</button>` : ''}
           ${['issued','listed'].includes(u.status) ? `<button class="act ghost" onclick="splitUnits('${u.id}')">Split</button>` : ''}
           ${u.status !== 'revoked' && u.status !== 'split' ? `<button class="act bad" onclick="revokeUnits('${u.id}','${esc(u.serial)}')">Revoke</button>` : ''}</td>
@@ -217,6 +264,27 @@ async function setUnitStatus(id, status){
   const { error } = await db.from('registry_units').update({ status }).eq('id', id);
   if (error) return alert('Error: ' + error.message);
   audit('units_' + status, id); loadRegistry();
+}
+async function transferUnits(id){
+  const { data: u } = await db.from('registry_units').select('*').eq('id', id).maybeSingle();
+  if (!u) return;
+  const acquirer = prompt('Transfer ' + u.serial + ' (' + Number(u.quantity_tco2e).toLocaleString() + ' tCO₂e).\nAcquirer name (kept PRIVATE — recorded in the audit log and shown only on the Transfer Confirmation document):', '');
+  if (acquirer === null || !acquirer.trim()) return;
+  const { error } = await db.from('registry_units').update({ status: 'transferred' }).eq('id', id);
+  if (error) return alert('Error: ' + error.message);
+  audit('units_transferred', u.serial + ' → ' + acquirer.trim());
+  if (confirm('Transferred. Open the printable Transfer Confirmation for "' + acquirer.trim() + '"?'))
+    window.open('/portal/transfer-confirmation.html?serial=' + encodeURIComponent(u.serial) + '&acquirer=' + encodeURIComponent(acquirer.trim()), '_blank');
+  loadRegistry();
+}
+async function transferConfirmation(serial){
+  // recover the acquirer from the audit log if possible
+  let acquirer = '';
+  const { data: logs } = await db.from('audit_log').select('target').eq('action','units_transferred').ilike('target', serial + '%').order('created_at',{ascending:false}).limit(1);
+  if (logs && logs[0]) acquirer = (logs[0].target.split('→')[1] || '').trim();
+  if (!acquirer) acquirer = prompt('Acquirer name for the confirmation (as recorded at settlement):', '') || '';
+  if (!acquirer.trim()) return;
+  window.open('/portal/transfer-confirmation.html?serial=' + encodeURIComponent(serial) + '&acquirer=' + encodeURIComponent(acquirer.trim()), '_blank');
 }
 async function retireUnits(id){
   const { data: u } = await db.from('registry_units').select('*').eq('id', id).maybeSingle();

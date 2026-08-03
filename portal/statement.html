@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="robots" content="noindex, nofollow"/>
+<title>Statement of Issuance | CarbonXFuture</title>
+<link rel="icon" href="/favicon.ico" sizes="48x48"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--forest:#1A4A2E;--forest-light:#2D6B45;--forest-pale:#EAF2EC;--slate-100:#E8E8E4;--slate-200:#C8C8C2;--slate-400:#8A8A82;--slate-600:#4A4A45;--slate-800:#1E1E1A;--gold:#B8740A;}
+body{font-family:'Inter',sans-serif;color:var(--slate-800);background:var(--slate-100);font-size:15px;line-height:1.65;padding:2rem 1rem 4rem;}
+.doc{max-width:720px;margin:0 auto;background:#fff;border:1px solid var(--slate-200);border-radius:4px;padding:3.2rem 3rem;position:relative;}
+.doc::before{content:"";position:absolute;inset:14px;border:1px solid var(--forest-pale);pointer-events:none;}
+.head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:2.2rem;}
+.mark{width:44px;height:44px;background:var(--forest);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:700;}
+.eyebrow{font-size:10.5px;letter-spacing:2.5px;text-transform:uppercase;color:var(--forest-light);font-weight:600;}
+h1{font-family:'Playfair Display',serif;font-size:2rem;font-weight:500;margin:0.3rem 0 0.4rem;}
+.serial{font-size:13px;color:var(--slate-400);}
+table{width:100%;border-collapse:collapse;font-size:14px;margin:1.6rem 0;}
+td{padding:10px 0;border-bottom:0.5px solid var(--slate-100);vertical-align:top;}
+td:first-child{width:200px;font-size:11px;text-transform:uppercase;letter-spacing:0.8px;color:var(--slate-400);font-weight:600;padding-top:13px;}
+.qty{font-family:'Playfair Display',serif;font-size:1.7rem;color:var(--forest);}
+.pill{display:inline-block;font-size:11px;font-weight:600;padding:3px 12px;border-radius:100px;text-transform:uppercase;background:var(--forest-pale);color:var(--forest);}
+.pill.warn{background:#FBEAEA;color:#A33;}
+.legal{font-size:11.5px;color:var(--slate-400);line-height:1.7;border-top:1px solid var(--slate-100);padding-top:1.2rem;margin-top:1.6rem;}
+.legal b{color:var(--slate-600);}
+.verify{background:var(--forest-pale);border-radius:8px;padding:0.9rem 1.2rem;font-size:12.5px;margin-top:1.4rem;}
+.toolbar{max-width:720px;margin:0 auto 1rem;display:flex;justify-content:space-between;align-items:center;}
+.toolbar a,.toolbar button{font-family:'Inter',sans-serif;font-size:13px;}
+button{background:var(--forest);color:#fff;border:none;border-radius:8px;padding:10px 22px;cursor:pointer;}
+.msg{max-width:720px;margin:3rem auto;text-align:center;color:var(--slate-600);}
+.msg a{color:var(--forest-light);}
+@media print{ body{background:#fff;padding:0;} .toolbar{display:none;} .doc{border:none;max-width:100%;} }
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <a href="/portal/dashboard.html" style="color:var(--forest-light);text-decoration:none;">&larr; Portal</a>
+  <button onclick="window.print()">Print / Save as PDF</button>
+</div>
+<div class="msg" id="msg">Loading…</div>
+<div class="doc" id="doc" style="display:none;">
+  <div class="head">
+    <div>
+      <div class="eyebrow">CarbonXFuture Markets, Inc. · CXF Registry</div>
+      <h1>Statement of Issuance</h1>
+      <div class="serial" id="dSerial"></div>
+    </div>
+    <div class="mark">CXF</div>
+  </div>
+  <p style="font-size:14.5px;">This is to state that, following item-by-item desk validation of the underlying monthly activity report and its documentary evidence, the following serialized CXF platform units were issued in the CXF Registry:</p>
+  <table>
+    <tr><td>Issued to</td><td id="dCompany" style="font-weight:600;"></td></tr>
+    <tr><td>Quantity</td><td><span class="qty" id="dQty"></span> <span style="font-size:13px;color:var(--slate-400);">tCO₂e (1 unit = 1 tCO₂e of desk-validated avoided emissions)</span></td></tr>
+    <tr><td>Batch serial</td><td id="dSerial2" style="font-weight:600;"></td></tr>
+    <tr><td>Contract specification</td><td id="dCode"></td></tr>
+    <tr><td>Vintage</td><td id="dVintage"></td></tr>
+    <tr><td>Public project label</td><td id="dLabel"></td></tr>
+    <tr><td>Issuance date</td><td id="dDate"></td></tr>
+    <tr><td>Current status</td><td id="dStatus"></td></tr>
+  </table>
+  <div class="verify"><b>Public verification:</b> the live status of this batch is visible to anyone, without an account, at <b>carbonxfuture.com/registry.html</b> — search serial <span id="dSerial3"></span>. This statement is only as valid as that live registry status.</div>
+  <div class="legal">
+    <b>What this statement is — and is not.</b> This statement attests that desk-validated activity generated the transferable CXF platform units identified above (CXF Registry Rules, §2). It is <b>not</b> a retirement and does <b>not</b> constitute an emissions-offset claim by the holder or any other party: units remain transferable until retired, and only a numbered CXF Retirement Certificate — created when units are permanently retired — supports an offset claim. CXF units are proprietary, desk-validated platform instruments of CarbonXFuture Markets, Inc.; they are not registry credits issued by Verra, Gold Standard, ACR or CAR. Issued under the CXF Registry Rules — carbonxfuture.com/registry-rules.html.
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/portal/config.js"></script>
+<script>
+const db = supabase.createClient(CXF_SUPABASE_URL, CXF_SUPABASE_KEY);
+const esc = s => String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const serial = new URLSearchParams(location.search).get('serial') || '';
+
+(async function(){
+  const msg = document.getElementById('msg');
+  const { data: s } = await db.auth.getSession();
+  if (!s.session) { msg.innerHTML = 'Please <a href="/portal/">sign in</a> to view this statement — it is available to the batch owner and the desk.'; return; }
+  if (!serial) { msg.textContent = 'No serial provided.'; return; }
+  const { data: u, error } = await db.from('registry_units').select('*, members(company)').eq('serial', serial).maybeSingle();
+  if (error || !u) { msg.innerHTML = 'Batch not found — or this account is not its owner. Check the serial against the <a href="/registry.html">public registry</a>.'; return; }
+  document.getElementById('dSerial').textContent = u.serial;
+  document.getElementById('dSerial2').textContent = u.serial;
+  document.getElementById('dSerial3').textContent = u.serial;
+  document.getElementById('dCompany').textContent = u.members?.company || '—';
+  document.getElementById('dQty').textContent = Number(u.quantity_tco2e).toLocaleString();
+  document.getElementById('dCode').textContent = u.contract_code;
+  document.getElementById('dVintage').textContent = u.vintage || '—';
+  document.getElementById('dLabel').textContent = u.project_label;
+  document.getElementById('dDate').textContent = String(u.issued_at).slice(0,10);
+  const st = document.getElementById('dStatus');
+  st.innerHTML = '<span class="pill' + (u.status === 'revoked' ? ' warn' : '') + '">' + esc(u.status) + '</span>' +
+    (u.status === 'revoked' ? ' <span style="color:#A33;font-size:12.5px;">This batch has been revoked — this statement is no longer valid. Reason: ' + esc(u.status_note || 'see registry') + '</span>' : '') +
+    (u.certificate_serial ? ' <span style="font-size:12.5px;color:var(--slate-400);">· retired under certificate ' + esc(u.certificate_serial) + '</span>' : '');
+  msg.style.display = 'none';
+  document.getElementById('doc').style.display = 'block';
+})();
+</script>
+</body>
+</html>
