@@ -55,6 +55,19 @@ const TEMPLATES = {
        <p><b>${esc(d.volume)} tCO₂e</b> in CXF platform credits ${d.price ? 'are now listed on the marketplace at <b>$' + esc(d.price) + '/tCO₂e</b>' : 'are now listed on the marketplace (price on request)'}.</p>
        <p>You can see your listing in the portal and on the public marketplace.</p>`)
   }),
+  units_issued: d => ({
+    subject: 'CXF units issued — batch ' + (d.serial || ''),
+    html: wrap('Your CXF units have been issued 🎉',
+      `<p>Hi ${esc(d.name)},</p>
+       <p>The CarbonXFuture desk has issued <b>${esc(d.qty)} tCO₂e</b> of serialized CXF platform units to <b>${esc(d.company)}</b>:</p>
+       <p style="background:#EAF2EC;padding:14px 18px;border-radius:8px;line-height:2;">
+         <b>Batch serial:</b> ${esc(d.serial)}<br/>
+         <b>Contract:</b> ${esc(d.code)} &middot; <b>Vintage:</b> ${esc(d.vintage)}<br/>
+         <b>Public label:</b> ${esc(d.label)}</p>
+       <p>Your batch is now publicly visible in the <a href="https://www.carbonxfuture.com/registry.html">CXF Registry</a> — anyone, including your customers' auditors, can verify its status. Your printable <b>Statement of Issuance</b> is in the portal:</p>
+       <p><a href="https://www.carbonxfuture.com/portal/statement.html?serial=${encodeURIComponent(d.serial || '')}" style="background:#1A4A2E;color:#ffffff;text-decoration:none;padding:10px 22px;border-radius:8px;font-size:13px;">Open Statement of Issuance</a></p>
+       <p style="font-size:12px;color:#8A8A82;">Note: issuance attests that your validated activity generated these transferable units. It is not an emissions-offset claim — only a numbered CXF Retirement Certificate, created when units are retired, supports an offset claim.</p>`)
+  }),
   report_changes: d => ({
     subject: 'Your report needs changes before validation',
     html: wrap('Changes requested on your report',
