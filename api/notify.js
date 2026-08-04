@@ -2,7 +2,7 @@
 // Requires RESEND_API_KEY in Vercel environment variables.
 // Only authenticated ADMIN sessions can trigger emails.
 
-const ADMIN_EMAILS = ['desk@carbonxfuture.com', 'alexandrurb@icloud.com'];
+const ADMIN_EMAILS = ['desk@carbonxfuture.com', 'alexandrurb@icloud.com', 'carbonxfuture@gmail.com'];
 const SUPABASE_URL = 'https://zohskwbavtzvecqziklq.supabase.co';
 const SUPABASE_ANON = 'sb_publishable_K-4sl6hEk75fByleZEZcfA_f_Zha9aI';
 const FROM = 'CarbonXFuture <desk@carbonxfuture.com>';
