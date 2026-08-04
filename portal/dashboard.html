@@ -83,6 +83,8 @@ async function notifySelf(type, data){
   const { data } = await db.auth.getSession();
   if (!data.session) { location.href = '/portal/'; return; }
   USER = data.session.user;
+  // Desk admins go straight to Desk Admin — they are not marketplace members.
+  if (CXF_ADMIN_EMAILS.includes((USER.email || '').toLowerCase())) { location.href = '/portal/admin.html'; return; }
   const { data: m } = await db.from('members').select('*').eq('id', USER.id).maybeSingle();
   MEMBER = m;
   if (!MEMBER) return renderOnboarding();
