@@ -6,8 +6,6 @@
     { "source": "/forwards", "destination": "/contracts.html", "permanent": true },
     { "source": "/cpi", "destination": "/prices.html", "permanent": true },
     { "source": "/certificates", "destination": "/verify.html", "permanent": true },
-    { "source": "/insights", "destination": "/", "permanent": true },
-    { "source": "/insights/:slug*", "destination": "/", "permanent": true },
     { "source": "/carbon/:slug*", "destination": "/", "permanent": true },
     { "source": "/oil/:slug*", "destination": "/", "permanent": true }
   ],
