@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Price Index Methodology | CarbonXFuture</title>
+<meta name="description" content="How the CXF Price Index is assessed and published: assessment basis, weekly cadence, benchmark provenance, revision policy, open data access and complaints."/>
+<link rel="canonical" href="https://www.carbonxfuture.com/index-methodology.html"/>
+<link rel="icon" href="/favicon.ico" sizes="48x48"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Inter',sans-serif;color:#1E1E1A;font-size:15px;line-height:1.75;background:#fff;}
+.wrap{max-width:760px;margin:0 auto;padding:4rem 1.5rem 5rem;}
+a{color:#1A4A2E;}
+h1{font-size:1.8rem;font-weight:600;margin-bottom:0.5rem;}
+h2{font-size:1.1rem;font-weight:600;margin:2rem 0 0.5rem;}
+.date{color:#8A8A82;font-size:13px;margin-bottom:2rem;}
+.back{display:inline-block;margin-bottom:2rem;font-size:13px;text-decoration:none;color:#2D6B45;}
+.notice{background:#FDF3E3;border-left:3px solid #B8740A;padding:1rem 1.25rem;border-radius:8px;font-size:13px;margin:1.5rem 0;color:#4A4A45;}
+ul{margin:0.5rem 0 0.5rem 1.4rem;}
+li{margin-bottom:0.35rem;}
+code{background:#F5F5F3;border:0.5px solid #E8E8E4;border-radius:6px;padding:2px 7px;font-size:12.5px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+<a class="back" href="/prices.html">&larr; Back to the CXF Price Index</a>
+<h1>CXF Price Index — Methodology</h1>
+<p class="date">Version 1.0 (pilot) · Effective July 30, 2026 · CarbonXFuture Markets, Inc., Fort Lauderdale, Florida, USA</p>
+
+<div class="notice"><b>Nature of the marks.</b> CXF Price Index levels are indicative assessments set by the CarbonXFuture desk. They are not exchange-traded settlement prices, not executable quotes, not an offer to buy or sell, and not financial advice. They are published so that a market with no prior public reference point has one.</div>
+
+<h2>1. What is assessed</h2>
+<p>The index carries eight weekly marks: two proprietary CXF waste-oil credit marks (CXF Used Oil — US Gulf; CXF Industrial Re-refining) and six desk observations of the broader voluntary market (Verra REDD+, Gold Standard renewables, ACR/CAR US compliance-grade, Verra blue carbon, Gold Standard cookstoves, Plan Vivo agroforestry). Two compliance benchmarks (EUA, ACCU) and daily physical references (WTI crude, ULSD diesel) are published alongside for context.</p>
+
+<h2>2. Assessment basis</h2>
+<ul>
+<li><b>CXF marks:</b> documented bids, offers and counterparty indications received by the desk in waste-oil carbon credits, weighed by the assessor and cross-checked against relevant public market benchmarks. As desk transactions complete, they are incorporated into the assessment basis with the highest weight.</li>
+<li><b>Registry observations:</b> desk readings of publicly reported levels in the broader voluntary market; they carry no CXF transaction content.</li>
+<li><b>Compliance benchmarks:</b> EUA and ACCU levels are taken from public market reporting, always with an explicit as-of date and stated source.</li>
+<li><b>Physical references:</b> WTI and ULSD spot series are pulled daily from the U.S. Energy Information Administration's public API, unmodified.</li>
+</ul>
+
+<h2>3. Cadence and publication</h2>
+<p>CXF marks are reviewed and published weekly, normally on Monday. Each publication carries the "last updated" date visible on the index page; if a week's review results in no change, the prior level is republished with the new date. Physical references refresh daily and independently.</p>
+
+<h2>4. History and revision policy</h2>
+<p>History accrues weekly from the date each mark is first published and is available as a chart, CSV download and open JSON endpoint. <b>Published levels are never revised retroactively</b> — an error identified after publication is corrected in the next publication with a note, and the erroneous point remains visible in the history.</p>
+
+<h2>5. Open data</h2>
+<p>The full history is public for research and integration: <code>GET /rest/v1/price_history</code> on our data endpoint (details on the <a href="/prices.html">index page</a>). Attribution required: "Source: CXF Price Index — carbonxfuture.com". Redistribution at scale requires written permission.</p>
+
+<h2>6. Conflicts of interest</h2>
+<p>The assessor — the CarbonXFuture desk — also operates the marketplace where CXF credits trade. This is disclosed openly, and three safeguards apply: the assessment basis is documented internally for every published mark; levels are cross-checked against public benchmarks; and the no-retroactive-revision rule removes the ability to repaint history.</p>
+
+<h2>7. Complaints</h2>
+<p>Anyone may challenge a published level by writing to <a href="mailto:desk@carbonxfuture.com">desk@carbonxfuture.com</a> with the mark, date and grounds. The desk acknowledges within 2 business days and responds with a reasoned outcome, normally within 15 business days; corrections follow Section 4.</p>
+
+<h2>8. Governance and versioning</h2>
+<p>This methodology is maintained by CarbonXFuture Markets, Inc. and versioned on this page; material changes are announced with an effective date and apply prospectively only.</p>
+
+<p style="margin-top:2rem;font-size:12.5px;color:#8A8A82;">© 2026 CarbonXFuture Markets, Inc. · <a href="/prices.html">CXF Price Index</a> · <a href="/contracts.html">Contract specifications</a> · <a href="/terms.html">Terms of Use</a></p>
+</div>
+</body>
+</html>
