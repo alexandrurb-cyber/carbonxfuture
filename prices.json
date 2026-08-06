@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-07-29",
+  "lastUpdated": "2026-08-06",
   "source": "CarbonXFuture trading desk",
   "prices": {
     "cxf-usgulf": 21.7,
@@ -14,17 +14,17 @@
   "benchmarks": {
     "eua": {
       "label": "EUA — EU ETS (Dec-26)",
-      "value": 81.0,
+      "value": 82.0,
       "unit": "EUR/t",
-      "asof": "2026-07-20",
-      "source": "Public market reporting (EEX/ICE levels as reported)"
+      "asof": "2026-08-04",
+      "source": "Public market reporting (Dec-26 benchmark; early-August range €80–84 after the late-July €86.6 peak)"
     },
     "accu": {
       "label": "ACCU — Australia",
-      "value": 26.4,
+      "value": 26.6,
       "unit": "USD/t",
-      "asof": "2026-07-17",
-      "source": "Public AU market coverage (A$38 spot × ~0.695 AUD/USD)"
+      "asof": "2026-08-04",
+      "source": "Public AU market coverage (A$38.25 spot × ~0.695 AUD/USD)"
     }
   }
 }
