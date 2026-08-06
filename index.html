@@ -1163,6 +1163,7 @@ nav.menu-open .nav-signin{text-align:center;margin-top:6px;}
       <div>
         <div class="eyebrow">Insights</div>
         <h2>Market intelligence</h2>
+        <p style="margin-bottom:0.5rem;"><a href="/insights/" style="color:var(--forest-light);font-size:13.5px;font-weight:600;text-decoration:none;">All articles — the Insights archive →</a></p>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
         <button class="filter-btn active" onclick="filterBlog(this,'all')">All</button>
@@ -1479,7 +1480,7 @@ nav.menu-open .nav-signin{text-align:center;margin-top:6px;}
       <div class="footer-col">
         <h4>Company</h4>
         <a href="#about">About</a>
-        <a href="#blog">Insights</a>
+        <a href="/insights/">Insights</a>
         <a href="/faq.html">FAQ</a>
         <a href="/waste-oil-carbon-credits.html">Waste oil credits guide</a>
         <a href="/accountants.html">For Accountants</a>
@@ -1738,97 +1739,48 @@ async function submitRfq(){
 const ARTICLES = [
   {
     tag: 'Market report',
-    icon: '📊',
     bannerBg: '#E8EEF5',
     date: 'July 13, 2026',
     readtime: '3 min read',
+    slug: 'desk-note-july-13-2026',
     title: 'Desk Note: Tight Base Oils, Steady Carbon',
-    summary: 'ACCUs stall above A$38 and Verra issuance ticks along, while Middle East outages keep US base oils on allocation and re-refiners effectively sold out.',
-    body: `<p style="margin-bottom:1.25rem;">Voluntary carbon markets were steady rather than spectacular this week. Carbon Pulse's daily coverage (July 6–7) noted continued resistance in Australia's ACCU market above A$38, with monthly volumes still running below 2025 levels, and fresh Verra issuance including 25,408 VCUs to Estonian developer Ecobase's European afforestation project. On policy, the European Parliament's environment committee voted to extend carbon-leakage protection to additional downstream sectors, while IETA's Asia Climate Summit in Hong Kong (July 7–9) drew roughly 800 delegates — a signal that APAC market infrastructure keeps building ahead of CORSIA's mandatory Phase 2 from 2027. Our indicative CXF US Gulf assessment stands at $21.50/t and CXF re-refining credits at $19.80/t (desk marks, updated July 7).</p><p style="margin-bottom:1.25rem;">In base oils, the story remains supply. Lubes'N'Greases' Weekly Americas report (July 8) describes US posted prices up 33–73% since March, suppliers holding customers on allocation with spot offers suspended, and Middle East disruptions — including an extended outage at Shell's Pearl GTL plant in Qatar — removing Group III barrels that normally cover a large share of US demand. Most relevant to our market: blenders are substituting re-refined Group III wherever approvals allow, and re-refiners are reported effectively sold out. The US Gulf entered hurricane season with unusually low inventories, and meaningful new virgin capacity (Chevron's Pascagoula Group III+) is only due in Q4 2026.</p><p style="margin-bottom:1.25rem;">Takeaway: for collectors and re-refiners this is a seller's market — feedstock secured now supports both premium base oil realizations and CXF credit generation; buyers should consider locking coverage before Q4 rather than waiting on new capacity.</p><p><em>Not financial advice.</em></p>`
+    summary: 'ACCUs stall above A$38 and Verra issuance ticks along, while Middle East outages keep US base oils on allocation and re-refiners effectively sold out.'
   },
   {
     tag: 'CXF Methodology',
-    icon: '♻️',
     bannerBg: '#EAF2EC',
-    date: 'July 2025',
+    date: 'July 2026',
     readtime: '5 min read',
+    slug: 'introducing-cxf-waste-oil-carbon-credits',
     title: 'Introducing CXF: how waste oil recycling generates traceable carbon credits',
-    summary: 'CarbonXFuture launches its proprietary CXF carbon credit standard — the first methodology specifically designed for used oil collection and re-refining infrastructure.',
-    body: `
-      <p style="margin-bottom:1.25rem;">The voluntary carbon market has long overlooked one of the most impactful sectors in the circular economy: <strong>waste oil recycling</strong>. Every gallon of used motor oil that is collected, re-refined and returned to service prevents the equivalent of approximately 28 gallons of crude oil from being extracted — avoiding significant upstream emissions.</p>
-      <p style="margin-bottom:1.25rem;">CarbonXFuture has developed the <strong>CXF Methodology</strong> to quantify, verify and monetise these emission reductions in a rigorous, auditable framework. The methodology covers three activity types:</p>
-      <ul style="margin:0 0 1.25rem 1.5rem;display:flex;flex-direction:column;gap:8px;">
-        <li><strong>Used oil collection:</strong> Credits issued for volumes collected and diverted from disposal or incineration.</li>
-        <li><strong>Re-refining:</strong> Credits for processing used oil back into base oil, replacing virgin crude-derived products.</li>
-        <li><strong>Infrastructure development:</strong> Credits for establishing collection networks in underserved regions.</li>
-      </ul>
-      <p style="margin-bottom:1.25rem;">Each CXF credit represents <strong>1 tonne of CO₂ equivalent avoided</strong>, validated by the CarbonXFuture desk against a published baseline. Credits are issued digitally on the CarbonXFuture platform registry, with full chain-of-custody from source facility to retirement.</p>
-      <p>Applicants can register through the CarbonXFuture onboarding portal. Our team supports data collection and documentation throughout the verification cycle.</p>
-    `
-  },
-  {
-    tag: 'Market report',
-    icon: '📊',
-    bannerBg: '#E8EEF5',
-    date: 'June 2025',
-    readtime: '7 min read',
-    title: 'Voluntary carbon markets Q2 2025: price dynamics and liquidity trends',
-    summary: 'An overview of voluntary carbon credit pricing across major registries in Q2 2025, with analysis of liquidity conditions and emerging demand drivers.',
-    body: `
-      <p style="margin-bottom:1.25rem;">Voluntary carbon markets showed increased differentiation in Q2 2025, with high-integrity credits maintaining premiums over lower-quality offsets as buyers applied tighter due diligence standards.</p>
-      <p style="margin-bottom:1.25rem;"><strong>Price highlights:</strong></p>
-      <ul style="margin:0 0 1.25rem 1.5rem;display:flex;flex-direction:column;gap:8px;">
-        <li>REDD+ (Verra VCS, Nature-based): $14–$32/tCO₂e depending on co-benefits and vintage</li>
-        <li>Renewable energy (Gold Standard): $18–$26/tCO₂e, strongest demand from European corporates</li>
-        <li>Methane avoidance (ACR/CAR): $12–$18/tCO₂e, high liquidity in North American markets</li>
-        <li>Waste oil / circular economy (CXF): $18–$24/tCO₂e, growing institutional interest</li>
-      </ul>
-      <p style="margin-bottom:1.25rem;">Corporate demand remained concentrated in net-zero-aligned purchases, with most buyers targeting vintages 2022–2025. The ICVCM Core Carbon Principles continued to influence purchasing decisions, with buyers increasingly requiring CCP label eligibility or equivalent standards.</p>
-      <p>Liquidity on the CarbonXFuture platform grew 34% quarter-on-quarter, driven by new onboarding of institutional trading desks and sovereign buyers in the Middle East and Southeast Asia.</p>
-    `
-  },
-  {
-    tag: 'Regulation',
-    icon: '📋',
-    bannerBg: '#FDF3E3',
-    date: 'May 2025',
-    readtime: '6 min read',
-    title: 'ICVCM Core Carbon Principles: what institutional buyers need to know in 2025',
-    summary: 'The Integrity Council for the Voluntary Carbon Market has finalised its Core Carbon Principles framework. Here is what it means for institutional carbon credit buyers.',
-    body: `
-      <p style="margin-bottom:1.25rem;">The Integrity Council for the Voluntary Carbon Market (ICVCM) Core Carbon Principles (CCPs) represent the most significant governance development in voluntary carbon markets in recent years. For institutional buyers, understanding the framework is now essential due diligence.</p>
-      <p style="margin-bottom:1.25rem;"><strong>What are the CCPs?</strong></p>
-      <p style="margin-bottom:1.25rem;">The CCPs establish a threshold standard for high-quality carbon credits across ten principles covering governance, emissions impact, and sustainable development. Credits that meet the CCPs are eligible for the CCP label, which is increasingly required by corporate procurement policies and voluntary disclosure frameworks.</p>
-      <p style="margin-bottom:1.25rem;"><strong>Key requirements for CCP eligibility:</strong></p>
-      <ul style="margin:0 0 1.25rem 1.5rem;display:flex;flex-direction:column;gap:8px;">
-        <li>Additionality: emission reductions must not have occurred in the absence of carbon credit finance</li>
-        <li>Permanence: credits must represent durable emission reductions with appropriate risk buffers</li>
-        <li>No double counting: registries must prevent duplicate issuance or retirement</li>
-        <li>Sustainable development: projects must demonstrate positive co-benefits</li>
-      </ul>
-      <p>CarbonXFuture is aligning the CXF methodology with ICVCM CCP requirements. All CXF credits issued from Q3 2025 will include a CCP alignment assessment as part of the verification report.</p>
-    `
+    summary: 'Why the most overlooked stream in the circular economy deserves its own carbon standard — and how the CXF framework works, from evidence to serialized units.'
   },
   {
     tag: 'Physical markets',
-    icon: '🛢️',
     bannerBg: '#F3EEF8',
-    date: 'April 2025',
+    date: 'July 2026',
     readtime: '4 min read',
-    title: 'Used oil collection infrastructure: carbon methodology development update',
-    summary: 'Progress update on the CXF used oil methodology, including baseline calculations, MRV protocol design and expected credit yields per litre collected.',
-    body: `
-      <p style="margin-bottom:1.25rem;">Development of the CXF used oil collection methodology is progressing through its final validation phase. This update summarises key technical parameters and expected credit yields for prospective applicants.</p>
-      <p style="margin-bottom:1.25rem;"><strong>Baseline emission factor:</strong> The CXF methodology uses a conservative baseline of 2.85 kg CO₂e per litre of used oil collected and diverted from uncontrolled disposal. This figure reflects the weighted average emission intensity of alternative disposal routes (incineration, illegal dumping, and road oiling) in the applicable geographic zones.</p>
-      <p style="margin-bottom:1.25rem;"><strong>Expected credit yield:</strong></p>
-      <ul style="margin:0 0 1.25rem 1.5rem;display:flex;flex-direction:column;gap:8px;">
-        <li>Collection only: approximately 10.8 tCO₂e per 1,000 US gallons collected (2.85 per 1,000 litres)</li>
-        <li>Collection + re-refining: approximately 19.3 tCO₂e per 1,000 US gallons processed (5.1 per 1,000 litres)</li>
-        <li>Collection + re-refining + distribution network: up to 25.7 tCO₂e per 1,000 US gallons (6.8 per 1,000 litres)</li>
-      </ul>
-      <p style="margin-bottom:1.25rem;"><strong>MRV requirements:</strong> Monthly volume logs with chain-of-custody documentation, periodic desk audits, and annual review reports. CarbonXFuture provides a digital MRV dashboard for all registered applicants.</p>
-      <p>Interested collectors and recyclers can pre-register now to be included in the first issuance cycle, targeted for Q4 2025.</p>
-    `
+    slug: 'cxf-quantification-factors-explained',
+    title: 'How many carbon credits does a gallon of used oil generate? The CXF factors, explained',
+    summary: 'Where the 10.8 / 19.3 / 25.7 tCO₂e factors come from, the EPA and ACR/IPCC anchors they sit between, and what evidence turns volumes into credits.'
+  },
+  {
+    tag: 'Market report',
+    bannerBg: '#E8EEF5',
+    date: 'July 2026',
+    readtime: '6 min read',
+    slug: 'how-voluntary-carbon-credits-are-priced',
+    title: "How voluntary carbon credits are priced: a buyer's primer",
+    summary: 'Why one tonne of CO₂ trades at $9 and another at $31 — project type, vintage, co-benefits, integrity labels, and how to read an indicative price.'
+  },
+  {
+    tag: 'Regulation',
+    bannerBg: '#FDF3E3',
+    date: 'July 2026',
+    readtime: '6 min read',
+    slug: 'icvcm-core-carbon-principles-buyers-guide',
+    title: 'ICVCM Core Carbon Principles: what institutional buyers need to know',
+    summary: 'The CCP framework in plain language — the ten principles, what the label changes in procurement, and where proprietary platform credits like CXF stand.'
   }
 ];
 
@@ -1862,7 +1814,7 @@ function renderBlog(filter) {
   empty.style.display = 'none';
   const tc = tagColors;
   grid.innerHTML = filtered.map((a, i) => `
-    <div class="blog-card" onclick="openArticle(${ARTICLES.indexOf(a)})" style="cursor:pointer;">
+    <div class="blog-card" onclick="location.href='/insights/${a.slug}.html'" style="cursor:pointer;">
       <div class="blog-img" style="background:${a.bannerBg};">
         ${artFor(a)}
       </div>
@@ -1887,19 +1839,7 @@ function filterBlog(btn, tag) {
 
 function openArticle(index) {
   const a = ARTICLES[index];
-  const tc = tagColors;
-  document.getElementById('modalBanner').style.background = a.bannerBg;
-  document.getElementById('modalBanner').innerHTML = artFor(a).replace('width="72" height="72"', 'width="92" height="92"');
-  document.getElementById('modalTag').textContent = a.tag;
-  document.getElementById('modalTag').style.color = tc[a.tag]?.color || 'var(--forest-light)';
-  document.getElementById('modalDate').textContent = a.date;
-  document.getElementById('modalReadtime').textContent = a.readtime;
-  document.getElementById('modalTitle').textContent = a.title;
-  document.getElementById('modalBody').innerHTML = a.body;
-  const modal = document.getElementById('articleModal');
-  modal.style.display = 'block';
-  document.body.style.overflow = 'hidden';
-  modal.scrollTop = 0;
+  if (a && a.slug) location.href = '/insights/' + a.slug + '.html';
 }
 
 function closeModal() {
@@ -2069,7 +2009,7 @@ PLATFORM PAGES you can point users to (use relative links exactly as written):
 - /buyers.html — For buyers: the 4-step path (browse → RFQ → bilateral settlement → retirement certificate).
 - /registry.html — PUBLIC CXF Registry: every serialized unit batch (serial CXF-B-YYYY-NNNN) with live status (issued/listed/transferred/retired/revoked/split), searchable by anyone — CXF's internal double-issuance controls (cross-program claims are covered by member attestation, not guaranteed). Ownership and prices are private by design.
 - /registry-rules.html — Registry Rules: issuance, transfers, terminal retirement, revocation with public reason, complaints process (desk@carbonxfuture.com, acknowledged in 2 business days).
-- /faq.html — plain-language FAQ for collectors and buyers (credits per gallon, evidence, payment, membership, verification).
+- /insights/ — the Insights archive: every article and weekly Desk Note as its own page (e.g. /insights/desk-note-july-13-2026.html).\n- /faq.html — plain-language FAQ for collectors and buyers (credits per gallon, evidence, payment, membership, verification).
 - /kyc-aml.html — KYC & AML policy: risk-based review, OFAC sanctions screening, enhanced review triggers, records.
 - /index-methodology.html — Price Index methodology: assessment basis, weekly Monday cadence, no retroactive revisions, open data, complaints.
 - Members receive three documents tied to public serials: Statement of Issuance (issuance — NOT an offset claim), Transfer Confirmation (ownership change), Retirement Certificate (the only document supporting an offset claim).
