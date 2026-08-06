@@ -35,6 +35,33 @@ button.act{border:none;border-radius:7px;padding:6px 13px;font-size:12px;font-we
 .muted{color:var(--slate-400);font-size:12px;}
 a{color:var(--forest-light);}
 .denied{max-width:480px;margin:5rem auto;text-align:center;}
+/* Desk suite: subnav, inbox, collapsible cards, search, notes modal */
+.subnav{position:sticky;top:0;z-index:40;background:rgba(245,245,243,0.95);backdrop-filter:blur(6px);border-bottom:1px solid var(--slate-100);margin:0 -1.5rem 1.25rem;padding:9px 1.5rem;display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
+.subnav a{font-size:11.5px;color:var(--slate-600);text-decoration:none;padding:5px 11px;border-radius:100px;border:0.5px solid var(--slate-200);background:#fff;white-space:nowrap;}
+.subnav a:hover{border-color:var(--forest-light);color:var(--forest);}
+.subnav a b{color:var(--forest);}
+.subnav input{flex:1;min-width:180px;padding:7px 12px;border:0.5px solid var(--slate-200);border-radius:100px;font-family:'Inter',sans-serif;font-size:12.5px;outline:none;}
+#searchResults{position:absolute;top:100%;left:1.5rem;right:1.5rem;background:#fff;border:0.5px solid var(--slate-200);border-radius:0 0 12px 12px;box-shadow:0 12px 30px rgba(0,0,0,0.1);max-height:320px;overflow-y:auto;display:none;}
+#searchResults div{padding:9px 16px;font-size:12.5px;cursor:pointer;border-bottom:0.5px solid var(--slate-100);}
+#searchResults div:hover{background:var(--forest-pale);}
+#searchResults .k{font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:var(--slate-400);margin-right:8px;}
+.inbox{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.25rem;}
+.inbox .chip{display:flex;align-items:center;gap:8px;background:#fff;border:0.5px solid var(--slate-100);border-radius:12px;padding:10px 16px;font-size:12.5px;cursor:pointer;}
+.inbox .chip b{font-size:1.15rem;color:var(--amber);}
+.inbox .chip.zero b{color:var(--slate-200);}
+.inbox .chip.zero{opacity:0.65;cursor:default;}
+.card h2{cursor:pointer;user-select:none;}
+.card h2::before{content:"▾";display:inline-block;margin-right:8px;color:var(--slate-400);transition:transform 0.15s;}
+.card.collapsed h2::before{transform:rotate(-90deg);}
+.card.collapsed > *:not(h2){display:none;}
+.card.flash{outline:2px solid var(--forest-light);outline-offset:2px;}
+#notesModal{display:none;position:fixed;inset:0;background:rgba(20,20,18,0.5);z-index:60;align-items:center;justify-content:center;padding:1.5rem;}
+#notesModal .box{background:#fff;border-radius:14px;max-width:520px;width:100%;max-height:80vh;overflow-y:auto;padding:1.5rem;}
+#notesModal textarea{width:100%;border:0.5px solid var(--slate-200);border-radius:8px;padding:10px;font-family:'Inter',sans-serif;font-size:13px;resize:vertical;}
+.noteItem{border-left:2px solid var(--forest-pale);padding:6px 12px;margin-bottom:8px;font-size:12.5px;}
+.week label{display:flex;align-items:center;gap:9px;padding:5px 0;font-size:13px;cursor:pointer;}
+.week input{accent-color:var(--forest);width:15px;height:15px;}
+.week .auto{font-size:10.5px;color:var(--forest-light);border:0.5px solid var(--forest-pale);border-radius:100px;padding:1px 8px;}
 </style>
 </head>
 <body>
@@ -43,6 +70,17 @@ a{color:var(--forest-light);}
   <div><a href="/" style="color:#fff;font-size:12px;margin-right:12px;">← Website</a><button onclick="signOut()">Sign out</button></div>
 </div>
 <div class="wrap" id="app"><p class="muted" style="text-align:center;margin-top:4rem;">Loading…</p></div>
+
+<div id="notesModal"><div class="box">
+  <h2 style="margin-bottom:0.25rem;" id="nmTitle">Notes</h2>
+  <p class="muted" id="nmSub" style="margin-bottom:1rem;">Private desk notes — never visible to the member.</p>
+  <div id="nmList" class="muted">Loading…</div>
+  <textarea id="nmText" rows="3" placeholder="Add a note — e.g. 'Called 07-30, sending W-9, follow up Friday'…" style="margin-top:0.75rem;"></textarea>
+  <div style="display:flex;justify-content:space-between;margin-top:0.75rem;">
+    <button class="act ghost" onclick="closeNotes()">Close</button>
+    <button class="act ok" onclick="saveNote()">Save note</button>
+  </div>
+</div></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="/portal/config.js"></script>
@@ -80,6 +118,22 @@ async function notifyMember(type, to, data) {
   }
   document.getElementById('app').innerHTML = `
     <h1>Desk Admin</h1>
+    <div class="subnav" style="position:sticky;">
+      <a href="#c-rfqs" onclick="jumpTo(event,'c-rfqs')">RFQ <b id="n-rfqs"></b></a>
+      <a href="#c-members" onclick="jumpTo(event,'c-members')">Members <b id="n-members"></b></a>
+      <a href="#c-reports" onclick="jumpTo(event,'c-reports')">Reports <b id="n-reports"></b></a>
+      <a href="#c-oil" onclick="jumpTo(event,'c-oil')">Feedstock <b id="n-oil"></b></a>
+      <a href="#c-registry" onclick="jumpTo(event,'c-registry')">Registry</a>
+      <a href="#c-certs" onclick="jumpTo(event,'c-certs')">Certificates</a>
+      <a href="#c-projects" onclick="jumpTo(event,'c-projects')">Projects</a>
+      <a href="#c-news" onclick="jumpTo(event,'c-news')">Newsletter</a>
+      <a href="#c-backup" onclick="jumpTo(event,'c-backup')">Backup</a>
+      <a href="#c-audit" onclick="jumpTo(event,'c-audit')">Log</a>
+      <input id="gSearch" placeholder="Search everything — member, email, serial, RFQ…" oninput="globalSearch(this.value)" onblur="setTimeout(()=>{document.getElementById('searchResults').style.display='none';},250)"/>
+      <div id="searchResults"></div>
+    </div>
+    <div class="inbox" id="inbox"></div>
+    <div class="card week" id="c-week"><h2>This week — desk routine</h2><div id="week" class="muted">Loading…</div></div>
     <div id="overview" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:1.5rem;"></div>
     <div class="card" id="c-rfqs"><h2>RFQ desk — quote requests</h2>
       <input placeholder="Filter…" oninput="filterCard('rfqs', this.value)" style="padding:7px 12px;border:0.5px solid var(--slate-200);border-radius:7px;font-family:'Inter',sans-serif;font-size:12px;margin-bottom:8px;width:220px;"/>
@@ -161,8 +215,125 @@ async function notifyMember(type, to, data) {
     </div>`;
   loadMembers(); loadReports(); loadDocs(); loadListings(); loadCxfProjects(); loadSubscriberCount();
   loadRfqs(); loadCertificates(); capturePriceSnapshot(); backupReminder(); loadOverview(); loadAudit();
-  loadOilAdmin(); loadRegistry();
+  loadOilAdmin(); loadRegistry(); loadInbox(); loadWeek(); wireCollapse();
 })();
+
+/* ---------- Desk suite: inbox, nav, collapse, search, notes, week ---------- */
+function jumpTo(e, id){
+  e.preventDefault();
+  const c = document.getElementById(id);
+  if (!c) return;
+  c.classList.remove('collapsed');
+  c.scrollIntoView({behavior:'smooth', block:'start'});
+  c.classList.add('flash'); setTimeout(() => c.classList.remove('flash'), 1600);
+}
+function toggleCard(id){
+  const c = document.getElementById(id);
+  c.classList.toggle('collapsed');
+  try { localStorage.setItem('cxf_col_' + id, c.classList.contains('collapsed') ? '1' : '0'); } catch(e){}
+}
+function wireCollapse(){
+  document.querySelectorAll('.card').forEach(c => {
+    const h = c.querySelector('h2');
+    if (!h) return;
+    h.addEventListener('click', () => toggleCard(c.id));
+    try { if (localStorage.getItem('cxf_col_' + c.id) === '1') c.classList.add('collapsed'); } catch(e){}
+  });
+}
+async function loadInbox(){
+  const cnt = async (table, col, val) => {
+    const { count } = await db.from(table).select('id', { count: 'exact', head: true }).eq(col, val);
+    return count || 0;
+  };
+  const [apps, reps, oil, rfq] = await Promise.all([
+    cnt('members','status','pending'), cnt('reports','status','submitted'),
+    cnt('oil_listings','status','pending'), cnt('rfqs','status','new')
+  ]);
+  const chip = (n, label, id) => `<div class="chip${n ? '' : ' zero'}" ${n ? `onclick="jumpTo(event,'${id}')"` : ''}><b>${n}</b> ${label}</div>`;
+  document.getElementById('inbox').innerHTML =
+    chip(apps, 'applications to review', 'c-members') +
+    chip(reps, 'reports to validate', 'c-reports') +
+    chip(oil, 'oil listings pending', 'c-oil') +
+    chip(rfq, 'RFQs awaiting quote', 'c-rfqs');
+  const set = (id, n) => { const el = document.getElementById(id); if (el) el.textContent = n ? n : ''; };
+  set('n-members', apps); set('n-reports', reps); set('n-oil', oil); set('n-rfqs', rfq);
+}
+let SEARCH_T = null;
+function globalSearch(q){
+  clearTimeout(SEARCH_T);
+  const box = document.getElementById('searchResults');
+  q = q.trim();
+  if (q.length < 2) { box.style.display = 'none'; return; }
+  SEARCH_T = setTimeout(async () => {
+    const like = '%' + q + '%';
+    const [m, r, c, f] = await Promise.all([
+      db.from('members').select('id, company, email, contact_name, status').or(`company.ilike.${like},email.ilike.${like},contact_name.ilike.${like}`).limit(5),
+      db.from('registry_units').select('serial, project_label, status, quantity_tco2e').or(`serial.ilike.${like},project_label.ilike.${like}`).limit(5),
+      db.from('certificates').select('serial, buyer_display, volume_tco2e').or(`serial.ilike.${like},buyer_display.ilike.${like}`).limit(5),
+      db.from('rfqs').select('id, company, listing_name, status').or(`company.ilike.${like},listing_name.ilike.${like},email.ilike.${like}`).limit(5)
+    ]);
+    let html = '';
+    (m.data || []).forEach(x => html += `<div onclick="jumpTo(event,'c-members')"><span class="k">Member</span><b>${esc(x.company)}</b> · ${esc(x.email)} · ${esc(x.status)}</div>`);
+    (r.data || []).forEach(x => html += `<div onclick="jumpTo(event,'c-registry')"><span class="k">Registry</span><b>${esc(x.serial)}</b> · ${esc(x.project_label)} · ${Number(x.quantity_tco2e).toLocaleString()} tCO₂e · ${esc(x.status)}</div>`);
+    (c.data || []).forEach(x => html += `<div onclick="jumpTo(event,'c-certs')"><span class="k">Certificate</span><b>${esc(x.serial)}</b> · ${esc(x.buyer_display)} · ${Number(x.volume_tco2e).toLocaleString()} tCO₂e</div>`);
+    (f.data || []).forEach(x => html += `<div onclick="jumpTo(event,'c-rfqs')"><span class="k">RFQ</span><b>${esc(x.company)}</b> · ${esc(x.listing_name)} · ${esc(x.status)}</div>`);
+    box.innerHTML = html || '<div class="muted" style="cursor:default;">No matches.</div>';
+    box.style.display = 'block';
+  }, 250);
+}
+let NOTES_MEMBER = null;
+async function openNotes(id, company){
+  NOTES_MEMBER = id;
+  document.getElementById('nmTitle').textContent = 'Notes — ' + company;
+  document.getElementById('nmText').value = '';
+  document.getElementById('notesModal').style.display = 'flex';
+  const list = document.getElementById('nmList');
+  list.textContent = 'Loading…';
+  const { data, error } = await db.from('member_notes').select('*').eq('member_id', id).order('created_at',{ascending:false}).limit(20);
+  if (error) { list.textContent = 'Error: ' + error.message + ' — did you run schema-member-notes.sql?'; return; }
+  list.innerHTML = (data && data.length)
+    ? data.map(n => `<div class="noteItem">${esc(n.note)}<div class="muted">${String(n.created_at).slice(0,10)} · ${esc(n.author)}</div></div>`).join('')
+    : '<p class="muted">No notes yet.</p>';
+}
+function closeNotes(){ document.getElementById('notesModal').style.display = 'none'; }
+async function saveNote(){
+  const note = document.getElementById('nmText').value.trim();
+  if (!note || !NOTES_MEMBER) return;
+  const { error } = await db.from('member_notes').insert({ member_id: NOTES_MEMBER, note, author: USER.email });
+  if (error) return alert('Error: ' + error.message + ' — did you run schema-member-notes.sql?');
+  audit('member_note', NOTES_MEMBER);
+  const t = document.getElementById('nmTitle').textContent.replace('Notes — ','');
+  openNotes(NOTES_MEMBER, t); loadMembers();
+}
+function isoWeek(){
+  const d = new Date(); const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  const day = t.getUTCDay() || 7; t.setUTCDate(t.getUTCDate() + 4 - day);
+  const y = new Date(Date.UTC(t.getUTCFullYear(),0,1));
+  return t.getUTCFullYear() + '-W' + String(Math.ceil((((t - y) / 86400000) + 1) / 7)).padStart(2,'0');
+}
+function weekStartISO(){
+  const d = new Date(); const day = d.getDay() || 7;
+  d.setDate(d.getDate() - day + 1);
+  return d.toISOString().slice(0,10);
+}
+async function loadWeek(){
+  const el = document.getElementById('week');
+  const wk = isoWeek(); const start = weekStartISO();
+  let pricesOk = false, snapOk = false, backupOk = false;
+  try { const p = await (await fetch('/prices.json', {cache:'no-store'})).json(); pricesOk = (p.lastUpdated || '') >= start; } catch(e){}
+  try { const { data } = await db.from('price_history').select('date').gte('date', start).limit(1); snapOk = !!(data && data.length); } catch(e){}
+  try { const last = parseInt(localStorage.getItem('cxf_last_backup') || '0'); backupOk = Date.now() - last < 7 * 86400000; } catch(e){}
+  const manual = key => { try { return localStorage.getItem('cxf_wk_' + wk + '_' + key) === '1'; } catch(e){ return false; } };
+  const row = (done, label, auto, key) => `
+    <label><input type="checkbox" ${done ? 'checked' : ''} ${auto ? 'disabled' : `onchange="try{localStorage.setItem('cxf_wk_${wk}_${key}', this.checked ? '1' : '0');}catch(e){}"`}/>
+    <span style="${done ? 'color:var(--slate-400);text-decoration:line-through;' : ''}">${label}</span>${auto ? '<span class="auto">auto</span>' : ''}</label>`;
+  el.innerHTML =
+    row(pricesOk, 'Update weekly marks — prices.json uploaded', true) +
+    row(snapOk, 'Price snapshot captured to history', true) +
+    row(manual('desknote'), 'Send the Monday Desk Note to subscribers', false, 'desknote') +
+    row(backupOk, 'Weekly backup downloaded', true) +
+    `<p class="muted" style="margin-top:6px;">Week ${wk} — auto items tick themselves; the checklist resets every Monday.</p>`;
+}
 
 /* ---------- CXF Registry (serialized units) ---------- */
 async function nextBatchSerial(){
@@ -625,21 +796,34 @@ async function loadMembers(){
   const el = document.getElementById('members');
   if (error) { el.textContent = 'Error: ' + error.message; return; }
   if (!data.length) { el.textContent = 'No members yet.'; return; }
+  // CRM: latest note date + count per member (table may not exist yet — degrade gracefully)
+  const noteInfo = {};
+  try {
+    const { data: notes } = await db.from('member_notes').select('member_id, created_at');
+    (notes || []).forEach(n => {
+      const i = noteInfo[n.member_id] || { count: 0, last: '' };
+      i.count++; if (String(n.created_at) > i.last) i.last = String(n.created_at);
+      noteInfo[n.member_id] = i;
+    });
+  } catch(e){}
   const subPill = s => {
     const cls = { active:'validated', trial:'approved', launch_free:'approved', exempt:'validated', past_due:'pending', canceled:'rejected' }[s] || 'pending';
     return `<span class="pill ${cls}">${esc((s || 'launch_free').replace('_',' '))}</span>`;
   };
   el.innerHTML = `<table><tr><th>Company</th><th>Contact</th><th>Email</th><th>Type</th><th>Status</th><th>Subscription</th><th>Actions</th></tr>` +
-    data.map(m => `<tr>
-      <td><b>${esc(m.company)}</b></td><td>${esc(m.contact_name)}</td><td><a href="mailto:${esc(m.email)}">${esc(m.email)}</a></td>
+    data.map(m => { const ni = noteInfo[m.id]; return `<tr>
+      <td><b>${esc(m.company)}</b>${ni ? '<div class="muted">' + ni.count + ' note' + (ni.count > 1 ? 's' : '') + ' · last ' + ni.last.slice(0,10) + '</div>' : ''}</td>
+      <td>${esc(m.contact_name)}</td><td><a href="mailto:${esc(m.email)}">${esc(m.email)}</a></td>
       <td>${esc(m.member_type ?? '—')}</td>
       <td><span class="pill ${esc(m.status)}">${esc(m.status)}</span></td>
       <td>${subPill(m.subscription_status)}${m.subscription_note ? '<div class="muted">' + esc(m.subscription_note) + '</div>' : ''}</td>
       <td>${m.status !== 'approved' ? `<button class="act ok" onclick="setStatus('${m.id}','approved')">Approve</button>` : ''}
           ${m.status !== 'rejected' ? `<button class="act bad" onclick="setStatus('${m.id}','rejected')">Reject</button>` : ''}
           ${m.status === 'approved' ? `<button class="act ghost" onclick="setStatus('${m.id}','suspended')">Suspend</button>` : ''}
-          <button class="act warn" onclick="setSubscription('${m.id}')">Set sub</button></td>
-    </tr>`).join('') + '</table>';
+          <button class="act warn" onclick="setSubscription('${m.id}')">Set sub</button>
+          <button class="act ghost" onclick="openNotes('${m.id}','${esc(m.company)}')">Notes${ni ? ' (' + ni.count + ')' : ''}</button>
+          <button class="act ghost" onclick="location.href='mailto:${esc(m.email)}?subject=' + encodeURIComponent('CarbonXFuture — ${esc(m.company)}')">Email</button></td>
+    </tr>`; }).join('') + '</table>';
 }
 const SUB_STATES = ['launch_free','trial','active','past_due','canceled','exempt'];
 async function setSubscription(id){
