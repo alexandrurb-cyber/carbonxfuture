@@ -517,11 +517,31 @@ nav.menu-open .nav-signin{text-align:center;margin-top:6px;}
       <a href="#calculators">Calculators</a>
       <a href="#donate">Volunteers</a>
       <a href="#about">About</a>
-      <a href="/portal/" class="nav-cta">Log in / Sign up</a>
+      <a href="/portal/" class="nav-cta" id="navAccount">Log in / Sign up</a>
     </div>
     <button class="nav-mobile-toggle" aria-label="Menu"><i class="ti ti-menu-2"></i></button>
   </div>
 </nav>
+<script>
+/* Reflect the member session on the public site: if signed in, the nav
+   button shows the account instead of "Log in / Sign up". No SDK needed —
+   Supabase keeps the session in localStorage. */
+(function(){
+  try {
+    var raw = localStorage.getItem('sb-zohskwbavtzvecqziklq-auth-token');
+    if (!raw) return;
+    var s = JSON.parse(raw);
+    var sess = s.currentSession || s;
+    var email = sess && sess.user && sess.user.email;
+    if (!email) return;
+    var name = email.split('@')[0];
+    if (name.length > 14) name = name.slice(0, 13) + '…';
+    var btn = document.getElementById('navAccount');
+    btn.innerHTML = '&#128100;&nbsp;' + name.replace(/</g,'&lt;');
+    btn.title = 'Signed in as ' + email + ' — open your portal';
+  } catch(e){}
+})();
+</script>
 
 <!-- HERO -->
 <section class="hero">
