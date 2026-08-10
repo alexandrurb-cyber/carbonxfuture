@@ -6,6 +6,7 @@
 <title>Insights — Carbon &amp; Waste Oil Market Intelligence | CarbonXFuture</title>
 <meta name="description" content="Weekly desk notes and analysis on waste-oil carbon credits, base oil markets, voluntary carbon pricing and regulation — from the CarbonXFuture desk in Fort Lauderdale."/>
 <link rel="canonical" href="https://www.carbonxfuture.com/insights/"/>
+<link rel="alternate" type="application/rss+xml" title="CarbonXFuture Insights" href="/insights/feed.xml"/>
 <link rel="icon" href="/favicon.ico" sizes="48x48"/>
 <meta property="og:title" content="CarbonXFuture Insights — carbon &amp; waste oil intelligence"/>
 <meta property="og:description" content="Weekly desk notes on waste-oil carbon credits, base oils and voluntary carbon markets."/>
@@ -128,7 +129,34 @@ h1{font-family:'Playfair Display',serif;font-size:clamp(1.8rem,4vw,2.6rem);font-
 
 </div>
 
-<div class="cta"><b>The Desk Note, every Monday.</b> Prices, base oil supply and market moves that matter — free, no spam. <a href="/#newsletter">Subscribe on the homepage →</a></div>
+<div class="cta" id="subBox"><b>Get the Desk Note every Monday.</b> Prices, base oil supply and the moves that matter — free, no spam.
+  <div style="display:flex;gap:8px;margin-top:0.8rem;flex-wrap:wrap;">
+    <input id="subEmail" type="email" placeholder="you@company.com" onkeydown="if(event.key==='Enter')cxfSub()" style="flex:1;min-width:200px;padding:10px 14px;border:0.5px solid var(--slate-200);border-radius:8px;font-family:'Inter',sans-serif;font-size:14px;outline:none;background:#fff;"/>
+    <button id="subBtn" onclick="cxfSub()" style="background:var(--forest);color:#fff;border:none;border-radius:8px;padding:10px 22px;font-family:'Inter',sans-serif;font-size:13.5px;font-weight:500;cursor:pointer;">Subscribe</button>
+  </div>
+  <div id="subNote" style="font-size:12px;color:var(--slate-400);margin-top:7px;">Unsubscribe anytime with one reply.</div>
+</div>
+<script>
+async function cxfSub(){
+  var input = document.getElementById('subEmail'), btn = document.getElementById('subBtn'), note = document.getElementById('subNote');
+  var email = input.value.trim();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { note.textContent = 'Please enter a valid email address.'; return; }
+  btn.disabled = true; btn.textContent = 'Subscribing…';
+  try {
+    var res = await fetch('https://zohskwbavtzvecqziklq.supabase.co/rest/v1/newsletter_subscribers', {
+      method: 'POST',
+      headers: { apikey: 'sb_publishable_K-4sl6hEk75fByleZEZcfA_f_Zha9aI', 'Content-Type': 'application/json', Prefer: 'return=minimal' },
+      body: JSON.stringify({ email: email })
+    });
+    if (!res.ok && res.status !== 409) throw new Error();
+    btn.textContent = '\u2713 Subscribed'; input.value = '';
+    note.textContent = 'Welcome aboard — the next Desk Note lands in your inbox.';
+  } catch(e) {
+    btn.disabled = false; btn.textContent = 'Subscribe';
+    note.textContent = 'Something went wrong — please try again, or email desk@carbonxfuture.com.';
+  }
+}
+</script>
 
 <div class="foot">© 2026 CarbonXFuture Markets, Inc. · <a href="/">Home</a> · <a href="/prices.html">CXF Price Index</a> · <a href="/registry.html">CXF Registry</a> · <a href="/faq.html">FAQ</a> · <a href="/waste-oil-carbon-credits.html">Waste oil credits guide</a></div>
 </div>

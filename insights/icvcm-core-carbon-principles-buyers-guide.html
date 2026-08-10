@@ -60,6 +60,35 @@ article li{margin-bottom:0.5rem;}
 
 <div class="cta"><b>Verifying is free:</b> check any CXF batch in the <a href="/registry.html">public registry</a> or any certificate at <a href="/verify.html">/verify</a> — no account required.</div>
 
+<div class="cta" id="subBox"><b>Get the Desk Note every Monday.</b> Prices, base oil supply and the moves that matter — free, no spam.
+  <div style="display:flex;gap:8px;margin-top:0.8rem;flex-wrap:wrap;">
+    <input id="subEmail" type="email" placeholder="you@company.com" onkeydown="if(event.key==='Enter')cxfSub()" style="flex:1;min-width:200px;padding:10px 14px;border:0.5px solid var(--slate-200);border-radius:8px;font-family:'Inter',sans-serif;font-size:14px;outline:none;background:#fff;"/>
+    <button id="subBtn" onclick="cxfSub()" style="background:var(--forest);color:#fff;border:none;border-radius:8px;padding:10px 22px;font-family:'Inter',sans-serif;font-size:13.5px;font-weight:500;cursor:pointer;">Subscribe</button>
+  </div>
+  <div id="subNote" style="font-size:12px;color:var(--slate-400);margin-top:7px;">Unsubscribe anytime with one reply.</div>
+</div>
+<script>
+async function cxfSub(){
+  var input = document.getElementById('subEmail'), btn = document.getElementById('subBtn'), note = document.getElementById('subNote');
+  var email = input.value.trim();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { note.textContent = 'Please enter a valid email address.'; return; }
+  btn.disabled = true; btn.textContent = 'Subscribing…';
+  try {
+    var res = await fetch('https://zohskwbavtzvecqziklq.supabase.co/rest/v1/newsletter_subscribers', {
+      method: 'POST',
+      headers: { apikey: 'sb_publishable_K-4sl6hEk75fByleZEZcfA_f_Zha9aI', 'Content-Type': 'application/json', Prefer: 'return=minimal' },
+      body: JSON.stringify({ email: email })
+    });
+    if (!res.ok && res.status !== 409) throw new Error();
+    btn.textContent = '\u2713 Subscribed'; input.value = '';
+    note.textContent = 'Welcome aboard — the next Desk Note lands in your inbox.';
+  } catch(e) {
+    btn.disabled = false; btn.textContent = 'Subscribe';
+    note.textContent = 'Something went wrong — please try again, or email desk@carbonxfuture.com.';
+  }
+}
+</script>
+
 <div class="foot">© 2026 CarbonXFuture Markets, Inc. · <a href="/insights/">All insights</a> · <a href="/registry-rules.html">Registry Rules</a> · <a href="/buyers.html">For buyers</a> · <a href="/faq.html">FAQ</a></div>
 </div>
 
