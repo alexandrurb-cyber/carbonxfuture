@@ -143,6 +143,10 @@ tr:hover td{background:var(--forest-pale);cursor:pointer;}
       <input id="epGallons" type="number" min="0" placeholder="Gallons" style="max-width:110px;"/>
       <button class="act ok" onclick="addEpaReport()">Add</button>
     </div>
+    <div id="drXcheckWrap" style="display:none;">
+      <label style="margin-top:1.25rem;">EPA ↔ CXF cross-check (per calendar year)</label>
+      <div id="drXcheck" class="muted" style="border:0.5px solid var(--slate-100);border-radius:8px;padding:8px 11px;font-size:12.5px;"></div>
+    </div>
   </div>
   <label style="margin-top:1.25rem;">Log activity</label>
   <div style="display:flex;gap:8px;">
@@ -162,7 +166,7 @@ tr:hover td{background:var(--forest-pale);cursor:pointer;}
 <script src="/portal/config.js"></script>
 <script>
 const db = supabase.createClient(CXF_SUPABASE_URL, CXF_SUPABASE_KEY);
-let USER = null, CONTACTS = [], VIEW = 'board', QUERY = '', CURRENT = null;
+let USER = null, CONTACTS = [], VIEW = 'board', QUERY = '', CURRENT = null, EPA_ALL = [], PORTAL_REPORTS = [];
 const esc = s => String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 const STAGES = [['lead','Lead'],['contacted','Contacted'],['quoted','Quoted'],['negotiation','Negotiation'],['customer','Customer'],['lost','Lost']];
 const OPEN_STAGES = ['lead','contacted','quoted','negotiation'];
@@ -214,7 +218,51 @@ async function load(){
     const { data: lic } = await db.from('crm_licenses').select('*');
     LICENSES = lic || [];
   } catch(e){ LICENSES = []; }
+  try {
+    const { data: ep } = await db.from('crm_epa_reports').select('contact_id, period, gallons');
+    EPA_ALL = ep || [];
+  } catch(e){ EPA_ALL = []; }
+  try {
+    const { data: pr } = await db.from('reports').select('member_id, period, litres, status').in('status',['submitted','validated']);
+    PORTAL_REPORTS = pr || [];
+  } catch(e){ PORTAL_REPORTS = []; }
   render();
+}
+
+/* ---------- EPA ↔ CXF cross-check (integrity) ----------
+   Compares, per calendar year, the gallons a client declared to EPA/state
+   against the volumes they reported to the CXF portal for credits
+   (litres → gallons). CXF volumes exceeding the EPA declaration is a red
+   flag; CXF volumes with no EPA declaration on record needs review. */
+const GAL = 3.78541;
+function crossCheckRows(c){
+  if (!c || !c.member_id) return [];
+  const epaByYear = {};
+  EPA_ALL.filter(r => r.contact_id === c.id).forEach(r => {
+    const y = String(r.period).slice(0,4);
+    epaByYear[y] = (epaByYear[y] || 0) + (Number(r.gallons) || 0);
+  });
+  const cxfByYear = {};
+  PORTAL_REPORTS.filter(r => r.member_id === c.member_id).forEach(r => {
+    const y = String(r.period).slice(0,4);
+    cxfByYear[y] = (cxfByYear[y] || 0) + (Number(r.litres) || 0) / GAL;
+  });
+  const years = [...new Set([...Object.keys(epaByYear), ...Object.keys(cxfByYear)])].sort().reverse();
+  return years.map(y => {
+    const epa = Math.round(epaByYear[y] || 0), cxf = Math.round(cxfByYear[y] || 0);
+    let status, cls;
+    if (cxf === 0) { status = 'no CXF reports'; cls = 'muted'; }
+    else if (epa === 0) { status = 'NO EPA DECLARATION'; cls = 'amber'; }
+    else if (cxf > epa * 1.02) { status = 'CXF EXCEEDS EPA'; cls = 'red'; }
+    else { status = 'covered ✓ (' + Math.round(cxf / epa * 100) + '% of declared)'; cls = 'ok'; }
+    return { year: y, epa, cxf, status, cls };
+  });
+}
+function crossCheckFlags(){
+  return CONTACTS.map(c => {
+    const bad = crossCheckRows(c).filter(r => r.cls === 'red' || r.cls === 'amber');
+    return bad.length ? { contact: c, rows: bad } : null;
+  }).filter(Boolean);
 }
 function expiringLicenses(days){
   const t = todayISO();
@@ -260,6 +308,7 @@ function renderStats(){
     ['Due today', dueToday, dueToday ? 'warn' : ''],
     ['Overdue', overdue, overdue ? 'warn' : ''],
     ['Licenses expiring ≤90d', expiringLicenses(90).length, expiringLicenses(90).length ? 'warn' : ''],
+    ['EPA cross-check flags', crossCheckFlags().length, crossCheckFlags().length ? 'warn' : ''],
     ['New this month', newMonth, '']
   ];
   document.getElementById('stats').innerHTML = s.map(([l,v,cls]) => `<div class="stat ${cls}"><b>${v}</b><span>${l}</span></div>`).join('');
@@ -340,7 +389,16 @@ function renderToday(el){
     `<div class="todo"><h3 style="color:var(--red);">⚠ Overdue (${over.length})</h3>${over.map(item).join('') || '<p class="muted">Nothing overdue — clean desk.</p>'}</div>` +
     `<div class="todo"><h3 style="color:var(--forest);">Today (${today.length})</h3>${today.map(item).join('') || '<p class="muted">Nothing due today.</p>'}</div>` +
     `<div class="todo"><h3>Upcoming</h3>${week.map(item).join('') || '<p class="muted">No upcoming follow-ups. Open a contact and set one.</p>'}</div>` +
-    `<div class="todo"><h3 style="color:var(--amber);">Licenses &amp; permits expiring ≤90 days (${lic.length})</h3>${lic.map(licItem).join('') || '<p class="muted">No licenses expiring in the next 90 days.</p>'}</div>`;
+    `<div class="todo"><h3 style="color:var(--amber);">Licenses &amp; permits expiring ≤90 days (${lic.length})</h3>${lic.map(licItem).join('') || '<p class="muted">No licenses expiring in the next 90 days.</p>'}</div>` +
+    (() => {
+      const flags = crossCheckFlags();
+      const fItem = f => `<div class="item" onclick="openContact('${f.contact.id}')">
+        <b>${esc(f.contact.company || f.contact.contact_name || f.contact.email)}</b>
+        <span class="muted">${f.rows.map(r => r.year + ': ' + r.status).join(' · ')}</span>
+        <span class="pill ${f.rows.some(r => r.cls === 'red') ? 'lost' : 'quoted'}" style="margin-left:auto;">${f.rows.some(r => r.cls === 'red') ? 'MISMATCH' : 'review'}</span>
+      </div>`;
+      return `<div class="todo"><h3 style="color:var(--red);">EPA ↔ CXF cross-check flags (${flags.length})</h3>${flags.map(fItem).join('') || '<p class="muted">All member credit volumes are covered by EPA declarations on record.</p>'}</div>`;
+    })();
 }
 
 /* ---------- Drawer (contact profile) ---------- */
@@ -361,7 +419,7 @@ function openDrawer(c){
     cb.style.display = '';
     document.getElementById('licKind').innerHTML = LIC_KINDS.map(k => '<option>' + k + '</option>').join('');
     document.getElementById('epForm').innerHTML = EPA_FORMS.map(k => '<option>' + k + '</option>').join('');
-    renderLicenseList(c.id); loadEpaReports(c.id);
+    renderLicenseList(c.id); loadEpaReports(c.id); renderXcheck(c);
   } else cb.style.display = 'none';
   document.getElementById('drTimeline').innerHTML = c ? '<p class="muted">Loading…</p>' : '<p class="muted">Save the contact first, then log calls and notes here.</p>';
   document.getElementById('drawer').style.display = 'flex';
@@ -473,14 +531,35 @@ async function addEpaReport(){
   const { error } = await db.from('crm_epa_reports').insert({ contact_id: CURRENT, period, form, gallons });
   if (error) return alert('Error: ' + error.message + (/relation|schema/i.test(error.message) ? '\n\nDid you run schema-epa.sql?' : ''));
   ['epPeriod','epGallons'].forEach(i => document.getElementById(i).value = '');
+  EPA_ALL.push({ contact_id: CURRENT, period, gallons });
   loadEpaReports(CURRENT);
+  renderXcheck(CONTACTS.find(x => x.id === CURRENT)); renderStats();
   audit('crm_epa_report_added', period + ' · ' + form + (gallons ? ' · ' + gallons + ' gal' : ''));
 }
 async function delEpaReport(id){
   if (!confirm('Remove this reported quantity?')) return;
   const { error } = await db.from('crm_epa_reports').delete().eq('id', id);
   if (error) return alert('Error: ' + error.message);
+  try { const { data: ep } = await db.from('crm_epa_reports').select('contact_id, period, gallons'); EPA_ALL = ep || []; } catch(e){}
   loadEpaReports(CURRENT);
+  renderXcheck(CONTACTS.find(x => x.id === CURRENT)); renderStats();
+}
+
+function renderXcheck(c){
+  const wrap = document.getElementById('drXcheckWrap');
+  if (!c || !c.member_id) { wrap.style.display = 'none'; return; }
+  wrap.style.display = '';
+  const el = document.getElementById('drXcheck');
+  const rows = crossCheckRows(c);
+  if (!rows.length) { el.textContent = 'No data yet on either side — add EPA declared quantities above; CXF volumes come from the member\'s portal reports automatically.'; return; }
+  const color = cls => cls === 'red' ? 'var(--red)' : cls === 'amber' ? 'var(--amber)' : cls === 'ok' ? 'var(--forest)' : 'var(--slate-400)';
+  el.innerHTML = rows.map(r => `<div class="docrow">
+    <b>${r.year}</b>
+    <span class="muted">EPA: ${r.epa ? r.epa.toLocaleString() + ' gal' : '—'}</span>
+    <span class="muted">CXF portal: ${r.cxf ? r.cxf.toLocaleString() + ' gal' : '—'}</span>
+    <b style="margin-left:auto;color:${color(r.cls)};white-space:nowrap;">${r.cls === 'red' ? '✗ ' : r.cls === 'amber' ? '⚠ ' : ''}${esc(r.status)}</b>
+  </div>`).join('') +
+  '<p class="muted" style="margin-top:6px;">Rule: volumes reported to the CXF portal for credits should not exceed what the client declared to EPA/state. CXF gallons are converted from portal litres (1 gal = 3.785 L), submitted + validated reports.</p>';
 }
 
 async function loadDrawerDocs(memberId){
