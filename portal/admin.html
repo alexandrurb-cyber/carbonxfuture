@@ -1225,6 +1225,9 @@ async function sendNewsletter(){
     if (!res.ok) throw new Error(out.error || ('HTTP ' + res.status));
     st.textContent = `✓ Sent to ${out.sent}/${out.total} subscribers` + (out.failed?.length ? ` — failed: ${out.failed.join(', ')}` : '');
     audit('newsletter_sent', subject + ' → ' + out.sent + ' subscribers');
+    // Auto-tick "Send the Monday Desk Note" in the weekly desk routine
+    try { localStorage.setItem('cxf_wk_' + isoWeek() + '_desknote', '1'); } catch(e){}
+    loadWeek();
   } catch(e) { st.textContent = ''; alert('Send failed: ' + e.message); }
   btn.disabled = false;
 }
