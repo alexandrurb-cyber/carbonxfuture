@@ -101,6 +101,8 @@ a{color:var(--forest-light);}
     <div><label>Tags</label><input id="pf_tags" placeholder="e.g. hot lead, collector, FL"/></div>
   </div>
   <label>Address</label><textarea id="pf_address" rows="2"></textarea>
+  <label style="margin-top:14px;">Documents on file</label>
+  <div id="pfDocs" class="muted" style="font-size:12.5px;border:0.5px solid var(--slate-100);border-radius:8px;padding:8px 11px;max-height:160px;overflow-y:auto;">Loading…</div>
   <div style="display:flex;justify-content:space-between;margin-top:1rem;">
     <button class="act ghost" onclick="closeProfile()">Close</button>
     <div>
@@ -886,7 +888,16 @@ async function loadCrm(){
     const { data: notes } = await db.from('member_notes').select('member_id, created_at, note').order('created_at',{ascending:false});
     (notes || []).forEach(n => { if (!noteInfo[n.member_id]) noteInfo[n.member_id] = { count: 0, last: n.created_at, preview: n.note }; noteInfo[n.member_id].count++; });
   } catch(e){}
-  el.innerHTML = `<table><tr><th>Company</th><th>Contact</th><th>Email</th><th>Phone</th><th>Location</th><th>Source</th><th>Tags</th><th>Member since</th><th>Last note</th><th>Actions</th></tr>` +
+  const docInfo = {};
+  try {
+    const { data: docs } = await db.from('documents').select('member_id, status');
+    (docs || []).forEach(d => {
+      const i = docInfo[d.member_id] || { total: 0, validated: 0 };
+      i.total++; if (d.status === 'validated') i.validated++;
+      docInfo[d.member_id] = i;
+    });
+  } catch(e){}
+  el.innerHTML = `<table><tr><th>Company</th><th>Contact</th><th>Email</th><th>Phone</th><th>Location</th><th>Source</th><th>Tags</th><th>Docs</th><th>Member since</th><th>Last note</th><th>Actions</th></tr>` +
     data.map(m => { const ni = noteInfo[m.id]; return `<tr>
       <td><b>${esc(m.company)}</b>${m.website ? '<div class="muted"><a href="' + esc(m.website) + '" target="_blank" rel="noopener">' + esc(String(m.website).replace(/^https?:\/\//,'')) + '</a></div>' : ''}</td>
       <td>${esc(m.contact_name ?? '—')}</td>
@@ -895,6 +906,7 @@ async function loadCrm(){
       <td>${esc([m.city, m.country].filter(Boolean).join(', ') || '—')}</td>
       <td class="muted">${esc(m.source ?? '—')}</td>
       <td class="muted">${esc(m.tags ?? '—')}</td>
+      <td>${docInfo[m.id] ? '<b>' + docInfo[m.id].total + '</b><span class="muted"> (' + docInfo[m.id].validated + ' ok)</span>' : '—'}</td>
       <td class="muted" style="white-space:nowrap;">${String(m.created_at).slice(0,10)}</td>
       <td class="muted">${ni ? esc(String(ni.preview).slice(0,42)) + (String(ni.preview).length > 42 ? '…' : '') + '<div>' + String(ni.last).slice(0,10) + ' · ' + ni.count + ' total</div>' : '—'}</td>
       <td><button class="act ok" onclick="openProfile('${m.id}')">Profile</button>
@@ -910,6 +922,21 @@ function openProfile(id){
   CRM_FIELDS.forEach(f => { const inp = document.getElementById('pf_' + f); if (inp) inp.value = m[f] ?? ''; });
   document.getElementById('pfNotesBtn').onclick = () => { closeProfile(); openNotes(id, m.company || m.email); };
   document.getElementById('profileModal').style.display = 'flex';
+  loadProfileDocs(id);
+}
+async function loadProfileDocs(id){
+  const el = document.getElementById('pfDocs');
+  el.textContent = 'Loading…';
+  const { data, error } = await db.from('documents').select('*').eq('member_id', id).order('uploaded_at',{ascending:false});
+  if (error) { el.textContent = 'Error: ' + error.message; return; }
+  if (!data.length) { el.textContent = 'No documents uploaded by this member yet.'; return; }
+  el.innerHTML = data.map(d => `
+    <div style="display:flex;align-items:center;gap:8px;padding:3px 0;">
+      <a href="#" onclick="openFile('${esc(d.storage_path)}');return false;" style="color:var(--forest-light);">${esc(d.file_name)}</a>
+      <span class="muted">${esc(d.doc_type ?? '')}</span>
+      <span class="pill ${esc(d.status)}" style="margin-left:auto;">${esc(String(d.status).replace('_',' '))}</span>
+      <span class="muted" style="white-space:nowrap;">${String(d.uploaded_at).slice(0,10)}</span>
+    </div>`).join('');
 }
 function closeProfile(){ document.getElementById('profileModal').style.display = 'none'; PROFILE_MEMBER = null; }
 async function saveProfile(){
