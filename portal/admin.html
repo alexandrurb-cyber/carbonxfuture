@@ -244,10 +244,11 @@ async function notifyMember(type, to, data) {
       <p class="muted" style="margin-top:0.5rem;">Note: uploaded PDF files live in Supabase Storage and are not inside this JSON — download important documents from the Documents card.</p>
     </div>
     <div class="card" id="c-prices"><h2>Update prices — weekly desk marks</h2>
-      <p class="muted" style="margin-bottom:0.75rem;">Edit the marks, then <b>Download prices.json</b> and upload it to GitHub (repo root, replacing the old one). Vercel deploys it, the This-week card ticks itself and the price snapshot is archived automatically on your next visit.</p>
+      <p class="muted" style="margin-bottom:0.75rem;">Edit the marks and hit <b>Save to website</b> — the desk commits prices.json to GitHub for you and Vercel publishes it (~1 min). The This-week card ticks itself and the price snapshot archives automatically on your next visit. Download stays available as a manual fallback.</p>
       <div id="pricesForm" class="muted">Loading current prices.json…</div>
-      <div style="margin-top:0.75rem;display:flex;gap:8px;align-items:center;">
-        <button class="act ok" onclick="downloadPricesJson()">Download prices.json</button>
+      <div style="margin-top:0.75rem;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <button class="act ok" id="prSaveBtn" onclick="savePricesToSite()">Save to website</button>
+        <button class="act ghost" onclick="downloadPricesJson()">Download prices.json</button>
         <button class="act ghost" onclick="copyPricesJson()">Copy JSON</button>
         <span id="prStatus" class="muted"></span>
       </div>
@@ -1189,6 +1190,27 @@ function buildPricesJson(){
     out.benchmarks[b][f] = f === 'value' ? Number(i.value) : i.value;
   });
   return JSON.stringify(out, null, 2) + '\n';
+}
+async function savePricesToSite(){
+  const json = buildPricesJson();
+  if (!json) return alert('Prices not loaded yet.');
+  const btn = document.getElementById('prSaveBtn');
+  const st = document.getElementById('prStatus');
+  if (!confirm('Publish these desk marks to carbonxfuture.com now?')) return;
+  btn.disabled = true; st.textContent = 'Committing to GitHub…';
+  try {
+    const { data: s } = await db.auth.getSession();
+    const r = await fetch('/api/prices', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + s.session.access_token },
+      body: json
+    });
+    const out = await r.json();
+    if (!r.ok) throw new Error(out.error || ('HTTP ' + r.status));
+    st.textContent = '✓ Committed — Vercel is deploying, live in ~1 minute (lastUpdated ' + out.lastUpdated + ').';
+    audit('prices_published', 'lastUpdated ' + out.lastUpdated);
+  } catch(e) { st.textContent = ''; alert('Publish failed: ' + e.message); }
+  btn.disabled = false;
 }
 function downloadPricesJson(){
   const json = buildPricesJson();
