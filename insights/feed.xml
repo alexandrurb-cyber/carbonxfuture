@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<channel>
+  <title>CarbonXFuture Insights</title>
+  <link>https://www.carbonxfuture.com/insights/</link>
+  <description>Weekly desk notes and analysis on waste-oil carbon credits, base oil markets, voluntary carbon pricing and regulation — from the CarbonXFuture desk in Fort Lauderdale.</description>
+  <language>en-us</language>
+  <atom:link href="https://www.carbonxfuture.com/insights/feed.xml" rel="self" type="application/rss+xml"/>
+
+  <item>
+    <title>Waste Oil Recycling: The Fastest-Growing Slice of a $50 Billion Market</title>
+    <link>https://www.carbonxfuture.com/insights/waste-oil-recycling-market-2035.html</link>
+    <guid>https://www.carbonxfuture.com/insights/waste-oil-recycling-market-2035.html</guid>
+    <pubDate>Mon, 10 Aug 2026 12:00:00 GMT</pubDate>
+    <description>The recycling market grows from $4.29B (2026) to $7.13B by 2035 at 5.8% CAGR — faster than the waste oil market overall. Value is migrating from disposal to processing.</description>
+  </item>
+  <item>
+    <title>The $50 Billion Waste Oil Opportunity: Market Outlook to 2033</title>
+    <link>https://www.carbonxfuture.com/insights/waste-oil-market-outlook-2033.html</link>
+    <guid>https://www.carbonxfuture.com/insights/waste-oil-market-outlook-2033.html</guid>
+    <pubDate>Mon, 10 Aug 2026 11:00:00 GMT</pubDate>
+    <description>The global waste oil market grows from $36.2B (2026) to $49.9B by 2033 — yet 42.6% of waste oil is still landfilled. What the numbers mean for collectors, re-refiners and carbon markets.</description>
+  </item>
+  <item>
+    <title>Desk Note: EUAs Test a Breakout, Re-refiners Sold Out</title>
+    <link>https://www.carbonxfuture.com/insights/desk-note-august-10-2026.html</link>
+    <guid>https://www.carbonxfuture.com/insights/desk-note-august-10-2026.html</guid>
+    <pubDate>Mon, 10 Aug 2026 10:00:00 GMT</pubDate>
+    <description>EU allowances hit a nine-day high before fading, VCM issuance quality improves as supply shrinks, and US base oil postings rise again with re-refined barrels fully committed.</description>
+  </item>
+  <item>
+    <title>Desk Note: Tight Base Oils, Steady Carbon</title>
+    <link>https://www.carbonxfuture.com/insights/desk-note-july-13-2026.html</link>
+    <guid>https://www.carbonxfuture.com/insights/desk-note-july-13-2026.html</guid>
+    <pubDate>Mon, 13 Jul 2026 10:00:00 GMT</pubDate>
+    <description>ACCUs stall above A$38 and Verra issuance ticks along, while Middle East outages keep US base oils on allocation and re-refiners effectively sold out.</description>
+  </item>
+  <item>
+    <title>Introducing CXF: how waste oil recycling generates traceable carbon credits</title>
+    <link>https://www.carbonxfuture.com/insights/introducing-cxf-waste-oil-carbon-credits.html</link>
+    <guid>https://www.carbonxfuture.com/insights/introducing-cxf-waste-oil-carbon-credits.html</guid>
+    <pubDate>Fri, 10 Jul 2026 10:00:00 GMT</pubDate>
+    <description>Why the most overlooked stream in the circular economy deserves its own carbon standard — and how the CXF framework works, from evidence to serialized units.</description>
+  </item>
+  <item>
+    <title>How many carbon credits does a gallon of used oil generate? The CXF factors, explained</title>
+    <link>https://www.carbonxfuture.com/insights/cxf-quantification-factors-explained.html</link>
+    <guid>https://www.carbonxfuture.com/insights/cxf-quantification-factors-explained.html</guid>
+    <pubDate>Fri, 10 Jul 2026 09:00:00 GMT</pubDate>
+    <description>10.8, 19.3 and 25.7 tCO2e per 1,000 gallons — where the CXF quantification factors come from, the EPA and ACR/IPCC anchors they sit between, and what evidence turns volumes into credits.</description>
+  </item>
+  <item>
+    <title>How voluntary carbon credits are priced: a buyer's primer</title>
+    <link>https://www.carbonxfuture.com/insights/how-voluntary-carbon-credits-are-priced.html</link>
+    <guid>https://www.carbonxfuture.com/insights/how-voluntary-carbon-credits-are-priced.html</guid>
+    <pubDate>Fri, 10 Jul 2026 08:00:00 GMT</pubDate>
+    <description>Why one tonne of CO2 trades at $9 and another at $31 — project type, vintage, co-benefits, integrity labels, and how to read an indicative price.</description>
+  </item>
+  <item>
+    <title>ICVCM Core Carbon Principles: what institutional buyers need to know</title>
+    <link>https://www.carbonxfuture.com/insights/icvcm-core-carbon-principles-buyers-guide.html</link>
+    <guid>https://www.carbonxfuture.com/insights/icvcm-core-carbon-principles-buyers-guide.html</guid>
+    <pubDate>Fri, 10 Jul 2026 07:00:00 GMT</pubDate>
+    <description>The CCP framework in plain language — the ten principles, what the label changes in procurement, and where proprietary platform credits like CXF stand.</description>
+  </item>
+</channel>
+</rss>
