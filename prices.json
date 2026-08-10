@@ -1,20 +1,20 @@
 {
-  "lastUpdated": "2026-08-06",
+  "lastUpdated": "2026-08-10",
   "source": "CarbonXFuture trading desk",
   "prices": {
-    "cxf-usgulf": 21.7,
+    "cxf-usgulf": 21.2,
     "verra-redd": 18.4,
     "gold-solar": 22.1,
     "acr-car": 15.2,
     "verra-blue": 31.5,
     "gold-cookstoves": 16.8,
     "cxf-rerefining": 19.9,
-    "planvivo-agro": 24.0
+    "planvivo-agro": 24
   },
   "benchmarks": {
     "eua": {
       "label": "EUA — EU ETS (Dec-26)",
-      "value": 82.0,
+      "value": 82,
       "unit": "EUR/t",
       "asof": "2026-08-04",
       "source": "Public market reporting (EEX/ICE levels as reported); carried forward 2026-08-10 — no numeric level verifiable this run"
