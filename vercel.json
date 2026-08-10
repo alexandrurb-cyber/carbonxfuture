@@ -1,4 +1,7 @@
 {
+  "crons": [
+    { "path": "/api/backup", "schedule": "0 11 * * 1" }
+  ],
   "redirects": [
     { "source": "/carbon", "destination": "/", "permanent": true },
     { "source": "/oil", "destination": "/", "permanent": true },
