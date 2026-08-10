@@ -58,6 +58,11 @@ a{color:var(--forest-light);}
 #notesModal{display:none;position:fixed;inset:0;background:rgba(20,20,18,0.5);z-index:60;align-items:center;justify-content:center;padding:1.5rem;}
 #notesModal .box{background:#fff;border-radius:14px;max-width:520px;width:100%;max-height:80vh;overflow-y:auto;padding:1.5rem;}
 #notesModal textarea{width:100%;border:0.5px solid var(--slate-200);border-radius:8px;padding:10px;font-family:'Inter',sans-serif;font-size:13px;resize:vertical;}
+#profileModal{display:none;position:fixed;inset:0;background:rgba(20,20,18,0.5);z-index:60;align-items:center;justify-content:center;padding:1.5rem;}
+#profileModal .box{background:#fff;border-radius:14px;max-width:560px;width:100%;max-height:85vh;overflow-y:auto;padding:1.5rem;}
+#profileModal label{display:block;font-size:10.5px;text-transform:uppercase;letter-spacing:0.5px;color:var(--slate-400);margin:10px 0 3px;}
+#profileModal input,#profileModal textarea{width:100%;border:0.5px solid var(--slate-200);border-radius:8px;padding:9px 11px;font-family:'Inter',sans-serif;font-size:13px;box-sizing:border-box;}
+#profileModal .grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 12px;}
 .noteItem{border-left:2px solid var(--forest-pale);padding:6px 12px;margin-bottom:8px;font-size:12.5px;}
 .week label{display:flex;align-items:center;gap:9px;padding:5px 0;font-size:13px;cursor:pointer;}
 .week input{accent-color:var(--forest);width:15px;height:15px;}
@@ -79,6 +84,29 @@ a{color:var(--forest-light);}
   <div style="display:flex;justify-content:space-between;margin-top:0.75rem;">
     <button class="act ghost" onclick="closeNotes()">Close</button>
     <button class="act ok" onclick="saveNote()">Save note</button>
+  </div>
+</div></div>
+
+<div id="profileModal"><div class="box">
+  <h2 style="margin-bottom:0.25rem;" id="pfTitle">Member profile</h2>
+  <p class="muted" style="margin-bottom:0.5rem;">Full CRM contact card — visible to the desk only. <span id="pfEmail" style="color:var(--forest);"></span></p>
+  <div class="grid2">
+    <div><label>Contact name</label><input id="pf_contact_name"/></div>
+    <div><label>Company</label><input id="pf_company"/></div>
+    <div><label>Phone</label><input id="pf_phone" placeholder="+1 954 …"/></div>
+    <div><label>Website</label><input id="pf_website" placeholder="https://…"/></div>
+    <div><label>Country</label><input id="pf_country" placeholder="USA"/></div>
+    <div><label>City / State</label><input id="pf_city" placeholder="Fort Lauderdale, FL"/></div>
+    <div><label>Source</label><input id="pf_source" placeholder="e.g. website KYC form, referral, LinkedIn"/></div>
+    <div><label>Tags</label><input id="pf_tags" placeholder="e.g. hot lead, collector, FL"/></div>
+  </div>
+  <label>Address</label><textarea id="pf_address" rows="2"></textarea>
+  <div style="display:flex;justify-content:space-between;margin-top:1rem;">
+    <button class="act ghost" onclick="closeProfile()">Close</button>
+    <div>
+      <button class="act ghost" id="pfNotesBtn">Notes</button>
+      <button class="act ok" onclick="saveProfile()">Save profile</button>
+    </div>
   </div>
 </div></div>
 
@@ -121,6 +149,8 @@ async function notifyMember(type, to, data) {
     <div class="subnav" style="position:sticky;">
       <a href="#c-rfqs" onclick="jumpTo(event,'c-rfqs')">RFQ <b id="n-rfqs"></b></a>
       <a href="#c-members" onclick="jumpTo(event,'c-members')">Members <b id="n-members"></b></a>
+      <a href="#c-crm" onclick="jumpTo(event,'c-crm')">CRM</a>
+      <a href="#c-subs" onclick="jumpTo(event,'c-subs')">Subscribers <b id="n-subs"></b></a>
       <a href="#c-reports" onclick="jumpTo(event,'c-reports')">Reports <b id="n-reports"></b></a>
       <a href="#c-oil" onclick="jumpTo(event,'c-oil')">Feedstock <b id="n-oil"></b></a>
       <a href="#c-registry" onclick="jumpTo(event,'c-registry')">Registry</a>
@@ -143,6 +173,11 @@ async function notifyMember(type, to, data) {
       <input placeholder="Filter…" oninput="filterCard('members', this.value)" style="padding:7px 12px;border:0.5px solid var(--slate-200);border-radius:7px;font-family:'Inter',sans-serif;font-size:12px;margin-bottom:8px;width:220px;"/>
       <button class="act ghost" onclick="exportCardCSV('members','cxf-members')" style="float:right;">Export CSV</button>
       <div id="members" class="muted">Loading…</div></div>
+    <div class="card" id="c-crm"><h2>CRM — member contact book</h2>
+      <p class="muted" style="margin-bottom:0.75rem;">Full contact profile for every member — phone, location, source, tags and desk notes. Click <b>Profile</b> to view/edit. (Extra fields require running <code>schema-crm.sql</code> once in Supabase.)</p>
+      <input placeholder="Filter…" oninput="filterCard('crm', this.value)" style="padding:7px 12px;border:0.5px solid var(--slate-200);border-radius:7px;font-family:'Inter',sans-serif;font-size:12px;margin-bottom:8px;width:220px;"/>
+      <button class="act ghost" onclick="exportCardCSV('crm','cxf-crm')" style="float:right;">Export CSV</button>
+      <div id="crm" class="muted">Loading…</div></div>
     <div class="card" id="c-reports"><h2>Reports awaiting validation</h2><div id="reports" class="muted">Loading…</div></div>
     <div class="card" id="c-docs"><h2>Documents</h2><div id="docs" class="muted">Loading…</div></div>
     <div class="card" id="c-oil"><h2>Feedstock — waste-oil listings (Oil Desk)</h2>
@@ -202,6 +237,15 @@ async function notifyMember(type, to, data) {
       <span id="bkStatus" class="muted" style="margin-left:10px;"></span>
       <p class="muted" style="margin-top:0.5rem;">Note: uploaded PDF files live in Supabase Storage and are not inside this JSON — download important documents from the Documents card.</p>
     </div>
+    <div class="card" id="c-subs"><h2>Subscribers — Desk Note list</h2>
+      <p class="muted" style="margin-bottom:0.75rem;">Everyone subscribed to the weekly Desk Note — <b id="subsActive">…</b> active, <b id="subsTotal">…</b> total. Emails are private (admin-only via RLS).</p>
+      <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap;">
+        <input placeholder="Filter…" oninput="filterCard('subs', this.value)" style="padding:7px 12px;border:0.5px solid var(--slate-200);border-radius:7px;font-family:'Inter',sans-serif;font-size:12px;width:220px;"/>
+        <input id="subAddEmail" type="email" placeholder="Add subscriber manually — email…" style="padding:7px 12px;border:0.5px solid var(--slate-200);border-radius:7px;font-family:'Inter',sans-serif;font-size:12px;width:260px;"/>
+        <button class="act ok" onclick="addSubscriber()">Add</button>
+        <button class="act ghost" onclick="exportCardCSV('subs','cxf-subscribers')" style="margin-left:auto;">Export CSV</button>
+      </div>
+      <div id="subs" class="muted">Loading…</div></div>
     <div class="card" id="c-news"><h2>Newsletter — Desk Note</h2>
       <p class="muted" style="margin-bottom:0.75rem;">Subscribers: <b id="nlCount">…</b> · sends individually via Resend (recipients never see each other).</p>
       <input id="nlSubject" placeholder="Subject (e.g. Desk Note — July 13, 2026)" style="width:100%;padding:9px;border:0.5px solid var(--slate-200);border-radius:7px;font-family:'Inter',sans-serif;font-size:12.5px;margin-bottom:8px;"/>
@@ -214,6 +258,7 @@ async function notifyMember(type, to, data) {
       <div id="auditlog" class="muted">Loading…</div>
     </div>`;
   loadMembers(); loadReports(); loadDocs(); loadListings(); loadCxfProjects(); loadSubscriberCount();
+  loadCrm(); loadSubs();
   loadRfqs(); loadCertificates(); capturePriceSnapshot(); backupReminder(); loadOverview(); loadAudit();
   loadOilAdmin(); loadRegistry(); loadInbox(); loadWeek(); wireCollapse();
 })();
@@ -575,7 +620,7 @@ async function loadOverview(){
     ['Live oil desk', oPub, 'c-oil', false],
     ['Live marketplace', lPub + pPub, 'c-market', false],
     ['Certificates', cAct, 'c-certs', false],
-    ['Subscribers', subs, 'c-news', false]
+    ['Subscribers', subs, 'c-subs', false]
   ];
   el.innerHTML = items.map(([label, n, target, attention]) => `
     <div onclick="document.getElementById('${target}').scrollIntoView({behavior:'smooth'})"
@@ -619,7 +664,7 @@ async function loadAudit(){
 }
 
 /* ---------- Backup ---------- */
-const BK_TABLES = ['members','reports','documents','listings','cxf_projects','rfqs','certificates','price_history','newsletter_subscribers','audit_log'];
+const BK_TABLES = ['members','member_notes','reports','documents','listings','cxf_projects','rfqs','certificates','price_history','newsletter_subscribers','audit_log'];
 function backupReminder(){
   const last = localStorage.getItem('cxf_last_backup');
   const days = last ? Math.floor((Date.now() - Number(last)) / 86400000) : null;
@@ -825,6 +870,97 @@ async function loadMembers(){
           <button class="act ghost" onclick="location.href='mailto:${esc(m.email)}?subject=' + encodeURIComponent('CarbonXFuture — ${esc(m.company)}')">Email</button></td>
     </tr>`; }).join('') + '</table>';
 }
+/* ---------- CRM — member contact book ---------- */
+const CRM_FIELDS = ['contact_name','company','phone','website','country','city','source','tags','address'];
+let CRM_DATA = {};
+async function loadCrm(){
+  const el = document.getElementById('crm');
+  const { data, error } = await db.from('members').select('*').order('created_at',{ascending:false});
+  if (error) { el.textContent = 'Error: ' + error.message; return; }
+  if (!data.length) { el.textContent = 'No members yet.'; return; }
+  CRM_DATA = {}; data.forEach(m => CRM_DATA[m.id] = m);
+  const noteInfo = {};
+  try {
+    const { data: notes } = await db.from('member_notes').select('member_id, created_at, note').order('created_at',{ascending:false});
+    (notes || []).forEach(n => { if (!noteInfo[n.member_id]) noteInfo[n.member_id] = { count: 0, last: n.created_at, preview: n.note }; noteInfo[n.member_id].count++; });
+  } catch(e){}
+  el.innerHTML = `<table><tr><th>Company</th><th>Contact</th><th>Email</th><th>Phone</th><th>Location</th><th>Source</th><th>Tags</th><th>Member since</th><th>Last note</th><th>Actions</th></tr>` +
+    data.map(m => { const ni = noteInfo[m.id]; return `<tr>
+      <td><b>${esc(m.company)}</b>${m.website ? '<div class="muted"><a href="' + esc(m.website) + '" target="_blank" rel="noopener">' + esc(String(m.website).replace(/^https?:\/\//,'')) + '</a></div>' : ''}</td>
+      <td>${esc(m.contact_name ?? '—')}</td>
+      <td><a href="mailto:${esc(m.email)}">${esc(m.email)}</a></td>
+      <td>${m.phone ? '<a href="tel:' + esc(m.phone) + '">' + esc(m.phone) + '</a>' : '—'}</td>
+      <td>${esc([m.city, m.country].filter(Boolean).join(', ') || '—')}</td>
+      <td class="muted">${esc(m.source ?? '—')}</td>
+      <td class="muted">${esc(m.tags ?? '—')}</td>
+      <td class="muted" style="white-space:nowrap;">${String(m.created_at).slice(0,10)}</td>
+      <td class="muted">${ni ? esc(String(ni.preview).slice(0,42)) + (String(ni.preview).length > 42 ? '…' : '') + '<div>' + String(ni.last).slice(0,10) + ' · ' + ni.count + ' total</div>' : '—'}</td>
+      <td><button class="act ok" onclick="openProfile('${m.id}')">Profile</button>
+          <button class="act ghost" onclick="openNotes('${m.id}','${esc(m.company)}')">Notes${ni ? ' (' + ni.count + ')' : ''}</button></td>
+    </tr>`; }).join('') + '</table>';
+}
+let PROFILE_MEMBER = null;
+function openProfile(id){
+  const m = CRM_DATA[id]; if (!m) return;
+  PROFILE_MEMBER = id;
+  document.getElementById('pfTitle').textContent = m.company || m.contact_name || 'Member profile';
+  document.getElementById('pfEmail').textContent = m.email;
+  CRM_FIELDS.forEach(f => { const inp = document.getElementById('pf_' + f); if (inp) inp.value = m[f] ?? ''; });
+  document.getElementById('pfNotesBtn').onclick = () => { closeProfile(); openNotes(id, m.company || m.email); };
+  document.getElementById('profileModal').style.display = 'flex';
+}
+function closeProfile(){ document.getElementById('profileModal').style.display = 'none'; PROFILE_MEMBER = null; }
+async function saveProfile(){
+  if (!PROFILE_MEMBER) return;
+  const upd = {};
+  CRM_FIELDS.forEach(f => { const inp = document.getElementById('pf_' + f); if (inp) upd[f] = inp.value.trim() || null; });
+  const { error } = await db.from('members').update(upd).eq('id', PROFILE_MEMBER);
+  if (error) return alert('Error: ' + error.message + (/column|schema/i.test(error.message) ? '\n\nDid you run schema-crm.sql in Supabase → SQL Editor?' : ''));
+  audit('crm_profile_updated', CRM_DATA[PROFILE_MEMBER]?.email || PROFILE_MEMBER);
+  closeProfile(); loadCrm(); loadMembers();
+}
+
+/* ---------- Subscribers — Desk Note list ---------- */
+async function loadSubs(){
+  const el = document.getElementById('subs');
+  const { data, error } = await db.from('newsletter_subscribers').select('*').order('created_at',{ascending:false});
+  if (error) { el.textContent = 'Error: ' + error.message; return; }
+  const act = data.filter(s => s.status === 'active').length;
+  document.getElementById('subsActive').textContent = act;
+  document.getElementById('subsTotal').textContent = data.length;
+  const nsubs = document.getElementById('n-subs'); if (nsubs) nsubs.textContent = act;
+  if (!data.length) { el.textContent = 'No subscribers yet.'; return; }
+  el.innerHTML = `<table><tr><th>Email</th><th>Status</th><th>Subscribed since</th><th>Actions</th></tr>` +
+    data.map(s => `<tr>
+      <td><a href="mailto:${esc(s.email)}">${esc(s.email)}</a></td>
+      <td><span class="pill ${s.status === 'active' ? 'validated' : 'rejected'}">${esc(s.status)}</span></td>
+      <td class="muted" style="white-space:nowrap;">${new Date(s.created_at).toLocaleDateString('en-US', {year:'numeric', month:'short', day:'numeric'})}</td>
+      <td>${s.status === 'active'
+        ? `<button class="act warn" onclick="subSetStatus('${s.id}','unsubscribed','${esc(s.email)}')">Unsubscribe</button>`
+        : `<button class="act ok" onclick="subSetStatus('${s.id}','active','${esc(s.email)}')">Reactivate</button>`}
+        <button class="act bad" onclick="subDelete('${s.id}','${esc(s.email)}')">Delete</button></td>
+    </tr>`).join('') + '</table>';
+}
+async function subSetStatus(id, status, email){
+  const { error } = await db.from('newsletter_subscribers').update({ status }).eq('id', id);
+  if (error) return alert('Error: ' + error.message);
+  audit('subscriber_' + status, email); loadSubs(); loadSubscriberCount();
+}
+async function subDelete(id, email){
+  if (!confirm('Permanently delete ' + email + ' from the subscriber list?')) return;
+  const { error } = await db.from('newsletter_subscribers').delete().eq('id', id);
+  if (error) return alert('Error: ' + error.message);
+  audit('subscriber_deleted', email); loadSubs(); loadSubscriberCount();
+}
+async function addSubscriber(){
+  const inp = document.getElementById('subAddEmail');
+  const email = inp.value.trim().toLowerCase();
+  if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return alert('Enter a valid email address.');
+  const { error } = await db.from('newsletter_subscribers').insert({ email });
+  if (error) return alert(/duplicate/i.test(error.message) ? 'Already on the list.' : 'Error: ' + error.message);
+  audit('subscriber_added_manually', email); inp.value = ''; loadSubs(); loadSubscriberCount();
+}
+
 const SUB_STATES = ['launch_free','trial','active','past_due','canceled','exempt'];
 async function setSubscription(id){
   const s = prompt('Subscription status — one of:\n' + SUB_STATES.join(' | '), 'active');
