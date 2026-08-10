@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CXF CRM | CarbonXFuture Desk</title>
+<meta name="robots" content="noindex,nofollow"/>
+<link rel="icon" href="/favicon.ico" sizes="48x48"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--forest:#1A4A2E;--forest-light:#2D6B45;--forest-pale:#EAF2EC;--slate-50:#F5F5F3;--slate-100:#E8E8E4;--slate-200:#C8C8C2;--slate-400:#8A8A82;--slate-600:#4A4A45;--slate-800:#1E1E1A;--blue:#1A3A5C;--blue-pale:#E8EEF5;--amber:#B07D2A;--amber-pale:#FDF3E3;--red:#A33B2E;--red-pale:#F9E9E6;--purple:#5C3A6E;--purple-pale:#F3EEF8;}
+body{font-family:'Inter',sans-serif;background:var(--slate-50);color:var(--slate-800);font-size:14px;line-height:1.5;}
+.topbar{background:var(--forest);padding:12px 1.5rem;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:50;}
+.topbar .brand{color:#fff;font-weight:600;font-size:14px;text-decoration:none;}
+.topbar a,.topbar button{color:#fff;font-size:12px;text-decoration:none;background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif;margin-left:14px;}
+.wrap{max-width:1400px;margin:0 auto;padding:1.25rem 1.5rem 4rem;}
+h1{font-size:1.35rem;font-weight:600;}
+.muted{color:var(--slate-400);}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin:1rem 0;}
+.stat{background:#fff;border:0.5px solid var(--slate-100);border-radius:12px;padding:0.7rem 0.9rem;cursor:default;}
+.stat b{display:block;font-size:1.35rem;color:var(--forest);}
+.stat.warn b{color:var(--amber);}
+.stat span{font-size:10.5px;text-transform:uppercase;letter-spacing:0.4px;color:var(--slate-400);}
+.controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:1rem;}
+.controls input[type=text]{flex:1;min-width:200px;padding:8px 14px;border:0.5px solid var(--slate-200);border-radius:100px;font-family:'Inter',sans-serif;font-size:13px;outline:none;background:#fff;}
+.btn{padding:7px 14px;border-radius:100px;border:0.5px solid var(--slate-200);background:#fff;font-family:'Inter',sans-serif;font-size:12.5px;cursor:pointer;white-space:nowrap;}
+.btn:hover{border-color:var(--forest-light);color:var(--forest);}
+.btn.primary{background:var(--forest);border-color:var(--forest);color:#fff;}
+.btn.primary:hover{background:var(--forest-light);color:#fff;}
+.tabs{display:flex;gap:4px;background:var(--slate-100);border-radius:100px;padding:3px;}
+.tabs button{border:none;background:none;padding:6px 16px;border-radius:100px;font-family:'Inter',sans-serif;font-size:12.5px;cursor:pointer;color:var(--slate-600);}
+.tabs button.on{background:#fff;color:var(--forest);font-weight:600;box-shadow:0 1px 4px rgba(0,0,0,0.08);}
+/* Kanban */
+.board{display:grid;grid-template-columns:repeat(6,minmax(210px,1fr));gap:10px;overflow-x:auto;align-items:start;}
+.col{background:var(--slate-100);border-radius:12px;padding:8px;min-height:120px;}
+.col.dragover{outline:2px dashed var(--forest-light);outline-offset:-2px;}
+.col h3{font-size:11px;text-transform:uppercase;letter-spacing:0.6px;color:var(--slate-600);padding:4px 6px 8px;display:flex;justify-content:space-between;}
+.col h3 .sum{color:var(--slate-400);font-weight:400;}
+.kcard{background:#fff;border-radius:10px;padding:9px 11px;margin-bottom:7px;cursor:grab;border:0.5px solid var(--slate-100);font-size:12.5px;}
+.kcard:active{cursor:grabbing;}
+.kcard b{display:block;font-size:13px;}
+.kcard .val{color:var(--forest);font-weight:600;}
+.kcard .due{font-size:11px;border-radius:100px;padding:1px 8px;background:var(--blue-pale);color:var(--blue);display:inline-block;margin-top:4px;}
+.kcard .due.over{background:var(--red-pale);color:var(--red);}
+.kcard .mm{font-size:10px;color:var(--forest-light);border:0.5px solid var(--forest-pale);border-radius:100px;padding:0 6px;margin-left:6px;}
+/* Table */
+table{width:100%;border-collapse:collapse;font-size:13px;background:#fff;border-radius:12px;overflow:hidden;}
+th{background:var(--slate-100);text-align:left;padding:9px 12px;font-size:10.5px;text-transform:uppercase;letter-spacing:0.4px;color:var(--slate-600);}
+td{padding:9px 12px;border-bottom:0.5px solid var(--slate-50);}
+tr:hover td{background:var(--forest-pale);cursor:pointer;}
+.pill{font-size:11px;border-radius:100px;padding:2px 10px;font-weight:600;white-space:nowrap;}
+.pill.lead{background:var(--blue-pale);color:var(--blue);} .pill.contacted{background:var(--purple-pale);color:var(--purple);}
+.pill.quoted{background:var(--amber-pale);color:var(--amber);} .pill.negotiation{background:var(--amber-pale);color:var(--amber);}
+.pill.customer{background:var(--forest-pale);color:var(--forest);} .pill.lost{background:var(--red-pale);color:var(--red);}
+/* Today */
+.todo{background:#fff;border:0.5px solid var(--slate-100);border-radius:12px;padding:1rem 1.25rem;margin-bottom:10px;}
+.todo h3{font-size:12px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;}
+.todo .item{display:flex;gap:10px;align-items:center;padding:6px 0;border-bottom:0.5px solid var(--slate-50);cursor:pointer;}
+.todo .item:last-child{border-bottom:none;}
+.todo .d{font-size:11px;white-space:nowrap;color:var(--slate-400);}
+.todo .d.over{color:var(--red);font-weight:600;}
+/* Drawer */
+#drawer{display:none;position:fixed;inset:0;background:rgba(20,20,18,0.5);z-index:60;justify-content:flex-end;}
+#drawer .panel{background:#fff;width:min(640px,100%);height:100%;overflow-y:auto;padding:1.5rem;}
+#drawer label{display:block;font-size:10.5px;text-transform:uppercase;letter-spacing:0.5px;color:var(--slate-400);margin:10px 0 3px;}
+#drawer input,#drawer select,#drawer textarea{width:100%;border:0.5px solid var(--slate-200);border-radius:8px;padding:9px 11px;font-family:'Inter',sans-serif;font-size:13px;box-sizing:border-box;background:#fff;}
+#drawer .grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 12px;}
+#drawer .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 12px;}
+.act{border:none;border-radius:7px;padding:7px 14px;font-family:'Inter',sans-serif;font-size:12.5px;cursor:pointer;}
+.act.ok{background:var(--forest);color:#fff;} .act.ghost{background:var(--slate-100);color:var(--slate-600);} .act.bad{background:var(--red-pale);color:var(--red);}
+.tl{border-left:2px solid var(--forest-pale);margin:10px 0 0 4px;padding-left:14px;}
+.tl .ev{margin-bottom:10px;font-size:12.5px;}
+.tl .ev .k{font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:var(--forest-light);font-weight:700;margin-right:6px;}
+.tl .ev .when{color:var(--slate-400);font-size:11px;}
+.docrow{display:flex;align-items:center;gap:8px;padding:3px 0;font-size:12.5px;}
+.docrow a{color:var(--forest-light);}
+@media(max-width:900px){.board{grid-template-columns:repeat(6,240px);}}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a class="brand" href="/portal/admin.html">⬡ CarbonXFuture · CRM</a>
+  <div><a href="/portal/admin.html">← Desk Admin</a><button onclick="signOut()">Sign out</button></div>
+</div>
+<div class="wrap" id="app"><p class="muted" style="text-align:center;margin-top:4rem;">Loading…</p></div>
+
+<div id="drawer"><div class="panel">
+  <div style="display:flex;justify-content:space-between;align-items:center;">
+    <h1 id="drTitle">Contact</h1>
+    <button class="act ghost" onclick="closeDrawer()">✕ Close</button>
+  </div>
+  <p class="muted" id="drSub" style="margin-bottom:0.5rem;"></p>
+  <div class="grid2">
+    <div><label>Company</label><input id="f_company"/></div>
+    <div><label>Contact name</label><input id="f_contact_name"/></div>
+    <div><label>Email</label><input id="f_email" type="email"/></div>
+    <div><label>Phone</label><input id="f_phone"/></div>
+    <div><label>Country</label><input id="f_country"/></div>
+    <div><label>City / State</label><input id="f_city"/></div>
+    <div><label>Website</label><input id="f_website"/></div>
+    <div><label>Source</label><input id="f_source" placeholder="RFQ, referral, LinkedIn…"/></div>
+  </div>
+  <label>Address</label><input id="f_address"/>
+  <label>Tags</label><input id="f_tags" placeholder="collector, FL, hot…"/>
+  <div class="grid3">
+    <div><label>Stage</label><select id="f_stage">
+      <option value="lead">Lead</option><option value="contacted">Contacted</option>
+      <option value="quoted">Quoted</option><option value="negotiation">Negotiation</option>
+      <option value="customer">Customer</option><option value="lost">Lost</option></select></div>
+    <div><label>Deal value (USD)</label><input id="f_deal_value" type="number" min="0" step="100"/></div>
+    <div><label>Follow-up date</label><input id="f_next_action_date" type="date"/></div>
+  </div>
+  <label>Next action</label><input id="f_next_action" placeholder="e.g. Call about Q4 offtake terms"/>
+  <div style="display:flex;justify-content:space-between;margin-top:1rem;gap:8px;flex-wrap:wrap;">
+    <button class="act bad" id="drDelete" onclick="deleteContact()">Delete</button>
+    <div style="display:flex;gap:8px;">
+      <a class="act ghost" id="drEmail" style="text-decoration:none;display:none;">Email</a>
+      <button class="act ok" onclick="saveContact()">Save</button>
+    </div>
+  </div>
+  <div id="drMemberBox" style="display:none;margin-top:1.25rem;">
+    <label>Portal member — documents on file</label>
+    <div id="drDocs" class="muted" style="border:0.5px solid var(--slate-100);border-radius:8px;padding:8px 11px;max-height:150px;overflow-y:auto;font-size:12.5px;">Loading…</div>
+  </div>
+  <label style="margin-top:1.25rem;">Log activity</label>
+  <div style="display:flex;gap:8px;">
+    <select id="evKind" style="max-width:120px;">
+      <option value="note">Note</option><option value="call">Call</option><option value="email">Email</option>
+      <option value="meeting">Meeting</option><option value="task">Task</option>
+    </select>
+    <input id="evBody" placeholder="e.g. Called — interested in 5k tCO₂e, send offer Friday" onkeydown="if(event.key==='Enter')addActivity()"/>
+    <button class="act ok" onclick="addActivity()">Add</button>
+  </div>
+  <div class="tl" id="drTimeline"><p class="muted">Loading…</p></div>
+</div></div>
+
+<input type="file" id="csvFile" accept=".csv" style="display:none;" onchange="importCSV(this.files[0])"/>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/portal/config.js"></script>
+<script>
+const db = supabase.createClient(CXF_SUPABASE_URL, CXF_SUPABASE_KEY);
+let USER = null, CONTACTS = [], VIEW = 'board', QUERY = '', CURRENT = null;
+const esc = s => String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const STAGES = [['lead','Lead'],['contacted','Contacted'],['quoted','Quoted'],['negotiation','Negotiation'],['customer','Customer'],['lost','Lost']];
+const OPEN_STAGES = ['lead','contacted','quoted','negotiation'];
+const F = ['company','contact_name','email','phone','country','city','website','source','address','tags','stage','deal_value','next_action','next_action_date'];
+const todayISO = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); };
+const money = v => v ? '$' + Number(v).toLocaleString() : '';
+
+async function signOut(){ await db.auth.signOut(); location.href='/portal/'; }
+async function audit(action, target){ try { await db.from('audit_log').insert({actor: USER.email, action, target}); } catch(e){} }
+
+(async function init(){
+  const { data } = await db.auth.getSession();
+  if (!data.session) { location.href = '/portal/'; return; }
+  USER = data.session.user;
+  if (!CXF_ADMIN_EMAILS.includes(USER.email.toLowerCase())) {
+    document.getElementById('app').innerHTML = '<p class="muted" style="text-align:center;margin-top:4rem;">This area is reserved for the CarbonXFuture desk.</p>';
+    return;
+  }
+  document.getElementById('app').innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+      <h1>CRM — pipeline &amp; contacts</h1>
+      <div class="tabs">
+        <button id="tb-board" class="on" onclick="setView('board')">Pipeline</button>
+        <button id="tb-table" onclick="setView('table')">Contacts</button>
+        <button id="tb-today" onclick="setView('today')">Follow-ups</button>
+      </div>
+    </div>
+    <div class="stats" id="stats"></div>
+    <div class="controls">
+      <input type="text" placeholder="Search — company, contact, email, phone, tag…" oninput="QUERY=this.value.toLowerCase();render();"/>
+      <button class="btn primary" onclick="newContact()">+ New contact</button>
+      <button class="btn" onclick="syncMembers()" id="syncBtn">Sync members</button>
+      <button class="btn" onclick="document.getElementById('csvFile').click()">Import CSV</button>
+      <button class="btn" onclick="exportCSV()">Export CSV</button>
+    </div>
+    <div id="view"></div>
+    <p class="muted" style="margin-top:1rem;font-size:12px;">Drag cards between pipeline columns to change stage. Click any card or row to open the full profile with timeline. If loading fails, run <code>schema-crm-pro.sql</code> once in Supabase → SQL Editor.</p>`;
+  await load();
+})();
+
+async function load(){
+  const { data, error } = await db.from('crm_contacts').select('*').order('updated_at',{ascending:false});
+  if (error) { document.getElementById('view').innerHTML = '<p class="muted">Error: ' + esc(error.message) + ' — did you run schema-crm-pro.sql?</p>'; return; }
+  CONTACTS = data || [];
+  render();
+}
+
+function filtered(){
+  if (!QUERY) return CONTACTS;
+  return CONTACTS.filter(c => F.map(f => c[f]).join(' ').toLowerCase().includes(QUERY));
+}
+
+function render(){
+  renderStats();
+  const el = document.getElementById('view');
+  if (VIEW === 'board') renderBoard(el);
+  else if (VIEW === 'table') renderTable(el);
+  else renderToday(el);
+}
+function setView(v){
+  VIEW = v;
+  ['board','table','today'].forEach(x => document.getElementById('tb-' + x).classList.toggle('on', x === v));
+  render();
+}
+
+function renderStats(){
+  const t = todayISO();
+  const open = CONTACTS.filter(c => OPEN_STAGES.includes(c.stage));
+  const pipeline = open.reduce((s,c) => s + (Number(c.deal_value) || 0), 0);
+  const overdue = CONTACTS.filter(c => c.next_action_date && c.next_action_date < t && c.stage !== 'lost').length;
+  const dueToday = CONTACTS.filter(c => c.next_action_date === t && c.stage !== 'lost').length;
+  const monthStart = t.slice(0,8) + '01';
+  const newMonth = CONTACTS.filter(c => String(c.created_at) >= monthStart).length;
+  const s = [
+    ['Contacts', CONTACTS.length, ''],
+    ['Open deals', open.length, ''],
+    ['Pipeline value', '$' + pipeline.toLocaleString(), ''],
+    ['Customers', CONTACTS.filter(c => c.stage === 'customer').length, ''],
+    ['Due today', dueToday, dueToday ? 'warn' : ''],
+    ['Overdue', overdue, overdue ? 'warn' : ''],
+    ['New this month', newMonth, '']
+  ];
+  document.getElementById('stats').innerHTML = s.map(([l,v,cls]) => `<div class="stat ${cls}"><b>${v}</b><span>${l}</span></div>`).join('');
+}
+
+/* ---------- Pipeline board ---------- */
+function renderBoard(el){
+  const t = todayISO();
+  const list = filtered();
+  el.innerHTML = '<div class="board">' + STAGES.map(([key, label]) => {
+    const cards = list.filter(c => c.stage === key);
+    const sum = cards.reduce((s,c) => s + (Number(c.deal_value) || 0), 0);
+    return `<div class="col" data-stage="${key}" ondragover="event.preventDefault();this.classList.add('dragover');" ondragleave="this.classList.remove('dragover');" ondrop="dropCard(event,'${key}')">
+      <h3>${label} · ${cards.length}${sum ? `<span class="sum">$${sum.toLocaleString()}</span>` : ''}</h3>
+      ${cards.map(c => `<div class="kcard" draggable="true" ondragstart="event.dataTransfer.setData('text/plain','${c.id}')" onclick="openContact('${c.id}')">
+        <b>${esc(c.company || c.contact_name || c.email || '—')}${c.member_id ? '<span class="mm">member</span>' : ''}</b>
+        <span class="muted">${esc(c.contact_name && c.company ? c.contact_name : (c.city || c.email || ''))}</span>
+        ${c.deal_value ? `<div class="val">${money(c.deal_value)}</div>` : ''}
+        ${c.next_action_date ? `<span class="due${c.next_action_date < t ? ' over' : ''}">${c.next_action_date < t ? '⚠ ' : '📅 '}${c.next_action_date}</span>` : ''}
+      </div>`).join('')}
+    </div>`;
+  }).join('') + '</div>';
+}
+async function dropCard(ev, stage){
+  ev.preventDefault();
+  document.querySelectorAll('.col').forEach(c => c.classList.remove('dragover'));
+  const id = ev.dataTransfer.getData('text/plain');
+  const c = CONTACTS.find(x => x.id === id);
+  if (!c || c.stage === stage) return;
+  const from = c.stage; c.stage = stage; render();
+  const { error } = await db.from('crm_contacts').update({ stage, updated_at: new Date().toISOString() }).eq('id', id);
+  if (error) { c.stage = from; render(); return alert('Error: ' + error.message); }
+  db.from('crm_activities').insert({ contact_id: id, kind: 'stage', body: from + ' → ' + stage, author: USER.email }).then(()=>{});
+  audit('crm_stage_' + stage, c.company || c.email || id);
+}
+
+/* ---------- Contacts table ---------- */
+function renderTable(el){
+  const list = filtered();
+  if (!list.length) { el.innerHTML = '<p class="muted">No contacts. Add one, sync members, or import a CSV.</p>'; return; }
+  el.innerHTML = `<table><tr><th>Company</th><th>Contact</th><th>Email</th><th>Phone</th><th>Location</th><th>Stage</th><th>Deal</th><th>Next action</th><th>Tags</th></tr>` +
+    list.map(c => `<tr onclick="openContact('${c.id}')">
+      <td><b>${esc(c.company ?? '—')}</b>${c.member_id ? ' <span class="mm" style="font-size:10px;color:var(--forest-light);">member</span>' : ''}</td>
+      <td>${esc(c.contact_name ?? '—')}</td>
+      <td>${esc(c.email ?? '—')}</td>
+      <td>${esc(c.phone ?? '—')}</td>
+      <td class="muted">${esc([c.city, c.country].filter(Boolean).join(', ') || '—')}</td>
+      <td><span class="pill ${esc(c.stage)}">${esc(c.stage)}</span></td>
+      <td>${money(c.deal_value) || '—'}</td>
+      <td class="muted">${c.next_action ? esc(c.next_action) + (c.next_action_date ? ' · ' + c.next_action_date : '') : '—'}</td>
+      <td class="muted">${esc(c.tags ?? '—')}</td>
+    </tr>`).join('') + '</table>';
+}
+
+/* ---------- Follow-ups ---------- */
+function renderToday(el){
+  const t = todayISO();
+  const withDate = filtered().filter(c => c.next_action_date && c.stage !== 'lost')
+    .sort((a,b) => a.next_action_date < b.next_action_date ? -1 : 1);
+  const over = withDate.filter(c => c.next_action_date < t);
+  const today = withDate.filter(c => c.next_action_date === t);
+  const week = withDate.filter(c => c.next_action_date > t).slice(0, 25);
+  const item = c => `<div class="item" onclick="openContact('${c.id}')">
+    <span class="d${c.next_action_date < t ? ' over' : ''}">${c.next_action_date}</span>
+    <b>${esc(c.company || c.contact_name || c.email)}</b>
+    <span class="muted">${esc(c.next_action || '')}</span>
+    <span class="pill ${esc(c.stage)}" style="margin-left:auto;">${esc(c.stage)}</span>
+  </div>`;
+  el.innerHTML =
+    `<div class="todo"><h3 style="color:var(--red);">⚠ Overdue (${over.length})</h3>${over.map(item).join('') || '<p class="muted">Nothing overdue — clean desk.</p>'}</div>` +
+    `<div class="todo"><h3 style="color:var(--forest);">Today (${today.length})</h3>${today.map(item).join('') || '<p class="muted">Nothing due today.</p>'}</div>` +
+    `<div class="todo"><h3>Upcoming</h3>${week.map(item).join('') || '<p class="muted">No upcoming follow-ups. Open a contact and set one.</p>'}</div>`;
+}
+
+/* ---------- Drawer (contact profile) ---------- */
+function newContact(){ openDrawer(null); }
+function openContact(id){ openDrawer(CONTACTS.find(c => c.id === id) || null, id); }
+function openDrawer(c){
+  CURRENT = c ? c.id : null;
+  document.getElementById('drTitle').textContent = c ? (c.company || c.contact_name || 'Contact') : 'New contact';
+  document.getElementById('drSub').textContent = c ? ('Added ' + String(c.created_at).slice(0,10) + (c.member_id ? ' · portal member' : ' · lead')) : 'A lead does not need a portal account.';
+  F.forEach(f => { const inp = document.getElementById('f_' + f); if (inp) inp.value = c ? (c[f] ?? '') : (f === 'stage' ? 'lead' : ''); });
+  document.getElementById('drDelete').style.display = c ? '' : 'none';
+  const em = document.getElementById('drEmail');
+  if (c && c.email) { em.style.display = ''; em.href = 'mailto:' + c.email; em.textContent = 'Email'; } else em.style.display = 'none';
+  const mb = document.getElementById('drMemberBox');
+  if (c && c.member_id) { mb.style.display = ''; loadDrawerDocs(c.member_id); } else mb.style.display = 'none';
+  document.getElementById('drTimeline').innerHTML = c ? '<p class="muted">Loading…</p>' : '<p class="muted">Save the contact first, then log calls and notes here.</p>';
+  document.getElementById('drawer').style.display = 'flex';
+  if (c) loadTimeline(c.id);
+}
+function closeDrawer(){ document.getElementById('drawer').style.display = 'none'; CURRENT = null; }
+document.getElementById('drawer').addEventListener('click', function(e){ if (e.target === this) closeDrawer(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(); });
+
+async function saveContact(){
+  const rec = {};
+  F.forEach(f => { const inp = document.getElementById('f_' + f); if (inp) rec[f] = inp.value.trim() || null; });
+  if (rec.deal_value) rec.deal_value = Number(rec.deal_value);
+  if (!rec.company && !rec.contact_name && !rec.email) return alert('Enter at least a company, a name or an email.');
+  rec.updated_at = new Date().toISOString();
+  let error;
+  if (CURRENT) ({ error } = await db.from('crm_contacts').update(rec).eq('id', CURRENT));
+  else {
+    const r = await db.from('crm_contacts').insert(rec).select().single();
+    error = r.error; if (!error) { CURRENT = r.data.id; }
+  }
+  if (error) return alert('Error: ' + error.message);
+  audit('crm_contact_saved', rec.company || rec.email || CURRENT);
+  await load();
+  const c = CONTACTS.find(x => x.id === CURRENT);
+  if (c) openDrawer(c); else closeDrawer();
+}
+async function deleteContact(){
+  if (!CURRENT) return;
+  const c = CONTACTS.find(x => x.id === CURRENT);
+  if (!confirm('Delete ' + (c?.company || c?.email || 'this contact') + ' and its whole timeline?')) return;
+  const { error } = await db.from('crm_contacts').delete().eq('id', CURRENT);
+  if (error) return alert('Error: ' + error.message);
+  audit('crm_contact_deleted', c?.company || c?.email || CURRENT);
+  closeDrawer(); load();
+}
+
+async function loadTimeline(id){
+  const el = document.getElementById('drTimeline');
+  const { data, error } = await db.from('crm_activities').select('*').eq('contact_id', id).order('created_at',{ascending:false}).limit(50);
+  if (error) { el.innerHTML = '<p class="muted">Error: ' + esc(error.message) + '</p>'; return; }
+  el.innerHTML = (data && data.length)
+    ? data.map(a => `<div class="ev"><span class="k">${esc(a.kind)}</span>${esc(a.body)}<div class="when">${new Date(a.created_at).toLocaleString('en-US',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'})} · ${esc(a.author)}</div></div>`).join('')
+    : '<p class="muted">No activity yet — log the first call or note above.</p>';
+}
+async function addActivity(){
+  if (!CURRENT) return alert('Save the contact first.');
+  const body = document.getElementById('evBody').value.trim();
+  if (!body) return;
+  const kind = document.getElementById('evKind').value;
+  const { error } = await db.from('crm_activities').insert({ contact_id: CURRENT, kind, body, author: USER.email });
+  if (error) return alert('Error: ' + error.message);
+  document.getElementById('evBody').value = '';
+  loadTimeline(CURRENT);
+  db.from('crm_contacts').update({ updated_at: new Date().toISOString() }).eq('id', CURRENT).then(()=>{});
+}
+
+async function loadDrawerDocs(memberId){
+  const el = document.getElementById('drDocs');
+  el.textContent = 'Loading…';
+  const { data, error } = await db.from('documents').select('*').eq('member_id', memberId).order('uploaded_at',{ascending:false});
+  if (error) { el.textContent = 'Error: ' + error.message; return; }
+  if (!data.length) { el.textContent = 'No documents uploaded yet.'; return; }
+  el.innerHTML = data.map(d => `<div class="docrow">
+    <a href="#" onclick="openFile('${esc(d.storage_path)}');return false;">${esc(d.file_name)}</a>
+    <span class="muted">${esc(d.doc_type ?? '')}</span>
+    <span class="muted" style="margin-left:auto;white-space:nowrap;">${esc(String(d.status).replace('_',' '))} · ${String(d.uploaded_at).slice(0,10)}</span>
+  </div>`).join('');
+}
+async function openFile(path){
+  const { data, error } = await db.storage.from('member-docs').createSignedUrl(path, 300);
+  if (error) return alert('Error: ' + error.message);
+  window.open(data.signedUrl, '_blank');
+}
+
+/* ---------- Sync portal members into the CRM ---------- */
+async function syncMembers(){
+  const btn = document.getElementById('syncBtn');
+  btn.disabled = true; btn.textContent = 'Syncing…';
+  try {
+    const { data: members, error } = await db.from('members').select('*');
+    if (error) throw error;
+    const byMember = new Set(CONTACTS.map(c => c.member_id).filter(Boolean));
+    const byEmail = {}; CONTACTS.forEach(c => { if (c.email) byEmail[c.email.toLowerCase()] = c; });
+    let added = 0, linked = 0;
+    for (const m of (members || [])) {
+      if (byMember.has(m.id)) continue;
+      const existing = m.email ? byEmail[m.email.toLowerCase()] : null;
+      if (existing) {
+        const { error: e2 } = await db.from('crm_contacts').update({ member_id: m.id, updated_at: new Date().toISOString() }).eq('id', existing.id);
+        if (!e2) linked++;
+        continue;
+      }
+      const rec = {
+        member_id: m.id, company: m.company, contact_name: m.contact_name, email: m.email,
+        phone: m.phone ?? null, country: m.country ?? null, city: m.city ?? null,
+        website: m.website ?? null, address: m.address ?? null, tags: m.tags ?? null,
+        source: m.source ?? 'portal KYC',
+        stage: m.status === 'approved' ? 'customer' : (m.status === 'rejected' || m.status === 'suspended' ? 'lost' : 'lead')
+      };
+      const { error: e3 } = await db.from('crm_contacts').insert(rec);
+      if (!e3) added++;
+    }
+    audit('crm_sync_members', added + ' added, ' + linked + ' linked');
+    alert('Sync done — ' + added + ' new contact(s) created, ' + linked + ' existing linked to a member. Members already in the CRM were left untouched.');
+    await load();
+  } catch(e) { alert('Sync failed: ' + e.message); }
+  btn.disabled = false; btn.textContent = 'Sync members';
+}
+
+/* ---------- CSV import / export ---------- */
+function parseCSV(text){
+  const rows = []; let row = [], cell = '', q = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (q) { if (ch === '"') { if (text[i+1] === '"') { cell += '"'; i++; } else q = false; } else cell += ch; }
+    else if (ch === '"') q = true;
+    else if (ch === ',') { row.push(cell); cell = ''; }
+    else if (ch === '\n' || ch === '\r') { if (cell !== '' || row.length) { row.push(cell); rows.push(row); row = []; cell = ''; } if (ch === '\r' && text[i+1] === '\n') i++; }
+    else cell += ch;
+  }
+  if (cell !== '' || row.length) { row.push(cell); rows.push(row); }
+  return rows;
+}
+const HEADER_MAP = {
+  company:'company', firma:'company', companie:'company',
+  contact:'contact_name', contact_name:'contact_name', name:'contact_name', nume:'contact_name',
+  email:'email', 'e-mail':'email', mail:'email',
+  phone:'phone', telefon:'phone', tel:'phone', mobile:'phone',
+  country:'country', tara:'country', 'țară':'country',
+  city:'city', oras:'city', 'oraș':'city', state:'city',
+  website:'website', site:'website', web:'website',
+  address:'address', adresa:'address', 'adresă':'address',
+  source:'source', sursa:'source', 'sursă':'source',
+  tags:'tags', tag:'tags', etichete:'tags',
+  stage:'stage', etapa:'stage', 'etapă':'stage', status:'stage',
+  deal_value:'deal_value', value:'deal_value', valoare:'deal_value', deal:'deal_value',
+  next_action:'next_action', next_action_date:'next_action_date', notes:'next_action'
+};
+async function importCSV(file){
+  if (!file) return;
+  const text = await file.text();
+  const rows = parseCSV(text);
+  if (rows.length < 2) return alert('CSV appears empty (needs a header row + data rows).');
+  const headers = rows[0].map(h => HEADER_MAP[h.trim().toLowerCase()] || null);
+  if (!headers.some(Boolean)) return alert('No recognizable columns. Use headers like: company, contact, email, phone, country, city, source, tags, stage, deal_value.');
+  const stages = STAGES.map(s => s[0]);
+  const recs = rows.slice(1).filter(r => r.some(v => v.trim())).map(r => {
+    const rec = { source: 'CSV import' };
+    headers.forEach((h, i) => { if (h && r[i] && r[i].trim()) rec[h] = r[i].trim(); });
+    if (rec.stage) rec.stage = stages.includes(rec.stage.toLowerCase()) ? rec.stage.toLowerCase() : 'lead'; else rec.stage = 'lead';
+    if (rec.deal_value) { rec.deal_value = Number(String(rec.deal_value).replace(/[^0-9.]/g,'')) || null; }
+    return rec;
+  }).filter(r => r.company || r.contact_name || r.email);
+  if (!recs.length) return alert('No usable rows found.');
+  const have = new Set(CONTACTS.map(c => (c.email || '').toLowerCase()).filter(Boolean));
+  const fresh = recs.filter(r => !r.email || !have.has(r.email.toLowerCase()));
+  const skipped = recs.length - fresh.length;
+  if (!confirm('Import ' + fresh.length + ' contact(s)?' + (skipped ? ' (' + skipped + ' skipped — email already in CRM)' : ''))) return;
+  let ok = 0;
+  for (let i = 0; i < fresh.length; i += 50) {
+    const { error } = await db.from('crm_contacts').insert(fresh.slice(i, i + 50));
+    if (error) { alert('Import stopped at row ' + (i + 1) + ': ' + error.message); break; }
+    ok += Math.min(50, fresh.length - i);
+  }
+  audit('crm_csv_import', ok + ' contacts');
+  alert('Imported ' + ok + ' contact(s).');
+  document.getElementById('csvFile').value = '';
+  load();
+}
+function exportCSV(){
+  if (!CONTACTS.length) return alert('Nothing to export.');
+  const cols = ['company','contact_name','email','phone','country','city','website','address','source','tags','stage','deal_value','next_action','next_action_date','created_at'];
+  const csv = cols.join(',') + '\n' + CONTACTS.map(c =>
+    cols.map(f => '"' + String(c[f] ?? '').replace(/"/g,'""') + '"').join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv'}));
+  a.download = 'cxf-crm-' + todayISO() + '.csv';
+  a.click(); URL.revokeObjectURL(a.href);
+}
+</script>
+</body>
+</html>

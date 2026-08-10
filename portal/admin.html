@@ -176,7 +176,8 @@ async function notifyMember(type, to, data) {
       <button class="act ghost" onclick="exportCardCSV('members','cxf-members')" style="float:right;">Export CSV</button>
       <div id="members" class="muted">Loading…</div></div>
     <div class="card" id="c-crm"><h2>CRM — member contact book</h2>
-      <p class="muted" style="margin-bottom:0.75rem;">Full contact profile for every member — phone, location, source, tags and desk notes. Click <b>Profile</b> to view/edit. (Extra fields require running <code>schema-crm.sql</code> once in Supabase.)</p>
+      <p class="muted" style="margin-bottom:0.75rem;">Full contact profile for every member — phone, location, source, tags and desk notes. Click <b>Profile</b> to view/edit. (Extra fields require running <code>schema-crm.sql</code> once in Supabase.)
+      <a href="/portal/crm.html" class="act ok" style="text-decoration:none;float:right;">Open full CRM — pipeline &amp; leads →</a></p>
       <input placeholder="Filter…" oninput="filterCard('crm', this.value)" style="padding:7px 12px;border:0.5px solid var(--slate-200);border-radius:7px;font-family:'Inter',sans-serif;font-size:12px;margin-bottom:8px;width:220px;"/>
       <button class="act ghost" onclick="exportCardCSV('crm','cxf-crm')" style="float:right;">Export CSV</button>
       <div id="crm" class="muted">Loading…</div></div>
