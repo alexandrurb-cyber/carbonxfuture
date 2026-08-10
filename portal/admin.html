@@ -158,6 +158,7 @@ async function notifyMember(type, to, data) {
       <a href="#c-registry" onclick="jumpTo(event,'c-registry')">Registry</a>
       <a href="#c-certs" onclick="jumpTo(event,'c-certs')">Certificates</a>
       <a href="#c-projects" onclick="jumpTo(event,'c-projects')">Projects</a>
+      <a href="#c-prices" onclick="jumpTo(event,'c-prices')">Prices</a>
       <a href="#c-news" onclick="jumpTo(event,'c-news')">Newsletter</a>
       <a href="#c-backup" onclick="jumpTo(event,'c-backup')">Backup</a>
       <a href="#c-audit" onclick="jumpTo(event,'c-audit')">Log</a>
@@ -237,8 +238,19 @@ async function notifyMember(type, to, data) {
     <div class="card" id="c-backup"><h2>Backup</h2>
       <p class="muted" style="margin-bottom:0.75rem;">Downloads every table (members, reports, listings, RFQs, certificates, price history, subscribers, audit log) as one JSON file. Keep weekly copies in a safe folder. <span id="bkReminder" style="color:var(--amber);font-weight:600;"></span></p>
       <button class="act ok" id="bkBtn" onclick="downloadBackup()">Download full backup (JSON)</button>
+      <button class="act ghost" onclick="emailBackupNow()">Email backup now (test auto-backup)</button>
       <span id="bkStatus" class="muted" style="margin-left:10px;"></span>
+      <p class="muted" style="margin-top:0.5rem;">Auto-backup: every Monday 11:00 UTC, Vercel emails the full JSON to desk@carbonxfuture.com (needs SUPABASE_SERVICE_KEY in Vercel env — see api/backup.js).</p>
       <p class="muted" style="margin-top:0.5rem;">Note: uploaded PDF files live in Supabase Storage and are not inside this JSON — download important documents from the Documents card.</p>
+    </div>
+    <div class="card" id="c-prices"><h2>Update prices — weekly desk marks</h2>
+      <p class="muted" style="margin-bottom:0.75rem;">Edit the marks, then <b>Download prices.json</b> and upload it to GitHub (repo root, replacing the old one). Vercel deploys it, the This-week card ticks itself and the price snapshot is archived automatically on your next visit.</p>
+      <div id="pricesForm" class="muted">Loading current prices.json…</div>
+      <div style="margin-top:0.75rem;display:flex;gap:8px;align-items:center;">
+        <button class="act ok" onclick="downloadPricesJson()">Download prices.json</button>
+        <button class="act ghost" onclick="copyPricesJson()">Copy JSON</button>
+        <span id="prStatus" class="muted"></span>
+      </div>
     </div>
     <div class="card" id="c-subs"><h2>Subscribers — Desk Note list</h2>
       <p class="muted" style="margin-bottom:0.75rem;">Everyone subscribed to the weekly Desk Note — <b id="subsActive">…</b> active, <b id="subsTotal">…</b> total. Emails are private (admin-only via RLS).</p>
@@ -264,6 +276,7 @@ async function notifyMember(type, to, data) {
   loadCrm(); loadSubs();
   loadRfqs(); loadCertificates(); capturePriceSnapshot(); backupReminder(); loadOverview(); loadAudit();
   loadOilAdmin(); loadRegistry(); loadInbox(); loadWeek(); wireCollapse();
+  syncRfqLeads(); loadPricesCard();
 })();
 
 /* ---------- Desk suite: inbox, nav, collapse, search, notes, week ---------- */
@@ -747,6 +760,48 @@ Marks are indicative desk assessments, not exchange prices. Not financial advice
 }
 
 /* ---------- RFQ desk ---------- */
+/* RFQ → CRM: every new quote request automatically becomes a CRM lead
+   (source "RFQ"), with an activity logged and the RFQ linked so it never
+   duplicates. Requires schema-rfq-crm.sql + schema-crm-pro.sql. */
+async function syncRfqLeads(){
+  try {
+    const { data: rfqs, error } = await db.from('rfqs').select('*').is('crm_contact_id', null);
+    if (error || !rfqs || !rfqs.length) return;
+    const { data: contacts, error: e2 } = await db.from('crm_contacts').select('id, email');
+    if (e2) return; // CRM Pro not installed yet — skip silently
+    const byEmail = {};
+    (contacts || []).forEach(c => { if (c.email) byEmail[c.email.toLowerCase()] = c.id; });
+    const d = new Date();
+    const today = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+    let created = 0;
+    for (const q of rfqs) {
+      const em = (q.email || '').toLowerCase();
+      let cid = em ? byEmail[em] : null;
+      if (!cid) {
+        const vol = Number(q.volume_tco2e), tp = Number(q.target_price);
+        const { data: nc, error: e3 } = await db.from('crm_contacts').insert({
+          company: q.company || null, contact_name: q.contact_name || null, email: q.email || null,
+          source: 'RFQ', stage: 'lead',
+          deal_value: (vol > 0 && tp > 0) ? Math.round(vol * tp) : null,
+          next_action: 'Send quote — ' + (q.listing_name || 'RFQ'),
+          next_action_date: today
+        }).select().single();
+        if (e3) continue;
+        cid = nc.id; if (em) byEmail[em] = cid; created++;
+      }
+      await db.from('crm_activities').insert({
+        contact_id: cid, kind: 'task', author: 'auto (RFQ desk)',
+        body: 'RFQ received: ' + (q.listing_name || '—')
+          + (q.volume_tco2e ? ' — ' + Number(q.volume_tco2e).toLocaleString() + ' tCO₂e' : '')
+          + (q.target_price ? ' @ $' + Number(q.target_price).toFixed(2) : '')
+          + (q.timeframe ? ' · ' + q.timeframe : '')
+      });
+      await db.from('rfqs').update({ crm_contact_id: cid }).eq('id', q.id);
+    }
+    if (created) audit('crm_rfq_leads_auto', created + ' lead(s) created from RFQs');
+  } catch(e){}
+}
+
 async function loadRfqs(){
   const el = document.getElementById('rfqs');
   const { data, error } = await db.from('rfqs').select('*').neq('status','archived').order('created_at',{ascending:false}).limit(100);
@@ -1078,6 +1133,78 @@ async function rejectReport(id){
   audit('report_rejected', id);
   if (r) await notifyMember('report_rejected', r.members.email, { name: r.members.contact_name, company: r.members.company, period: r.period, note });
   loadReports();
+}
+
+async function emailBackupNow(){
+  const st = document.getElementById('bkStatus');
+  st.textContent = 'Sending backup email…';
+  try {
+    const { data: s } = await db.auth.getSession();
+    const r = await fetch('/api/backup', { headers: { Authorization: 'Bearer ' + s.session.access_token } });
+    const out = await r.json();
+    if (!r.ok) throw new Error(out.error || ('HTTP ' + r.status));
+    st.textContent = '✓ Backup emailed to desk@ (' + Math.round(out.size_bytes / 1024) + ' KB).';
+  } catch(e) { st.textContent = ''; alert('Backup email failed: ' + e.message); }
+}
+
+/* ---------- Update prices card ---------- */
+let PRICES_CUR = null;
+function localToday(){ const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
+async function loadPricesCard(){
+  const el = document.getElementById('pricesForm');
+  if (!el) return;
+  try {
+    const p = await (await fetch('/prices.json', {cache:'no-store'})).json();
+    PRICES_CUR = p;
+    const inp = 'padding:8px;border:0.5px solid var(--slate-200);border-radius:7px;font-family:\'Inter\',sans-serif;font-size:12.5px;width:100%;box-sizing:border-box;';
+    const lab = 'font-size:10.5px;text-transform:uppercase;letter-spacing:0.4px;color:var(--slate-400);display:block;margin-bottom:2px;';
+    el.innerHTML =
+      '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;">' +
+      Object.entries(p.prices).map(([k,v]) =>
+        `<div><label style="${lab}">${esc((typeof PRICE_LABELS !== 'undefined' && PRICE_LABELS[k]) || k)}</label>
+         <input data-pk="${esc(k)}" type="number" step="0.1" min="0" value="${v}" style="${inp}"/></div>`).join('') +
+      '</div>' +
+      '<div style="display:grid;grid-template-columns:1fr 1fr 2fr;gap:8px;margin-top:10px;">' +
+      ['eua','accu'].map(b => { const bm = (p.benchmarks || {})[b] || {}; return `
+        <div><label style="${lab}">${esc(bm.label || b.toUpperCase())} — value (${esc(bm.unit || '')})</label>
+          <input data-bk="${b}" data-bf="value" type="number" step="0.1" value="${bm.value ?? ''}" style="${inp}"/></div>
+        <div><label style="${lab}">as of</label>
+          <input data-bk="${b}" data-bf="asof" type="date" value="${esc(bm.asof ?? '')}" style="${inp}"/></div>
+        <div><label style="${lab}">source note</label>
+          <input data-bk="${b}" data-bf="source" value="${esc(bm.source ?? '')}" style="${inp}"/></div>`; }).join('') +
+      '</div>' +
+      `<div style="margin-top:10px;max-width:220px;"><label style="${lab}">lastUpdated (today = marks refreshed)</label>
+        <input id="prLastUpdated" type="date" value="${localToday()}" style="${inp}"/></div>`;
+  } catch(e) { el.textContent = 'Could not load current prices.json — ' + e.message; }
+}
+function buildPricesJson(){
+  if (!PRICES_CUR) return null;
+  const out = JSON.parse(JSON.stringify(PRICES_CUR));
+  out.lastUpdated = document.getElementById('prLastUpdated').value || localToday();
+  document.querySelectorAll('#pricesForm [data-pk]').forEach(i => { const v = Number(i.value); if (v > 0) out.prices[i.dataset.pk] = v; });
+  document.querySelectorAll('#pricesForm [data-bk]').forEach(i => {
+    const b = i.dataset.bk, f = i.dataset.bf;
+    if (!out.benchmarks) out.benchmarks = {};
+    if (!out.benchmarks[b]) out.benchmarks[b] = {};
+    out.benchmarks[b][f] = f === 'value' ? Number(i.value) : i.value;
+  });
+  return JSON.stringify(out, null, 2) + '\n';
+}
+function downloadPricesJson(){
+  const json = buildPricesJson();
+  if (!json) return alert('Prices not loaded yet.');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([json], {type:'application/json'}));
+  a.download = 'prices.json';
+  a.click(); URL.revokeObjectURL(a.href);
+  document.getElementById('prStatus').textContent = '✓ Downloaded — now upload to GitHub repo root (replace prices.json).';
+  audit('prices_json_prepared', 'lastUpdated ' + (document.getElementById('prLastUpdated').value || localToday()));
+}
+async function copyPricesJson(){
+  const json = buildPricesJson();
+  if (!json) return alert('Prices not loaded yet.');
+  try { await navigator.clipboard.writeText(json); document.getElementById('prStatus').textContent = '✓ Copied to clipboard.'; }
+  catch(e) { alert('Copy failed — use Download instead.'); }
 }
 
 /* ---------- Documents ---------- */
