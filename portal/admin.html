@@ -99,6 +99,8 @@ a{color:var(--forest-light);}
     <div><label>City / State</label><input id="pf_city" placeholder="Fort Lauderdale, FL"/></div>
     <div><label>Source</label><input id="pf_source" placeholder="e.g. website KYC form, referral, LinkedIn"/></div>
     <div><label>Tags</label><input id="pf_tags" placeholder="e.g. hot lead, collector, FL"/></div>
+    <div><label>EPA ID (RCRA no.)</label><input id="pf_epa_id" placeholder="e.g. FLR000123456"/></div>
+    <div></div>
   </div>
   <label>Address</label><textarea id="pf_address" rows="2"></textarea>
   <label style="margin-top:14px;">Documents on file</label>
@@ -932,7 +934,7 @@ async function loadMembers(){
     </tr>`; }).join('') + '</table>';
 }
 /* ---------- CRM — member contact book ---------- */
-const CRM_FIELDS = ['contact_name','company','phone','website','country','city','source','tags','address'];
+const CRM_FIELDS = ['contact_name','company','phone','website','country','city','source','tags','epa_id','address'];
 let CRM_DATA = {};
 async function loadCrm(){
   const el = document.getElementById('crm');

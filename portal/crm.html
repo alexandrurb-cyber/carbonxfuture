@@ -100,6 +100,8 @@ tr:hover td{background:var(--forest-pale);cursor:pointer;}
     <div><label>City / State</label><input id="f_city"/></div>
     <div><label>Website</label><input id="f_website"/></div>
     <div><label>Source</label><input id="f_source" placeholder="RFQ, referral, LinkedIn…"/></div>
+    <div><label>EPA ID (RCRA no.)</label><input id="f_epa_id" placeholder="e.g. FLR000123456"/></div>
+    <div></div>
   </div>
   <label>Address</label><input id="f_address"/>
   <label>Tags</label><input id="f_tags" placeholder="collector, FL, hot…"/>
@@ -123,6 +125,25 @@ tr:hover td{background:var(--forest-pale);cursor:pointer;}
     <label>Portal member — documents on file</label>
     <div id="drDocs" class="muted" style="border:0.5px solid var(--slate-100);border-radius:8px;padding:8px 11px;max-height:150px;overflow-y:auto;font-size:12.5px;">Loading…</div>
   </div>
+  <div id="drCompliance" style="display:none;">
+    <label style="margin-top:1.25rem;">Licenses &amp; permits</label>
+    <div id="drLicenses" class="muted" style="border:0.5px solid var(--slate-100);border-radius:8px;padding:8px 11px;font-size:12.5px;">Loading…</div>
+    <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
+      <select id="licKind" style="max-width:150px;"></select>
+      <input id="licNumber" placeholder="Number" style="max-width:140px;"/>
+      <input id="licIssuer" placeholder="Issuer (EPA, FDEP…)" style="max-width:140px;"/>
+      <input id="licExpiry" type="date" title="Expiry date" style="max-width:140px;"/>
+      <button class="act ok" onclick="addLicense()">Add</button>
+    </div>
+    <label style="margin-top:1.25rem;">EPA / state reports — declared quantities</label>
+    <div id="drEpa" class="muted" style="border:0.5px solid var(--slate-100);border-radius:8px;padding:8px 11px;font-size:12.5px;">Loading…</div>
+    <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
+      <input id="epPeriod" placeholder="Period (2026 or 2026-07)" style="max-width:150px;"/>
+      <select id="epForm" style="max-width:170px;"></select>
+      <input id="epGallons" type="number" min="0" placeholder="Gallons" style="max-width:110px;"/>
+      <button class="act ok" onclick="addEpaReport()">Add</button>
+    </div>
+  </div>
   <label style="margin-top:1.25rem;">Log activity</label>
   <div style="display:flex;gap:8px;">
     <select id="evKind" style="max-width:120px;">
@@ -145,7 +166,10 @@ let USER = null, CONTACTS = [], VIEW = 'board', QUERY = '', CURRENT = null;
 const esc = s => String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 const STAGES = [['lead','Lead'],['contacted','Contacted'],['quoted','Quoted'],['negotiation','Negotiation'],['customer','Customer'],['lost','Lost']];
 const OPEN_STAGES = ['lead','contacted','quoted','negotiation'];
-const F = ['company','contact_name','email','phone','country','city','website','source','address','tags','stage','deal_value','next_action','next_action_date'];
+const F = ['company','contact_name','email','phone','country','city','website','source','address','tags','stage','deal_value','next_action','next_action_date','epa_id'];
+let LICENSES = [];
+const LIC_KINDS = ['EPA ID','State permit','Transporter license','Processor permit','Insurance','Other'];
+const EPA_FORMS = ['EPA 8700-12','EPA 8700-13A/B','State annual report','State monthly report','Other'];
 const todayISO = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); };
 const money = v => v ? '$' + Number(v).toLocaleString() : '';
 
@@ -186,7 +210,20 @@ async function load(){
   const { data, error } = await db.from('crm_contacts').select('*').order('updated_at',{ascending:false});
   if (error) { document.getElementById('view').innerHTML = '<p class="muted">Error: ' + esc(error.message) + ' — did you run schema-crm-pro.sql?</p>'; return; }
   CONTACTS = data || [];
+  try {
+    const { data: lic } = await db.from('crm_licenses').select('*');
+    LICENSES = lic || [];
+  } catch(e){ LICENSES = []; }
   render();
+}
+function expiringLicenses(days){
+  const t = todayISO();
+  const lim = new Date(); lim.setDate(lim.getDate() + days);
+  const limISO = lim.getFullYear() + '-' + String(lim.getMonth()+1).padStart(2,'0') + '-' + String(lim.getDate()).padStart(2,'0');
+  return LICENSES.filter(l => l.expiry_date && l.expiry_date <= limISO)
+    .map(l => ({ ...l, overdue: l.expiry_date < t, contact: CONTACTS.find(c => c.id === l.contact_id) }))
+    .filter(l => l.contact)
+    .sort((a,b) => a.expiry_date < b.expiry_date ? -1 : 1);
 }
 
 function filtered(){
@@ -222,6 +259,7 @@ function renderStats(){
     ['Customers', CONTACTS.filter(c => c.stage === 'customer').length, ''],
     ['Due today', dueToday, dueToday ? 'warn' : ''],
     ['Overdue', overdue, overdue ? 'warn' : ''],
+    ['Licenses expiring ≤90d', expiringLicenses(90).length, expiringLicenses(90).length ? 'warn' : ''],
     ['New this month', newMonth, '']
   ];
   document.getElementById('stats').innerHTML = s.map(([l,v,cls]) => `<div class="stat ${cls}"><b>${v}</b><span>${l}</span></div>`).join('');
@@ -262,12 +300,13 @@ async function dropCard(ev, stage){
 function renderTable(el){
   const list = filtered();
   if (!list.length) { el.innerHTML = '<p class="muted">No contacts. Add one, sync members, or import a CSV.</p>'; return; }
-  el.innerHTML = `<table><tr><th>Company</th><th>Contact</th><th>Email</th><th>Phone</th><th>Location</th><th>Stage</th><th>Deal</th><th>Next action</th><th>Tags</th></tr>` +
+  el.innerHTML = `<table><tr><th>Company</th><th>Contact</th><th>Email</th><th>Phone</th><th>EPA ID</th><th>Location</th><th>Stage</th><th>Deal</th><th>Next action</th><th>Tags</th></tr>` +
     list.map(c => `<tr onclick="openContact('${c.id}')">
       <td><b>${esc(c.company ?? '—')}</b>${c.member_id ? ' <span class="mm" style="font-size:10px;color:var(--forest-light);">member</span>' : ''}</td>
       <td>${esc(c.contact_name ?? '—')}</td>
       <td>${esc(c.email ?? '—')}</td>
       <td>${esc(c.phone ?? '—')}</td>
+      <td class="muted">${esc(c.epa_id ?? '—')}</td>
       <td class="muted">${esc([c.city, c.country].filter(Boolean).join(', ') || '—')}</td>
       <td><span class="pill ${esc(c.stage)}">${esc(c.stage)}</span></td>
       <td>${money(c.deal_value) || '—'}</td>
@@ -290,10 +329,18 @@ function renderToday(el){
     <span class="muted">${esc(c.next_action || '')}</span>
     <span class="pill ${esc(c.stage)}" style="margin-left:auto;">${esc(c.stage)}</span>
   </div>`;
+  const lic = expiringLicenses(90);
+  const licItem = l => `<div class="item" onclick="openContact('${l.contact.id}')">
+    <span class="d${l.overdue ? ' over' : ''}">${l.expiry_date}</span>
+    <b>${esc(l.contact.company || l.contact.contact_name || l.contact.email)}</b>
+    <span class="muted">${esc(l.kind)}${l.number ? ' ' + esc(l.number) : ''}${l.issuer ? ' · ' + esc(l.issuer) : ''}</span>
+    <span class="pill ${l.overdue ? 'lost' : 'quoted'}" style="margin-left:auto;">${l.overdue ? 'EXPIRED' : 'expiring'}</span>
+  </div>`;
   el.innerHTML =
     `<div class="todo"><h3 style="color:var(--red);">⚠ Overdue (${over.length})</h3>${over.map(item).join('') || '<p class="muted">Nothing overdue — clean desk.</p>'}</div>` +
     `<div class="todo"><h3 style="color:var(--forest);">Today (${today.length})</h3>${today.map(item).join('') || '<p class="muted">Nothing due today.</p>'}</div>` +
-    `<div class="todo"><h3>Upcoming</h3>${week.map(item).join('') || '<p class="muted">No upcoming follow-ups. Open a contact and set one.</p>'}</div>`;
+    `<div class="todo"><h3>Upcoming</h3>${week.map(item).join('') || '<p class="muted">No upcoming follow-ups. Open a contact and set one.</p>'}</div>` +
+    `<div class="todo"><h3 style="color:var(--amber);">Licenses &amp; permits expiring ≤90 days (${lic.length})</h3>${lic.map(licItem).join('') || '<p class="muted">No licenses expiring in the next 90 days.</p>'}</div>`;
 }
 
 /* ---------- Drawer (contact profile) ---------- */
@@ -309,6 +356,13 @@ function openDrawer(c){
   if (c && c.email) { em.style.display = ''; em.href = 'mailto:' + c.email; em.textContent = 'Email'; } else em.style.display = 'none';
   const mb = document.getElementById('drMemberBox');
   if (c && c.member_id) { mb.style.display = ''; loadDrawerDocs(c.member_id); } else mb.style.display = 'none';
+  const cb = document.getElementById('drCompliance');
+  if (c) {
+    cb.style.display = '';
+    document.getElementById('licKind').innerHTML = LIC_KINDS.map(k => '<option>' + k + '</option>').join('');
+    document.getElementById('epForm').innerHTML = EPA_FORMS.map(k => '<option>' + k + '</option>').join('');
+    renderLicenseList(c.id); loadEpaReports(c.id);
+  } else cb.style.display = 'none';
   document.getElementById('drTimeline').innerHTML = c ? '<p class="muted">Loading…</p>' : '<p class="muted">Save the contact first, then log calls and notes here.</p>';
   document.getElementById('drawer').style.display = 'flex';
   if (c) loadTimeline(c.id);
@@ -365,6 +419,70 @@ async function addActivity(){
   db.from('crm_contacts').update({ updated_at: new Date().toISOString() }).eq('id', CURRENT).then(()=>{});
 }
 
+/* ---------- Compliance: licenses & EPA reports ---------- */
+function renderLicenseList(contactId){
+  const el = document.getElementById('drLicenses');
+  const t = todayISO();
+  const list = LICENSES.filter(l => l.contact_id === contactId).sort((a,b) => (a.expiry_date || '9999') < (b.expiry_date || '9999') ? -1 : 1);
+  if (!list.length) { el.textContent = 'No licenses recorded — add the EPA ID certificate, state permits, transporter licenses…'; return; }
+  el.innerHTML = list.map(l => `<div class="docrow">
+    <b>${esc(l.kind)}</b>${l.number ? ' ' + esc(l.number) : ''}${l.issuer ? ' <span class="muted">· ' + esc(l.issuer) + '</span>' : ''}
+    <span style="margin-left:auto;white-space:nowrap;" class="${l.expiry_date && l.expiry_date < t ? '' : 'muted'}">${l.expiry_date ? (l.expiry_date < t ? '⚠ EXPIRED ' : 'exp. ') + l.expiry_date : 'no expiry'}</span>
+    <a href="#" onclick="delLicense('${l.id}','${esc(l.kind)}');return false;" style="color:var(--red);">✕</a>
+  </div>`).join('');
+}
+async function addLicense(){
+  if (!CURRENT) return;
+  const kind = document.getElementById('licKind').value;
+  const number = document.getElementById('licNumber').value.trim() || null;
+  const issuer = document.getElementById('licIssuer').value.trim() || null;
+  const expiry = document.getElementById('licExpiry').value || null;
+  const { data, error } = await db.from('crm_licenses').insert({ contact_id: CURRENT, kind, number, issuer, expiry_date: expiry }).select().single();
+  if (error) return alert('Error: ' + error.message + (/relation|schema/i.test(error.message) ? '\n\nDid you run schema-epa.sql?' : ''));
+  LICENSES.push(data);
+  ['licNumber','licIssuer','licExpiry'].forEach(i => document.getElementById(i).value = '');
+  renderLicenseList(CURRENT); renderStats();
+  audit('crm_license_added', kind + (number ? ' ' + number : ''));
+}
+async function delLicense(id, kind){
+  if (!confirm('Remove this ' + kind + ' entry?')) return;
+  const { error } = await db.from('crm_licenses').delete().eq('id', id);
+  if (error) return alert('Error: ' + error.message);
+  LICENSES = LICENSES.filter(l => l.id !== id);
+  renderLicenseList(CURRENT); renderStats();
+}
+async function loadEpaReports(contactId){
+  const el = document.getElementById('drEpa');
+  el.textContent = 'Loading…';
+  const { data, error } = await db.from('crm_epa_reports').select('*').eq('contact_id', contactId).order('period',{ascending:false}).limit(36);
+  if (error) { el.textContent = 'Error: ' + error.message + (/relation|schema/i.test(error.message) ? ' — did you run schema-epa.sql?' : ''); return; }
+  if (!data.length) { el.textContent = 'No declared quantities recorded yet.'; return; }
+  const total = data.reduce((s,r) => s + (Number(r.gallons) || 0), 0);
+  el.innerHTML = data.map(r => `<div class="docrow">
+    <b>${esc(r.period)}</b><span class="muted">${esc(r.form)}</span>
+    <span style="margin-left:auto;white-space:nowrap;">${r.gallons ? Number(r.gallons).toLocaleString() + ' gal' : '—'}</span>
+    <a href="#" onclick="delEpaReport('${r.id}');return false;" style="color:var(--red);">✕</a>
+  </div>`).join('') + `<div class="docrow" style="border-top:0.5px solid var(--slate-100);margin-top:4px;padding-top:6px;"><b>Total recorded</b><span style="margin-left:auto;">${total.toLocaleString()} gal</span></div>`;
+}
+async function addEpaReport(){
+  if (!CURRENT) return;
+  const period = document.getElementById('epPeriod').value.trim();
+  if (!/^\d{4}(-\d{2})?$/.test(period)) return alert('Period must be YYYY or YYYY-MM (e.g. 2026 or 2026-07).');
+  const form = document.getElementById('epForm').value;
+  const gallons = Number(document.getElementById('epGallons').value) || null;
+  const { error } = await db.from('crm_epa_reports').insert({ contact_id: CURRENT, period, form, gallons });
+  if (error) return alert('Error: ' + error.message + (/relation|schema/i.test(error.message) ? '\n\nDid you run schema-epa.sql?' : ''));
+  ['epPeriod','epGallons'].forEach(i => document.getElementById(i).value = '');
+  loadEpaReports(CURRENT);
+  audit('crm_epa_report_added', period + ' · ' + form + (gallons ? ' · ' + gallons + ' gal' : ''));
+}
+async function delEpaReport(id){
+  if (!confirm('Remove this reported quantity?')) return;
+  const { error } = await db.from('crm_epa_reports').delete().eq('id', id);
+  if (error) return alert('Error: ' + error.message);
+  loadEpaReports(CURRENT);
+}
+
 async function loadDrawerDocs(memberId){
   const el = document.getElementById('drDocs');
   el.textContent = 'Loading…';
@@ -405,6 +523,7 @@ async function syncMembers(){
         member_id: m.id, company: m.company, contact_name: m.contact_name, email: m.email,
         phone: m.phone ?? null, country: m.country ?? null, city: m.city ?? null,
         website: m.website ?? null, address: m.address ?? null, tags: m.tags ?? null,
+        epa_id: m.epa_id ?? null,
         source: m.source ?? 'portal KYC',
         stage: m.status === 'approved' ? 'customer' : (m.status === 'rejected' || m.status === 'suspended' ? 'lost' : 'lead')
       };
@@ -442,6 +561,7 @@ const HEADER_MAP = {
   website:'website', site:'website', web:'website',
   address:'address', adresa:'address', 'adresă':'address',
   source:'source', sursa:'source', 'sursă':'source',
+  epa_id:'epa_id', epa:'epa_id', 'epa id':'epa_id', rcra:'epa_id',
   tags:'tags', tag:'tags', etichete:'tags',
   stage:'stage', etapa:'stage', 'etapă':'stage', status:'stage',
   deal_value:'deal_value', value:'deal_value', valoare:'deal_value', deal:'deal_value',
@@ -480,7 +600,7 @@ async function importCSV(file){
 }
 function exportCSV(){
   if (!CONTACTS.length) return alert('Nothing to export.');
-  const cols = ['company','contact_name','email','phone','country','city','website','address','source','tags','stage','deal_value','next_action','next_action_date','created_at'];
+  const cols = ['company','contact_name','email','phone','epa_id','country','city','website','address','source','tags','stage','deal_value','next_action','next_action_date','created_at'];
   const csv = cols.join(',') + '\n' + CONTACTS.map(c =>
     cols.map(f => '"' + String(c[f] ?? '').replace(/"/g,'""') + '"').join(',')).join('\n');
   const a = document.createElement('a');
