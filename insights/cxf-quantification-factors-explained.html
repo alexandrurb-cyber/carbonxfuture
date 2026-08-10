@@ -4,17 +4,17 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>How Many Carbon Credits Does a Gallon of Used Oil Generate? The CXF Factors, Explained | CarbonXFuture</title>
-<meta name="description" content="10.8, 19.3 and 25.7 tCO₂e per 1,000 gallons — where the CXF quantification factors come from, the EPA and ACR/IPCC anchors they sit between, and what evidence turns volumes into credits."/>
+<meta name="description" content="The interim CXF factors stated plainly — collection 10.8, re-refining 0.63 tCO₂e per 1,000 gallons — the counterfactuals behind them, why we corrected our own numbers, and the external expert review under way."/>
 <link rel="canonical" href="https://www.carbonxfuture.com/insights/cxf-quantification-factors-explained.html"/>
 <link rel="icon" href="/favicon.ico" sizes="48x48"/>
 <meta property="og:title" content="How many carbon credits does a gallon of used oil generate?"/>
-<meta property="og:description" content="The CXF quantification factors explained — with their EPA and ACR/IPCC anchors."/>
+<meta property="og:description" content="The interim CXF factors, their counterfactuals, and why we corrected our own numbers."/>
 <meta property="og:image" content="https://www.carbonxfuture.com/og-banner.png"/>
 <meta property="og:type" content="article"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
-:root{--forest:#1A4A2E;--forest-light:#2D6B45;--forest-pale:#EAF2EC;--slate-100:#E8E8E4;--slate-200:#C8C8C2;--slate-400:#8A8A82;--slate-600:#4A4A45;--slate-800:#1E1E1A;--purple:#5C3A78;}
+:root{--forest:#1A4A2E;--forest-light:#2D6B45;--forest-pale:#EAF2EC;--slate-100:#E8E8E4;--slate-200:#C8C8C2;--slate-400:#8A8A82;--slate-600:#4A4A45;--slate-800:#1E1E1A;--purple:#5C3A78;--gold:#B8740A;--gold-pale:#FDF3E3;}
 body{font-family:'Inter',sans-serif;color:var(--slate-800);font-size:16px;line-height:1.75;background:#fff;}
 .topbar{background:var(--forest);padding:14px 1.5rem;}
 .topbar a{color:#fff;text-decoration:none;font-size:13px;font-weight:500;}
@@ -26,8 +26,7 @@ h1{font-family:'Playfair Display',serif;font-size:clamp(1.7rem,4vw,2.4rem);font-
 article p{margin-bottom:1.25rem;color:var(--slate-600);}
 article strong{color:var(--slate-800);}
 article a{color:var(--forest-light);}
-article ul{margin:0 0 1.25rem 1.5rem;color:var(--slate-600);}
-article li{margin-bottom:0.5rem;}
+.notice{background:var(--gold-pale);border-left:3px solid var(--gold);padding:1rem 1.25rem;border-radius:8px;font-size:14px;margin:0 0 1.5rem;color:var(--slate-600);}
 table{width:100%;border-collapse:collapse;font-size:14px;margin:0 0 1.25rem;}
 th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:var(--slate-400);padding:8px 10px;border-bottom:1px solid var(--slate-100);}
 td{padding:9px 10px;border-bottom:0.5px solid var(--slate-100);color:var(--slate-600);}
@@ -43,23 +42,25 @@ td{padding:9px 10px;border-bottom:0.5px solid var(--slate-100);color:var(--slate
 <div class="wrap">
 <div class="tag">Physical markets · Methodology</div>
 <h1>How many carbon credits does a gallon of used oil generate? The CXF factors, explained</h1>
-<div class="meta">July 2026 · 4 min read · CarbonXFuture desk, Fort Lauderdale</div>
+<div class="meta">Updated August 2026 · 5 min read · CarbonXFuture desk, Fort Lauderdale</div>
 
 <article>
-<p>Every conversation with a collector eventually arrives at the same question: <strong>how many credits do my gallons actually generate?</strong> The CXF answer is three published numbers — and, just as importantly, a transparent account of where they come from.</p>
+<div class="notice"><b>Updated August 2026.</b> Following an external technical review, we corrected our published re-refining factor from 19.3 to <b>0.63 tCO₂e per 1,000 gallons</b> — the strict result of the ACR-derived calculation we cite — and withdrew the full-chain factor pending our own methodology. This article explains the current interim factors and why we changed them. We publish corrections openly; that is the standard we ask you to hold us to.</div>
+
+<p>Every conversation with a collector eventually arrives at the same question: <strong>how many credits do my gallons actually generate?</strong> Here are the current interim CXF answers — and, just as importantly, the reasoning and the caveats behind each.</p>
 <table>
-<tr><th>Activity</th><th>per 1,000 US gallons</th><th>per 1,000 litres</th></tr>
-<tr><td>Collection only (CXF-CO)</td><td><strong>10.8 tCO₂e</strong></td><td>2.85</td></tr>
-<tr><td>Collection + re-refining (CXF-RR)</td><td><strong>19.3 tCO₂e</strong></td><td>5.1</td></tr>
-<tr><td>Full chain incl. distribution (CXF-FC)</td><td><strong>25.7 tCO₂e</strong></td><td>6.8</td></tr>
+<tr><th>Activity</th><th>per 1,000 US gallons</th><th>per 1,000 litres</th><th>Status</th></tr>
+<tr><td>Collection (CXF-CO)</td><td><strong>10.8 tCO₂e</strong></td><td>2.85</td><td>Interim — under expert review</td></tr>
+<tr><td>Re-refining (CXF-RR)</td><td><strong>0.63 tCO₂e</strong></td><td>0.167</td><td>Interim — strict ACR-derived</td></tr>
+<tr><td>Full chain (CXF-FC)</td><td colspan="2">Under development</td><td>Not currently offered</td></tr>
 </table>
-<p><strong>Where 10.8 comes from.</strong> The collection factor is anchored to the energy parameters used in the American Carbon Registry's <em>Re-Refining Used Lubricating Oils</em> methodology (0.0402 GJ per litre heat content, 20 kgC/GJ carbon content, converted at 44/12) and cross-checked against the EPA GHG Emission Factors Hub. The EPA's own combustion factors bracket it: 10.21 tCO₂/1,000 gal for "Used Oil" and 10.69 for "Lubricants", with the full ACR/IPCC derivation at 11.16. The CXF factor of 10.8 sits inside that band — above the most conservative EPA reading, below the ACR ceiling — and the full arithmetic is published in the <a href="/methodology.html">CXF Methodology</a> and <a href="/contracts.html">contract specifications</a> for anyone to check.</p>
-<p><strong>Why re-refining earns more.</strong> Collection prevents improper disposal or uncontrolled burning; re-refining additionally displaces virgin, crude-derived base oil production — so CXF-RR stacks a displacement component on top of the collection baseline, net of leakage and project emissions. The full-chain factor extends this through documented distribution of finished re-refined products back to market.</p>
-<p><strong>Factors are ceilings, not promises.</strong> A number only becomes credits after evidence: monthly volumes reported through the member portal, weighbridge tickets and manifests attached, and item-by-item validation by the CarbonXFuture desk. Validated activity can then be serialized in the public <a href="/registry.html">CXF Registry</a> — one report backs at most one batch, and a batch can never exceed its evidence. That chain, not the multiplication, is what buyers' auditors examine.</p>
-<p>Worked example: a service network collecting 100,000 gallons a year documents roughly <strong>1,080 tCO₂e</strong> of collection activity — at indicative desk marks (see the live <a href="/prices.html">CXF Price Index</a>), a second revenue line north of $20,000 a year from gallons already on the truck.</p>
+<p><strong>Why re-refining is only 0.63 — the honest math.</strong> The ACR <em>Re-Refining Used Lubricating Oils</em> methodology (Feb 2019 — now listed by ACR as inactive for new projects, and the source of our initial parameters) assumes the used oil would otherwise have been <em>burned as industrial fuel, displacing other fossil fuels</em>. Under that assumption, the baseline (152.2 GJ × 20 kgC/GJ per 1,000 gallons) is almost entirely offset by the replacement-fuel leakage deduction (18.867 kgC/GJ), leaving a net of just 0.63 tCO₂e per 1,000 gallons before facility emissions. We previously published a much larger figure; a reviewer correctly showed it did not follow from the equations we cite, and we corrected it. The full arithmetic is now worked line-by-line on the <a href="/methodology.html">methodology page</a>.</p>
+<p><strong>Why collection is 10.8 — a different counterfactual.</strong> The interim CXF-CO factor assumes collected volumes are diverted from <em>uncontrolled burning or improper disposal without any energy displacement</em> — the situation of oil dumped, burned in the open, or lost to ground. In that case the avoided emissions approach the oil's full combustion emissions, which the EPA GHG Emission Factors Hub puts at 10.21–10.69 tCO₂ per 1,000 gallons for used oil and lubricants. Because the two counterfactuals cannot both be true for the same barrel, <strong>a given volume may be claimed under one contract type only</strong> — and the evidence for assigning a counterfactual is exactly what the external GHG/LCA expert review now under way will pin down.</p>
+<p><strong>Factors are ceilings, not promises.</strong> A number becomes credits only after evidence: monthly volumes reported through the member portal, weighbridge tickets and manifests attached, and item-by-item validation by the CarbonXFuture desk. Validated activity can then be serialized in the public <a href="/registry.html">CXF Registry</a> — one report backs at most one batch, and a batch can never exceed its evidence.</p>
+<p>Worked example under the interim factors: a service network collecting 100,000 gallons a year documents roughly <strong>1,080 tCO₂e</strong> of CXF-CO activity — at indicative desk marks (see the live <a href="/prices.html">CXF Price Index</a>), a second revenue line north of $20,000 a year from gallons already on the truck. Re-refiners under strict CXF-RR accounting document ~0.63 tCO₂e per 1,000 gallons processed — a small number stated honestly, pending our own methodology.</p>
 </article>
 
-<div class="cta"><b>Your volumes, in 10 seconds:</b> the <a href="/#calculators">calculators</a> apply these factors to your gallons — then <a href="/portal/">sign up</a> to make them official.</div>
+<div class="cta"><b>Your volumes, in 10 seconds:</b> the <a href="/#calculators">calculators</a> apply the interim factors to your gallons — then <a href="/portal/">sign up</a> to make them official.</div>
 
 <div class="cta" id="subBox"><b>Get the Desk Note every Monday.</b> Prices, base oil supply and the moves that matter — free, no spam.
   <div style="display:flex;gap:8px;margin-top:0.8rem;flex-wrap:wrap;">
@@ -81,7 +82,7 @@ async function cxfSub(){
       body: JSON.stringify({ email: email })
     });
     if (!res.ok && res.status !== 409) throw new Error();
-    btn.textContent = '\u2713 Subscribed'; input.value = '';
+    btn.textContent = '✓ Subscribed'; input.value = '';
     note.textContent = 'Welcome aboard — the next Desk Note lands in your inbox.';
   } catch(e) {
     btn.disabled = false; btn.textContent = 'Subscribe';
@@ -94,7 +95,7 @@ async function cxfSub(){
 </div>
 
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"Article","headline":"How many carbon credits does a gallon of used oil generate? The CXF factors, explained","datePublished":"2026-07-10","author":{"@type":"Organization","name":"CarbonXFuture Markets, Inc."},"publisher":{"@type":"Organization","name":"CarbonXFuture","logo":{"@type":"ImageObject","url":"https://www.carbonxfuture.com/og-banner.png"}},"mainEntityOfPage":"https://www.carbonxfuture.com/insights/cxf-quantification-factors-explained.html","description":"Where the CXF quantification factors come from — 10.8, 19.3 and 25.7 tCO₂e per 1,000 gallons — and the EPA and ACR/IPCC anchors they sit between."}
+{"@context":"https://schema.org","@type":"Article","headline":"How many carbon credits does a gallon of used oil generate? The CXF factors, explained","datePublished":"2026-07-10","dateModified":"2026-08-10","author":{"@type":"Organization","name":"CarbonXFuture Markets, Inc."},"publisher":{"@type":"Organization","name":"CarbonXFuture","logo":{"@type":"ImageObject","url":"https://www.carbonxfuture.com/og-banner.png"}},"mainEntityOfPage":"https://www.carbonxfuture.com/insights/cxf-quantification-factors-explained.html","description":"The interim CXF factors — collection 10.8, re-refining 0.63 tCO2e per 1,000 gallons — their counterfactuals, and the correction we published."}
 </script>
 </body>
 </html>
