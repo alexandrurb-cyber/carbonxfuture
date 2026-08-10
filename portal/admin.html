@@ -359,7 +359,9 @@ function isoWeek(){
 function weekStartISO(){
   const d = new Date(); const day = d.getDay() || 7;
   d.setDate(d.getDate() - day + 1);
-  return d.toISOString().slice(0,10);
+  // Build from LOCAL components — toISOString() shifts to UTC and can
+  // return the wrong day for evening use in US timezones.
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
 }
 async function loadWeek(){
   const el = document.getElementById('week');
