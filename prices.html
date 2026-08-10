@@ -84,7 +84,7 @@ tr:last-child td{border-bottom:none;}
 <div class="table-wrap"><table id="histTable"><thead></thead><tbody></tbody></table></div>
 
 <h2>Desk analytics — carbon uplift per 1,000 gallons</h2>
-<p class="sub" style="margin-bottom:1rem;">What CXF credits add on top of the physical value of used oil, at current desk marks. This is the number that turns collection volumes into a second revenue line.</p>
+<p class="sub" style="margin-bottom:1rem;">What CXF credits add on top of the physical value of used oil, at current desk marks and the <b>interim</b> quantification factors (under external expert review; CXF-FC is under development and not shown). This is the number that turns collection volumes into a second revenue line.</p>
 <div class="cards" id="upliftCards"></div>
 
 <div id="benchSection" style="display:none;">
@@ -227,9 +227,8 @@ function renderUplift() {
   const usgulf = last.prices['cxf-usgulf'], rr = last.prices['cxf-rerefining'];
   if (typeof usgulf !== 'number' || typeof rr !== 'number') return;
   const rows = [
-    ['Collection only', 2.85, usgulf, 'CXF-CO · 10.8 tCO₂e/1,000 gal × CXF US Gulf'],
-    ['Collection + re-refining', 5.1, rr, 'CXF-RR · 19.3 tCO₂e/1,000 gal × CXF Re-refining'],
-    ['Full chain', 6.8, rr, 'CXF-FC · 25.7 tCO₂e/1,000 gal × CXF Re-refining']
+    ['Collection (interim factor)', 2.85, usgulf, 'CXF-CO · 10.8 tCO₂e/1,000 gal × CXF US Gulf'],
+    ['Re-refining (ACR-derived, interim)', 0.167, rr, 'CXF-RR · 0.63 tCO₂e/1,000 gal × CXF Re-refining']
   ];
   document.getElementById('upliftCards').innerHTML = rows.map(([label, f, mark, note]) => `
     <div class="pcard"><div class="k">${label}</div>
