@@ -17,14 +17,14 @@
       "value": 82.0,
       "unit": "EUR/t",
       "asof": "2026-08-04",
-      "source": "Public market reporting (Dec-26 benchmark; early-August range €80–84 after the late-July €86.6 peak)"
+      "source": "Public market reporting (EEX/ICE levels as reported); carried forward 2026-08-10 — no numeric level verifiable this run"
     },
     "accu": {
       "label": "ACCU — Australia",
       "value": 26.6,
       "unit": "USD/t",
       "asof": "2026-08-04",
-      "source": "Public AU market coverage (A$38.25 spot × ~0.695 AUD/USD)"
+      "source": "Carbon Pulse AU market coverage (A$38.25 spot × ~0.695 AUD/USD); carried forward 2026-08-10 — no numeric level verifiable this run"
     }
   }
 }
