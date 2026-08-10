@@ -503,7 +503,7 @@ nav.menu-open .nav-signin{text-align:center;margin-top:6px;}
 <!-- NAV -->
 <nav id="mainNav">
   <div class="nav-inner">
-    <a href="#" class="logo">
+    <a href="/" class="logo">
       <div class="logo-mark"><span>CXF</span></div>
       <span class="logo-text">Carbon<em>X</em>Future</span>
     </a>
@@ -786,8 +786,8 @@ nav.menu-open .nav-signin{text-align:center;margin-top:6px;}
         <div class="calc-row">
           <label>Annual volume collected</label>
           <div style="display:flex;gap:8px;">
-            <input type="number" id="calcWoVol" min="0" placeholder="e.g. 66,000" oninput="calcWasteOil()" style="flex:1;"/>
-            <select id="calcWoUnit" onchange="calcWasteOil()" style="flex:0 0 110px;">
+            <input type="number" id="calcWoVol" aria-label="Annual waste oil volume" min="0" placeholder="e.g. 66,000" oninput="calcWasteOil()" style="flex:1;"/>
+            <select id="calcWoUnit" aria-label="Volume unit" onchange="calcWasteOil()" style="flex:0 0 110px;">
               <option value="gal">US gallons</option>
               <option value="l">litres</option>
             </select>
@@ -795,7 +795,7 @@ nav.menu-open .nav-signin{text-align:center;margin-top:6px;}
         </div>
         <div class="calc-row">
           <label>Activity scope</label>
-          <select id="calcWoScope" onchange="calcWasteOil()">
+          <select id="calcWoScope" aria-label="Activity type" onchange="calcWasteOil()">
             <option value="2.85">Collection only — 10.8 tCO₂e / 1,000 gal</option>
             <option value="0.167">Re-refining (strict ACR-derived, interim) — 0.63 tCO₂e / 1,000 gal</option>
           </select>
@@ -813,11 +813,11 @@ nav.menu-open .nav-signin{text-align:center;margin-top:6px;}
         <p class="calc-desc">Avoided grid emissions from renewable generation.</p>
         <div class="calc-row">
           <label>Annual generation (MWh)</label>
-          <input type="number" id="calcGeMwh" min="0" placeholder="e.g. 12,000" oninput="calcGreenEnergy()"/>
+          <input type="number" id="calcGeMwh" aria-label="Annual clean energy generated (MWh)" min="0" placeholder="e.g. 12,000" oninput="calcGreenEnergy()"/>
         </div>
         <div class="calc-row">
           <label>Displaced grid (typical average factor)</label>
-          <select id="calcGeFactor" onchange="calcGreenEnergy()">
+          <select id="calcGeFactor" aria-label="Grid region" onchange="calcGreenEnergy()">
             <option value="0.37">United States — 0.37 tCO₂e / MWh</option>
             <option value="0.25">European Union — 0.25 tCO₂e / MWh</option>
             <option value="0.60">Emerging grids (Asia / Africa) — 0.60 tCO₂e / MWh</option>
@@ -836,7 +836,7 @@ nav.menu-open .nav-signin{text-align:center;margin-top:6px;}
         <p class="calc-desc">Landfill or biogas methane destruction (GWP₁₀₀ = 28).</p>
         <div class="calc-row">
           <label>Methane captured &amp; destroyed (tonnes CH₄ / year)</label>
-          <input type="number" id="calcMeT" min="0" placeholder="e.g. 400" oninput="calcMethane()"/>
+          <input type="number" id="calcMeT" aria-label="Methane captured per year (tonnes)" min="0" placeholder="e.g. 400" oninput="calcMethane()"/>
         </div>
         <div class="calc-result">
           <span class="calc-result-num" id="calcMeNum">—</span>
@@ -851,7 +851,7 @@ nav.menu-open .nav-signin{text-align:center;margin-top:6px;}
         <p class="calc-desc">Sequestration from reforestation / afforestation area.</p>
         <div class="calc-row">
           <label>Project area (hectares)</label>
-          <input type="number" id="calcRfHa" min="0" placeholder="e.g. 1,200" oninput="calcReforest()"/>
+          <input type="number" id="calcRfHa" aria-label="Hectares reforested" min="0" placeholder="e.g. 1,200" oninput="calcReforest()"/>
         </div>
         <div class="calc-result">
           <span class="calc-result-num" id="calcRfNum">—</span>
@@ -866,11 +866,11 @@ nav.menu-open .nav-signin{text-align:center;margin-top:6px;}
         <p class="calc-desc">Indicative cost to retire credits against your emissions.</p>
         <div class="calc-row">
           <label>Emissions to offset (tCO₂e)</label>
-          <input type="number" id="calcOfT" min="0" placeholder="e.g. 1,500" oninput="calcOffset()"/>
+          <input type="number" id="calcOfT" aria-label="Emissions to offset (tCO2e)" min="0" placeholder="e.g. 1,500" oninput="calcOffset()"/>
         </div>
         <div class="calc-row">
           <label>Credit type</label>
-          <select id="calcOfType" onchange="calcOffset()">
+          <select id="calcOfType" aria-label="Credit type" onchange="calcOffset()">
             <option value="cxf-usgulf">⬡ CXF — Waste oil (US Gulf)</option>
             <option value="verra-redd">Verra VCS — REDD+</option>
             <option value="gold-solar">Gold Standard — Renewable energy</option>
@@ -1098,7 +1098,7 @@ nav.menu-open .nav-signin{text-align:center;margin-top:6px;}
           <div class="amount-btn" onclick="selectAmount(this,'1000')">$1,000</div>
           <div class="amount-btn" onclick="selectAmount(this,'custom')">Custom</div>
         </div>
-        <input class="custom-input" type="number" placeholder="Enter custom amount (USD)" id="custom-amount" style="display:none"/>
+        <input class="custom-input" type="number" placeholder="Enter custom amount (USD)" id="custom-amount" aria-label="Custom offset amount (tCO2e)" style="display:none"/>
         <div class="reward-preview">
           <i class="ti ti-certificate reward-icon" aria-hidden="true"></i>
           <div class="reward-text">
@@ -1354,19 +1354,19 @@ nav.menu-open .nav-signin{text-align:center;margin-top:6px;}
         <p style="font-size:12.5px;color:var(--slate-400);margin-bottom:1rem;">Prefer to talk first? Leave your details and the desk will contact you — or skip this and <a href="/portal/" style="color:var(--forest-light);font-weight:600;">sign up directly</a>.</p>
         <div class="form-row">
           <label>Full name</label>
-          <input type="text" id="kycName" placeholder="John Smith"/>
+          <input type="text" id="kycName" aria-label="Full name" placeholder="John Smith"/>
         </div>
         <div class="form-row">
           <label>Company / Organisation</label>
-          <input type="text" id="kycCompany" placeholder="Acme Recycling LLC"/>
+          <input type="text" id="kycCompany" aria-label="Company name" placeholder="Acme Recycling LLC"/>
         </div>
         <div class="form-row">
           <label>Business email</label>
-          <input type="email" id="kycEmail" placeholder="j.smith@company.com"/>
+          <input type="email" id="kycEmail" aria-label="Business email" placeholder="j.smith@company.com"/>
         </div>
         <div class="form-row">
           <label>I am a</label>
-          <select id="kycRole">
+          <select id="kycRole" aria-label="Your role">
             <option value="">Select your role</option>
             <option>Waste oil collector / recycler</option>
             <option>Corporate buyer</option>
@@ -1379,7 +1379,7 @@ nav.menu-open .nav-signin{text-align:center;margin-top:6px;}
         </div>
         <div class="form-row">
           <label>Annual waste oil volume (US gallons) or credit volume (tCO₂e)</label>
-          <select id="kycVolume">
+          <select id="kycVolume" aria-label="Monthly volume range">
             <option value="">Select range</option>
             <option>Under 25,000 gal / 1,000 tCO₂e</option>
             <option>25,000–150,000 gal / 1,000–10,000 tCO₂e</option>
@@ -1412,7 +1412,7 @@ nav.menu-open .nav-signin{text-align:center;margin-top:6px;}
       <div class="agent-panel-title">Agent CXF</div>
       <div class="agent-panel-sub">Carbon credit assistant · Online</div>
     </div>
-    <button class="agent-close" onclick="toggleAgent()"><i class="ti ti-x"></i></button>
+    <button class="agent-close" aria-label="Close chat" onclick="toggleAgent()"><i class="ti ti-x"></i></button>
   </div>
   <div class="agent-messages" id="agentMessages">
     <div class="msg bot">
@@ -1431,13 +1431,13 @@ nav.menu-open .nav-signin{text-align:center;margin-top:6px;}
   </div>
   <div class="agent-lead-form" id="agentLeadForm" style="display:none;padding:6px 14px 10px;gap:6px;">
     <div style="display:flex;gap:6px;">
-      <input type="email" id="leadEmail" placeholder="Your business email" style="flex:1;font-size:13px;padding:8px 10px;border-radius:8px;border:0.5px solid var(--slate-200);outline:none;font-family:'Inter',sans-serif;" onkeydown="if(event.key==='Enter')sendLead()"/>
+      <input type="email" id="leadEmail" aria-label="Business email for desk contact" placeholder="Your business email" style="flex:1;font-size:13px;padding:8px 10px;border-radius:8px;border:0.5px solid var(--slate-200);outline:none;font-family:'Inter',sans-serif;" onkeydown="if(event.key==='Enter')sendLead()"/>
       <button onclick="sendLead()" id="leadBtn" style="font-size:12px;padding:8px 14px;border-radius:8px;border:none;background:var(--forest);color:#fff;cursor:pointer;font-family:'Inter',sans-serif;">Send</button>
     </div>
   </div>
   <div class="agent-input-row">
-    <input class="agent-input" id="agentInput" placeholder="Ask me anything..." onkeydown="if(event.key==='Enter')sendMessage()"/>
-    <button class="agent-send" onclick="sendMessage()"><i class="ti ti-send" aria-hidden="true"></i></button>
+    <input class="agent-input" id="agentInput" aria-label="Ask the CXF assistant a question" placeholder="Ask me anything..." onkeydown="if(event.key==='Enter')sendMessage()"/>
+    <button class="agent-send" aria-label="Send message" onclick="sendMessage()"><i class="ti ti-send" aria-hidden="true"></i></button>
   </div>
 </div>
 
@@ -1492,10 +1492,11 @@ nav.menu-open .nav-signin{text-align:center;margin-top:6px;}
         <a href="/registry-rules.html">Registry Rules</a>
         <a href="/index-methodology.html">Price Index methodology</a>
         <a href="/verify.html">Verify a certificate</a>
-        <a href="#">Verra VCS</a>
-        <a href="#">Gold Standard</a>
-        <a href="#">ACR</a>
-        <a href="#">CAR / Plan Vivo</a>
+        <a href="https://registry.verra.org/" target="_blank" rel="noopener">Verra VCS</a>
+        <a href="https://registry.goldstandard.org/" target="_blank" rel="noopener">Gold Standard</a>
+        <a href="https://acrcarbon.org/" target="_blank" rel="noopener">ACR</a>
+        <a href="https://climateactionreserve.org/" target="_blank" rel="noopener">CAR</a>
+        <a href="https://www.planvivo.org/" target="_blank" rel="noopener">Plan Vivo</a>
       </div>
       <div class="footer-col">
         <h4>Company</h4>
@@ -1530,31 +1531,31 @@ nav.menu-open .nav-signin{text-align:center;margin-top:6px;}
     </div>
     <div id="rfqForm">
       <p style="font-size:12.5px;color:#8A8A82;margin-bottom:1rem;">The desk replies with an indicative quote, typically within one business day. You'll receive an email confirmation immediately.</p>
-      <input type="hidden" id="rfqReg"/>
-      <input type="text" id="rfqWebsite" autocomplete="off" tabindex="-1" style="position:absolute;left:-5000px;" aria-hidden="true"/>
+      <input type="hidden" id="rfqReg" aria-label="Registry"/>
+      <input type="text" id="rfqWebsite" aria-label="Company website" autocomplete="off" tabindex="-1" style="position:absolute;left:-5000px;" aria-hidden="true"/>
       <label style="font-size:11px;font-weight:600;color:#4A4A45;text-transform:uppercase;letter-spacing:0.5px;">Listing</label>
-      <input id="rfqListing" readonly style="width:100%;padding:10px 12px;border:0.5px solid #C8C8C2;border-radius:8px;margin:4px 0 12px;font-size:14px;background:#F5F5F3;"/>
+      <input id="rfqListing" aria-label="Listing of interest" readonly style="width:100%;padding:10px 12px;border:0.5px solid #C8C8C2;border-radius:8px;margin:4px 0 12px;font-size:14px;background:#F5F5F3;"/>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
         <div><label id="rfqVolLabel" style="font-size:11px;font-weight:600;color:#4A4A45;text-transform:uppercase;letter-spacing:0.5px;">Volume (tCO₂e)</label>
-        <input id="rfqVolume" type="number" min="1" placeholder="e.g. 10000" style="width:100%;padding:10px 12px;border:0.5px solid #C8C8C2;border-radius:8px;margin:4px 0 12px;font-size:14px;"/></div>
+        <input id="rfqVolume" aria-label="Volume (tCO2e)" type="number" min="1" placeholder="e.g. 10000" style="width:100%;padding:10px 12px;border:0.5px solid #C8C8C2;border-radius:8px;margin:4px 0 12px;font-size:14px;"/></div>
         <div><label id="rfqPriceLabel" style="font-size:11px;font-weight:600;color:#4A4A45;text-transform:uppercase;letter-spacing:0.5px;">Target price ($/t, optional)</label>
-        <input id="rfqPrice" type="number" min="0" step="0.01" placeholder="e.g. 20.00" style="width:100%;padding:10px 12px;border:0.5px solid #C8C8C2;border-radius:8px;margin:4px 0 12px;font-size:14px;"/></div>
+        <input id="rfqPrice" aria-label="Target price (USD per tonne)" type="number" min="0" step="0.01" placeholder="e.g. 20.00" style="width:100%;padding:10px 12px;border:0.5px solid #C8C8C2;border-radius:8px;margin:4px 0 12px;font-size:14px;"/></div>
       </div>
       <label style="font-size:11px;font-weight:600;color:#4A4A45;text-transform:uppercase;letter-spacing:0.5px;">Timeframe</label>
-      <select id="rfqTime" style="width:100%;padding:10px 12px;border:0.5px solid #C8C8C2;border-radius:8px;margin:4px 0 12px;font-size:14px;background:#fff;">
+      <select id="rfqTime" aria-label="Delivery timing" style="width:100%;padding:10px 12px;border:0.5px solid #C8C8C2;border-radius:8px;margin:4px 0 12px;font-size:14px;background:#fff;">
         <option value="Spot">Spot</option><option value="This quarter">This quarter</option>
         <option value="Forward — 1-2 years">Forward — 1–2 years</option><option value="Forward — multi-year offtake">Forward — multi-year offtake</option>
       </select>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
         <div><label style="font-size:11px;font-weight:600;color:#4A4A45;text-transform:uppercase;letter-spacing:0.5px;">Company</label>
-        <input id="rfqCompany" placeholder="Acme Corp" style="width:100%;padding:10px 12px;border:0.5px solid #C8C8C2;border-radius:8px;margin:4px 0 12px;font-size:14px;"/></div>
+        <input id="rfqCompany" aria-label="Company name" placeholder="Acme Corp" style="width:100%;padding:10px 12px;border:0.5px solid #C8C8C2;border-radius:8px;margin:4px 0 12px;font-size:14px;"/></div>
         <div><label style="font-size:11px;font-weight:600;color:#4A4A45;text-transform:uppercase;letter-spacing:0.5px;">Contact name</label>
-        <input id="rfqName" placeholder="Jane Doe" style="width:100%;padding:10px 12px;border:0.5px solid #C8C8C2;border-radius:8px;margin:4px 0 12px;font-size:14px;"/></div>
+        <input id="rfqName" aria-label="Contact name" placeholder="Jane Doe" style="width:100%;padding:10px 12px;border:0.5px solid #C8C8C2;border-radius:8px;margin:4px 0 12px;font-size:14px;"/></div>
       </div>
       <label style="font-size:11px;font-weight:600;color:#4A4A45;text-transform:uppercase;letter-spacing:0.5px;">Business email</label>
-      <input id="rfqEmail" type="email" placeholder="jane@acme.com" style="width:100%;padding:10px 12px;border:0.5px solid #C8C8C2;border-radius:8px;margin:4px 0 12px;font-size:14px;"/>
+      <input id="rfqEmail" aria-label="Business email" type="email" placeholder="jane@acme.com" style="width:100%;padding:10px 12px;border:0.5px solid #C8C8C2;border-radius:8px;margin:4px 0 12px;font-size:14px;"/>
       <label style="font-size:11px;font-weight:600;color:#4A4A45;text-transform:uppercase;letter-spacing:0.5px;">Notes (optional)</label>
-      <textarea id="rfqNotes" rows="2" placeholder="Delivery preferences, certifications needed…" style="width:100%;padding:10px 12px;border:0.5px solid #C8C8C2;border-radius:8px;margin:4px 0 12px;font-size:14px;font-family:inherit;resize:vertical;"></textarea>
+      <textarea id="rfqNotes" aria-label="Notes for the desk" rows="2" placeholder="Delivery preferences, certifications needed…" style="width:100%;padding:10px 12px;border:0.5px solid #C8C8C2;border-radius:8px;margin:4px 0 12px;font-size:14px;font-family:inherit;resize:vertical;"></textarea>
       <button id="rfqSubmit" onclick="submitRfq()" style="background:#1A4A2E;color:#fff;border:none;border-radius:8px;padding:12px 24px;font-size:14px;cursor:pointer;width:100%;">Submit request</button>
       <p id="rfqStatus" style="font-size:12.5px;color:#A33;margin-top:8px;min-height:1em;"></p>
       <p style="font-size:11px;color:#8A8A82;margin-top:4px;">Quotes are indicative and subject to confirmation and documentation. See <a href="/contracts.html" style="color:#2D6B45;">contract specifications</a>.</p>
