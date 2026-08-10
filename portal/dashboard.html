@@ -305,13 +305,14 @@ async function loadOilListings(){
 }
 
 /* ---------- Portfolio ---------- */
-let PF = { reports: [], listings: [] };
+let PF = { reports: [], listings: [], units: [] };
 async function loadPortfolio(){
-  const [{ data: reps }, { data: lst }] = await Promise.all([
+  const [{ data: reps }, { data: lst }, { data: units }] = await Promise.all([
     db.from('reports').select('*').order('created_at',{ascending:false}),
-    db.from('listings').select('*').eq('member_id', USER.id).order('validated_at',{ascending:false})
+    db.from('listings').select('*').eq('member_id', USER.id).order('validated_at',{ascending:false}),
+    db.from('registry_units').select('*').eq('member_id', USER.id).order('issued_at',{ascending:false})
   ]);
-  PF.reports = reps || []; PF.listings = lst || [];
+  PF.reports = reps || []; PF.listings = lst || []; PF.units = units || [];
   const validated = PF.reports.filter(r => r.status === 'validated').reduce((s,r) => s + Number(r.computed_tco2e || 0), 0);
   const pending = PF.reports.filter(r => r.status === 'submitted').reduce((s,r) => s + Number(r.computed_tco2e || 0), 0);
   const listed = PF.listings.filter(l => l.status === 'published').reduce((s,l) => s + Number(l.volume || 0), 0);
@@ -321,15 +322,25 @@ async function loadPortfolio(){
       <div style="font-size:10.5px;text-transform:uppercase;letter-spacing:0.5px;color:var(--slate-600);">${k}</div>
       <div style="font-size:1.35rem;font-weight:600;color:var(--forest);">${v}</div>
       <div style="font-size:11px;color:var(--slate-400);">${d}</div></div>`;
+  const serialized = PF.units.filter(u => !['revoked','split'].includes(u.status)).reduce((s,u) => s + Number(u.quantity_tco2e || 0), 0);
   document.getElementById('pfCards').innerHTML =
+    card('Serialized in registry', serialized.toLocaleString('en-US', {maximumFractionDigits:1}), 'tCO₂e, public serials') +
     card('Validated credits', validated.toLocaleString('en-US', {maximumFractionDigits:1}), 'tCO₂e, desk-validated') +
     card('Pending validation', pending.toLocaleString('en-US', {maximumFractionDigits:1}), 'tCO₂e, submitted') +
     card('Listed on market', listed.toLocaleString('en-US', {maximumFractionDigits:1}), 'tCO₂e, live listings') +
     card('Sold', sold.toLocaleString('en-US', {maximumFractionDigits:1}), 'tCO₂e, settled via desk') +
     card('Indicative listed value', '$' + listedValue.toLocaleString('en-US', {maximumFractionDigits:0}), 'volume × listed price');
   const el = document.getElementById('pfHoldings');
-  if (!PF.listings.length && !PF.reports.length) { el.textContent = 'Nothing in the portfolio yet — submit your first activity report.'; return; }
-  el.innerHTML = `<table><tr><th>Item</th><th>Vintage / Period</th><th>Volume (tCO₂e)</th><th>Price</th><th>Status</th></tr>` +
+  if (!PF.listings.length && !PF.reports.length && !PF.units.length) { el.textContent = 'Nothing in the portfolio yet — submit your first activity report.'; return; }
+  const unitsBlock = PF.units.length ? `<h3 style="font-size:13px;margin:0 0 8px;">Serialized batches — CXF Registry</h3>
+    <table style="margin-bottom:1.25rem;"><tr><th>Serial</th><th>Contract</th><th>Vintage</th><th>tCO₂e</th><th>Status</th><th>Documents</th></tr>` +
+    PF.units.map(u => `<tr>
+      <td><b>${esc(u.serial)}</b></td><td>${esc(u.contract_code)}</td><td>${esc(u.vintage || '—')}</td>
+      <td>${Number(u.quantity_tco2e).toLocaleString()}</td>
+      <td><span class="pill ${['issued','listed'].includes(u.status) ? 'validated' : u.status === 'revoked' ? 'rejected' : 'pending'}">${esc(u.status)}</span></td>
+      <td><a href="/portal/statement.html?serial=${encodeURIComponent(u.serial)}" target="_blank">Statement of Issuance</a>${u.certificate_serial ? ' · <a href="/certificate.html?serial=' + encodeURIComponent(u.certificate_serial) + '" target="_blank">Certificate</a>' : ''}</td>
+    </tr>`).join('') + '</table>' : '';
+  el.innerHTML = unitsBlock + `<table><tr><th>Item</th><th>Vintage / Period</th><th>Volume (tCO₂e)</th><th>Price</th><th>Status</th></tr>` +
     PF.listings.map(l => `<tr><td><b>${esc(l.name)}</b></td><td>${esc(l.vintage || '—')}</td><td>${Number(l.volume).toLocaleString()}</td><td>${l.price ? '$' + Number(l.price).toFixed(2) : '—'}</td><td><span class="pill ${esc(l.status)}">${esc(l.status)}</span></td></tr>`).join('') +
     PF.reports.map(r => `<tr><td>Report ${esc(r.period)}</td><td>${esc(r.period)}</td><td>${Number(r.computed_tco2e).toLocaleString()}</td><td>—</td><td><span class="pill ${esc(r.status)}">${esc(r.status.replace('_',' '))}</span></td></tr>`).join('') + '</table>';
 }
