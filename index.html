@@ -496,6 +496,14 @@ nav.menu-open .nav-signin{text-align:center;margin-top:6px;}
 .calc-result-val{margin-left:auto;font-size:13px;color:var(--forest-light);font-weight:500;}
 .calcs-note{margin-top:2rem;font-size:12px;color:var(--slate-400);max-width:860px;line-height:1.7;}
 @media(max-width:800px){.calc-grid{grid-template-columns:1fr;}}
+
+/* Marketplace group separation */
+.group-row td{background:var(--slate-50,#F5F5F3);font-size:10.5px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--slate-600,#4A4A45);padding:9px 16px;border-top:1px solid var(--slate-100,#E8E8E4);}
+.group-row td span{font-weight:400;text-transform:none;letter-spacing:0;color:var(--slate-400,#8A8A82);font-size:11.5px;}
+.group-empty td{font-size:12.5px;color:var(--slate-400,#8A8A82);padding:14px 16px;font-style:italic;}
+.group-empty td a{color:inherit;}
+.td-action .ref-btn{background:none;border:0.5px solid var(--slate-200,#C8C8C2);color:var(--slate-600,#4A4A45);}
+.td-action .ref-btn:hover{border-color:var(--forest,#1A4A2E);color:var(--forest,#1A4A2E);background:none;}
 </style>
 </head>
 <body>
@@ -965,7 +973,7 @@ nav.menu-open .nav-signin{text-align:center;margin-top:6px;}
       <button class="filter-btn" onclick="filterTable(this,'acr')">ACR</button>
       <button class="filter-btn" onclick="filterTable(this,'car')">CAR</button>
     </div>
-    <p style="font-size:12px;opacity:0.55;margin:-0.5rem 0 1rem;">Rows marked “Member listing” or “Forward offer” are desk-reviewed offers from platform members. CXF rows marked “pending registry issuance” are <b>indicative desk offers</b> — no CXF units have been serialized against them yet; once issued, each CXF listing will reference its batch serial in the public <a href="/registry.html" style="color:inherit;">CXF Registry</a>. Registry-project rows are <b>market reference examples</b> — illustrative, based on public registry information; CarbonXFuture is not affiliated with or endorsed by the referenced projects or registries. Availability is confirmed by the desk after KYC.</p>
+    <p style="font-size:12px;opacity:0.55;margin:-0.5rem 0 1rem;">The board is organized in three sections. <b>Live issued inventory</b>: serialized CXF batches, each referencing its serial in the public <a href="/registry.html" style="color:inherit;">CXF Registry</a>. <b>Forward &amp; pending issuance</b>: desk-reviewed member offers — indicative, with no units serialized yet. <b>Market reference examples</b>: illustrative rows based on public registry information; CarbonXFuture is not affiliated with or endorsed by the referenced projects or registries. Availability is confirmed by the desk after KYC.</p>
     <div class="table-wrap">
       <table class="listings-table" id="listingsTable">
         <thead>
@@ -980,54 +988,58 @@ nav.menu-open .nav-signin{text-align:center;margin-top:6px;}
           </tr>
         </thead>
         <tbody>
-          <tr data-reg="cxf">
+          <tr class="group-row" id="grpLive"><td colspan="7">Live issued inventory <span>— serialized CXF batches, verifiable in the public registry</span></td></tr>
+          <tr class="group-empty" id="grpLiveEmpty"><td colspan="7">No serialized batches are listed yet — issuance status is public in the <a href="/registry.html">CXF Registry</a>.</td></tr>
+          <tr class="group-row" id="grpPending"><td colspan="7">Forward &amp; pending issuance <span>— desk-reviewed member offers; indicative, no units serialized yet</span></td></tr>
+          <tr data-reg="cxf" data-group-item="1">
             <td><div class="td-project"><span class="project-dot cxf"></span><div><div class="td-name">Used Oil Collection — US Gulf</div><div class="td-sub">Texas, USA · Indicative offer — pending registry issuance</div></div></div></td>
             <td><span class="badge cxf">⬡ CXF</span></td>
             <td class="td-muted">Waste oil</td><td>2025</td>
             <td class="td-price">38,000</td><td class="td-price">$21.50</td>
             <td class="td-action"><button onclick="quoteRequest(this)">Request quote</button></td>
           </tr>
-          <tr data-reg="cxf">
+          <tr data-reg="cxf" data-group-item="1">
             <td><div class="td-project"><span class="project-dot cxf"></span><div><div class="td-name">CXF Industrial Re-refining</div><div class="td-sub">Re-refining · Indicative offer — pending registry issuance</div></div></div></td>
             <td><span class="badge cxf">⬡ CXF</span></td>
             <td class="td-muted">Waste oil</td><td>2025</td>
             <td class="td-price">12,400</td><td class="td-price">$19.80</td>
             <td class="td-action"><button onclick="quoteRequest(this)">Request quote</button></td>
           </tr>
-          <tr data-reg="verra">
+          <tr class="group-row" id="grpRef"><td colspan="7">Market reference examples <span>— illustrative, from public registry information; not CXF inventory, no affiliation</span></td></tr>
+          <tr data-reg="verra" data-group-item="1">
             <td><div class="td-project"><span class="project-dot verra"></span><div><div class="td-name">Kasigau Corridor REDD+</div><div class="td-sub">Kenya · Forest conservation</div></div></div></td>
             <td><span class="badge verra">Verra VCS</span></td>
             <td class="td-muted">REDD+</td><td>2023</td>
             <td class="td-price">42,000</td><td class="td-price">$14.85</td>
-            <td class="td-action"><button onclick="quoteRequest(this)">Request quote</button></td>
+            <td class="td-action"><button class="ref-btn" onclick="quoteRequest(this)">Enquire</button></td>
           </tr>
-          <tr data-reg="gold">
+          <tr data-reg="gold" data-group-item="1">
             <td><div class="td-project"><span class="project-dot gold"></span><div><div class="td-name">Sichuan Household Biogas</div><div class="td-sub">China · Household biogas</div></div></div></td>
             <td><span class="badge gold">Gold Standard</span></td>
             <td class="td-muted">Biogas</td><td>2024</td>
             <td class="td-price">18,500</td><td class="td-price">$19.20</td>
-            <td class="td-action"><button onclick="quoteRequest(this)">Request quote</button></td>
+            <td class="td-action"><button class="ref-btn" onclick="quoteRequest(this)">Enquire</button></td>
           </tr>
-          <tr data-reg="acr">
+          <tr data-reg="acr" data-group-item="1">
             <td><div class="td-project"><span class="project-dot acr"></span><div><div class="td-name">Cascadia IFM</div><div class="td-sub">Oregon, USA · Improved forest management</div></div></div></td>
             <td><span class="badge acr">ACR</span></td>
             <td class="td-muted">IFM</td><td>2022</td>
             <td class="td-price">25,000</td><td class="td-price">$24.10</td>
-            <td class="td-action"><button onclick="quoteRequest(this)">Request quote</button></td>
+            <td class="td-action"><button class="ref-btn" onclick="quoteRequest(this)">Enquire</button></td>
           </tr>
-          <tr data-reg="car">
+          <tr data-reg="car" data-group-item="1">
             <td><div class="td-project"><span class="project-dot car"></span><div><div class="td-name">Landfill Methane Capture</div><div class="td-sub">Pennsylvania, USA · Waste management</div></div></div></td>
             <td><span class="badge car">CAR</span></td>
             <td class="td-muted">Methane avoidance</td><td>2024</td>
             <td class="td-price">90,000</td><td class="td-price">$9.50</td>
-            <td class="td-action"><button onclick="quoteRequest(this)">Request quote</button></td>
+            <td class="td-action"><button class="ref-btn" onclick="quoteRequest(this)">Enquire</button></td>
           </tr>
-          <tr data-reg="verra">
+          <tr data-reg="verra" data-group-item="1">
             <td><div class="td-project"><span class="project-dot verra"></span><div><div class="td-name">Rimba Raya Biodiversity Reserve</div><div class="td-sub">Indonesia · REDD+ / peatland</div></div></div></td>
             <td><span class="badge verra">Verra VCS</span></td>
             <td class="td-muted">REDD+</td><td>2023</td>
             <td class="td-price">12,000</td><td class="td-price">$16.75</td>
-            <td class="td-action"><button onclick="quoteRequest(this)">Request quote</button></td>
+            <td class="td-action"><button class="ref-btn" onclick="quoteRequest(this)">Enquire</button></td>
           </tr>
         </tbody>
       </table>
@@ -1677,6 +1689,7 @@ function filterTable(btn, reg) {
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   document.querySelectorAll('#listingsTable tbody tr').forEach(row => {
+    if (row.classList.contains('group-row') || row.classList.contains('group-empty')) { row.style.display = ''; return; }
     row.style.display = (reg === 'all' || row.dataset.reg === reg) ? '' : 'none';
   });
 }
@@ -1917,15 +1930,24 @@ renderBlog('all');
     window.CXF_LISTINGS = data;
     const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     if (Array.isArray(data.carbon) && data.carbon.length) {
-      const tb = document.querySelector('#listingsTable tbody');
-      if (tb) tb.innerHTML = data.carbon.map(l => `
-        <tr data-reg="${esc(l.reg)}">
+      const rowHtml = (l, cta, cls) => `
+        <tr data-reg="${esc(l.reg)}" data-group-item="1">
           <td><div class="td-project"><span class="project-dot ${esc(l.reg)}"></span><div><div class="td-name">${esc(l.name)}</div><div class="td-sub">${esc(l.sub)}</div></div></div></td>
           <td><span class="badge ${esc(l.reg)}">${esc(l.badge)}</span></td>
           <td class="td-muted">${esc(l.type)}</td><td>${esc(l.vintage)}</td>
           <td class="td-price">${esc(l.volume)}</td><td class="td-price">$${Number(l.price).toFixed(2)}</td>
-          <td class="td-action"><button onclick="quoteRequest(this)">Request quote</button></td>
-        </tr>`).join('');
+          <td class="td-action"><button${cls ? ' class="' + cls + '"' : ''} onclick="quoteRequest(this)">${cta}</button></td>
+        </tr>`;
+      const grpPendingRow = document.getElementById('grpPending');
+      const grpRefRow = document.getElementById('grpRef');
+      if (grpPendingRow && grpRefRow) {
+        // clear previously rendered static items, keep group headers + empty state
+        document.querySelectorAll('#listingsTable tbody tr[data-group-item]').forEach(r => r.remove());
+        const cxfRows = data.carbon.filter(l => l.reg === 'cxf');
+        const refRows = data.carbon.filter(l => l.reg !== 'cxf');
+        grpPendingRow.insertAdjacentHTML('afterend', cxfRows.map(l => rowHtml(l, 'Request quote', '')).join(''));
+        grpRefRow.insertAdjacentHTML('afterend', refRows.map(l => rowHtml(l, 'Enquire', 'ref-btn')).join(''));
+      }
     }
     // Desk-validated member listings from the CXF portal (published only)
     try {
@@ -1934,9 +1956,9 @@ renderBlog('all');
       });
       if (pr.ok) {
         const portal = await pr.json();
-        const tbc = document.querySelector('#listingsTable tbody');
-        if (tbc && Array.isArray(portal) && portal.length) {
-          tbc.insertAdjacentHTML('afterbegin', portal.map(l => `
+        const anchorP = document.getElementById('grpPending');
+        if (anchorP && Array.isArray(portal) && portal.length) {
+          anchorP.insertAdjacentHTML('afterend', portal.map(l => `
         <tr data-reg="${esc(l.reg || 'cxf')}">
           <td><div class="td-project"><span class="project-dot ${esc(l.reg || 'cxf')}"></span><div><div class="td-name">${esc(l.name)}</div><div class="td-sub">Member listing · Desk-validated</div></div></div></td>
           <td><span class="badge ${esc(l.reg || 'cxf')}">${esc(l.badge || '⬡ CXF')}</span></td>
@@ -1955,10 +1977,10 @@ renderBlog('all');
       });
       if (pj.ok) {
         const projects = await pj.json();
-        const tbp = document.querySelector('#listingsTable tbody');
+        const anchorF = document.getElementById('grpPending');
         const rows = projects.filter(p => p.annual_tco2e && p.price_usd && p.term_years);
-        if (tbp && rows.length) {
-          tbp.insertAdjacentHTML('afterbegin', rows.map(p => {
+        if (anchorF && rows.length) {
+          anchorF.insertAdjacentHTML('afterend', rows.map(p => {
             const total = p.annual_tco2e * p.price_usd * p.term_years;
             const totalVol = p.annual_tco2e * p.term_years;
             const totalFmt = total >= 1e6 ? '$' + (total/1e6).toFixed(1) + 'M' : '$' + total.toLocaleString('en-US',{maximumFractionDigits:0});
@@ -2068,7 +2090,7 @@ PLATFORM PAGES you can point users to (use relative links exactly as written):
 - /es.html — Spanish-language page for collectors and re-refiners (para hispanohablantes).
 - /portal/ — member portal login (magic link). Members get a dashboard with reports, documents, listings and a Portfolio tab with CSV export.
 
-HOW TO BUY (if asked): click "Request quote" on any marketplace listing → a form opens (volume, target price, timeframe) → instant email confirmation → the desk replies with an indicative quote within ~1 business day → bilateral settlement, payment against documentation → numbered retirement certificate, publicly verifiable.
+MARKETPLACE SECTIONS: Live issued inventory (serialized CXF batches, registry-verifiable — currently none listed), Forward & pending issuance (desk-reviewed member offers, indicative, not yet serialized), Market reference examples (illustrative external-registry rows, not CXF inventory, no affiliation).\nHOW TO BUY (if asked): click "Request quote" on any marketplace listing → a form opens (volume, target price, timeframe) → instant email confirmation → the desk replies with an indicative quote within ~1 business day → bilateral settlement, payment against documentation → numbered retirement certificate, publicly verifiable.
 HOW TO SELL / EARN (if asked): Sign up at /portal/ (email + one-time code, short onboarding) → desk KYC review (24-48h, email at every step) → submit monthly volume reports with evidence in the portal → desk validates each report individually → credits list automatically on the marketplace.
 FOUNDER: Alexandru Bondar, Founder & CEO — more than 25 years in the oil business, also the developer behind the World Trade Petroleum used-oil re-refinery project in Florida. His mission: "Nobody throws plastic away anymore; used oil deserves the same ecosystem — and the people who save the planet should get paid for it." Contact: desk@carbonxfuture.com.
 FOUNDING MEMBERS: the first 25 approved members keep launch terms permanently (the live count is shown on /pricing.html).
