@@ -669,7 +669,7 @@ async function loadAudit(){
 }
 
 /* ---------- Backup ---------- */
-const BK_TABLES = ['members','member_notes','reports','documents','listings','cxf_projects','rfqs','certificates','price_history','newsletter_subscribers','audit_log'];
+const BK_TABLES = ['members','member_notes','crm_contacts','crm_activities','reports','documents','listings','cxf_projects','rfqs','certificates','price_history','newsletter_subscribers','audit_log'];
 function backupReminder(){
   const last = localStorage.getItem('cxf_last_backup');
   const days = last ? Math.floor((Date.now() - Number(last)) / 86400000) : null;
