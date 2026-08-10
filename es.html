@@ -113,7 +113,7 @@ function calc(){
   const gal = parseFloat(document.getElementById('litros').value) || 0;
   const litros = gal * 3.78541; // 1 galón US = 3,78541 litros
   const f = parseFloat(document.getElementById('actividad').value);
-  document.getElementById('resultado').textContent = gal > 0 ? (litros/1000*f).toLocaleString('es-US', {maximumFractionDigits:1}) : '—';
+  document.getElementById('resultado').textContent = gal > 0 ? (litros/1000*f).toLocaleString('es-US', {maximumFractionDigits: (litros/1000*f) < 10 ? 2 : 1}) : '—';
 }
 </script>
 </body>
