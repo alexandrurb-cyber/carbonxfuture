@@ -180,8 +180,8 @@ function renderDashboard(){
       <label>Period</label><input type="month" id="rPeriod"/>
       <label>Activity scope</label>
       <select id="rActivity" onchange="calcPreview()">
-        <option value="collection">Collection only — 10.8 tCO₂e / 1,000 gal</option>
-        <option value="collection_rerefining">Re-refining (strict ACR-derived, interim) — 0.63 tCO₂e / 1,000 gal</option>
+        <option value="collection">Collection (eligibility-gated) — 6.3 tCO₂ / 1,000 gal</option>
+        <option value="collection_rerefining">Re-refining Tier 1 — 0.60 tCO₂e / 1,000 gal</option>
       </select>
       <label>Volume</label>
       <div style="display:flex;gap:10px;">
@@ -370,15 +370,17 @@ function printStatement(){
   w.document.close();
 }
 
-const L_PER_GAL = 3.78541; // 1 US gallon = 3.78541 litres (methodology factors are per litre)
+const L_PER_GAL = 3.78541; // 1 US gallon = 3.78541 litres (methodology v1.0-draft factors are per 1,000 US gallons)
 function volumeInLitres(){
   const v = parseFloat(document.getElementById('rLitres').value) || 0;
   return document.getElementById('rUnit').value === 'gal' ? v * L_PER_GAL : v;
 }
 function calcPreview(){
   const litres = volumeInLitres();
+  const gal = litres / L_PER_GAL;
   const f = CXF_FACTORS[document.getElementById('rActivity').value].factor;
-  document.getElementById('rPreview').textContent = litres > 0 ? (litres/1000*f).toFixed(1) : '—';
+  const t = gal/1000*f;
+  document.getElementById('rPreview').textContent = litres > 0 ? (t < 10 ? t.toFixed(2) : t.toFixed(1)) : '—';
 }
 
 async function submitReport(){
@@ -397,7 +399,7 @@ async function submitReport(){
       const { error: upErr } = await db.storage.from('member-docs').upload(evidence_path, file);
       if (upErr) throw upErr;
     }
-    const computed_tco2e = +(litres/1000*CXF_FACTORS[activity].factor).toFixed(2);
+    const computed_tco2e = +((litres/L_PER_GAL)/1000*CXF_FACTORS[activity].factor).toFixed(2);
     const { error } = await db.from('reports').insert({ member_id: USER.id, period, activity, litres, computed_tco2e, evidence_path });
     if (error) throw error;
     notifySelf('report_received', { name: MEMBER.contact_name, company: MEMBER.company, period, volume: computed_tco2e });
