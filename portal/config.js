@@ -4,11 +4,8 @@ const CXF_SUPABASE_URL = 'https://zohskwbavtzvecqziklq.supabase.co';
 const CXF_SUPABASE_KEY = 'sb_publishable_K-4sl6hEk75fByleZEZcfA_f_Zha9aI';
 const CXF_ADMIN_EMAILS = ['desk@carbonxfuture.com', 'alexandrurb@icloud.com', 'carbonxfuture@gmail.com'];
 
-// CXF methodology factors (tCO2e per 1,000 litres) — indicative
-// INTERIM factors, under external expert review. CXF-CO counterfactual:
-// diversion from uncontrolled combustion/disposal without energy displacement.
-// CXF-RR: strict ACR-derived net result (baseline minus replacement-fuel leakage).
-// CXF-FC: quantification under development — not currently offered.
+// CXF Quantification Methodology v1.0-draft factors (tCO2 / tCO2e per 1,000 US gallons).
+// Interim pending independent expert opinion. CXF-FC: not offered (would double count).
 const CXF_FACTORS = {
   collection:              { factor: 6.3,  label: 'Collection (CXF-CO — v1.0-draft, eligibility-gated)' },
   collection_rerefining:   { factor: 0.60, label: 'Re-refining (CXF-RR Tier 1 — v1.0-draft)' }
