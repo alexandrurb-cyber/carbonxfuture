@@ -227,13 +227,13 @@ function renderUplift() {
   const usgulf = last.prices['cxf-usgulf'], rr = last.prices['cxf-rerefining'];
   if (typeof usgulf !== 'number' || typeof rr !== 'number') return;
   const rows = [
-    ['Collection (interim factor)', 2.85, usgulf, 'CXF-CO · 10.8 tCO₂e/1,000 gal × CXF US Gulf'],
-    ['Re-refining (ACR-derived, interim)', 0.167, rr, 'CXF-RR · 0.63 tCO₂e/1,000 gal × CXF Re-refining']
+    ['Collection (v1.0-draft, eligibility-gated)', 6.3, usgulf, 'CXF-CO · 6.3 tCO₂/1,000 gal × CXF US Gulf'],
+    ['Re-refining (v1.0-draft, Tier 1)', 0.60, rr, 'CXF-RR · 0.60 tCO₂e/1,000 gal × CXF Re-refining']
   ];
   document.getElementById('upliftCards').innerHTML = rows.map(([label, f, mark, note]) => `
     <div class="pcard"><div class="k">${label}</div>
-      <div class="v">$${(f * L_PER_GAL * mark).toLocaleString('en-US', {maximumFractionDigits:0})}<span style="font-size:0.85rem;color:var(--slate-400);font-weight:400;"> /1,000 gal</span></div>
-      <div class="d">${note} <span style="color:var(--slate-200);">·</span> $${(f * mark).toFixed(0)}/1,000 L</div>
+      <div class="v">$${(f * mark).toLocaleString('en-US', {maximumFractionDigits:0})}<span style="font-size:0.85rem;color:var(--slate-400);font-weight:400;"> /1,000 gal</span></div>
+      <div class="d">${note} <span style="color:var(--slate-200);">·</span> $${(f / L_PER_GAL * mark).toFixed(0)}/1,000 L</div>
     </div>`).join('');
 }
 

@@ -804,8 +804,8 @@ nav.menu-open .nav-signin{text-align:center;margin-top:6px;}
         <div class="calc-row">
           <label>Activity scope</label>
           <select id="calcWoScope" aria-label="Activity type" onchange="calcWasteOil()">
-            <option value="2.85">Collection only — 10.8 tCO₂e / 1,000 gal</option>
-            <option value="0.167">Re-refining (strict ACR-derived, interim) — 0.63 tCO₂e / 1,000 gal</option>
+            <option value="6.3">Collection (eligibility-gated) — 6.3 tCO₂e / 1,000 gal</option>
+            <option value="0.60">Re-refining Tier 1 — 0.60 tCO₂e / 1,000 gal (Tier 2 up to ≈1.3)</option>
           </select>
         </div>
         <div class="calc-result">
@@ -1823,7 +1823,7 @@ const ARTICLES = [
     readtime: '4 min read',
     slug: 'cxf-quantification-factors-explained',
     title: 'How many carbon credits does a gallon of used oil generate? The CXF factors, explained',
-    summary: 'The interim CXF factors stated plainly — collection 10.8, re-refining 0.63 (strict ACR-derived) — the counterfactuals behind them, and the external expert review now under way.'
+    summary: 'The CXF Quantification Methodology v1.0-draft stated plainly — collection 6.3 with strict eligibility, re-refining 0.60 to 1.3 on a displacement basis — and why every earlier figure was withdrawn.'
   },
   {
     tag: 'Market report',
@@ -2066,7 +2066,7 @@ You help users understand:
 - CXF credits: CarbonXFuture's proprietary carbon credit standard for waste oil recycling and collection. 1 CXF credit = 1 tonne CO2 equivalent avoided. Credits are digital, issued on the CarbonXFuture registry and tradeable on the platform.
 - How to earn CXF credits: waste oil collectors and recyclers apply, submit monthly volume data with evidence, pass CXF desk validation, then their serialized platform units list on the marketplace.
 - Current indicative prices and live listings: use ONLY the numbers in the CURRENT PLATFORM DATA section appended at the end of this prompt. Always note prices are indicative.
-- The CXF methodology: covers used oil collection and re-refining. INTERIM factors, under external expert review: collection (CXF-CO) ~10.8 tCO2e per 1,000 US gallons (2.85 per 1,000 litres), counterfactual = diversion from uncontrolled combustion/disposal WITHOUT energy displacement; re-refining (CXF-RR) 0.63 tCO2e/1,000 gal (0.167/1,000 L) — the strict net result of the ACR-derived calculation (baseline minus replacement-fuel leakage). CXF-FC (full chain): quantification under development, not currently offered. A given volume may be claimed under ONE contract type only (counterfactuals are mutually exclusive). IMPORTANT: the ACR Re-Refining Used Lubricating Oils methodology (Feb 2019) that CXF drew inspiration from is now listed by ACR as INACTIVE and ineligible for new projects — CXF is developing its own internal methodology, subject to external expert review. US industry speaks in gallons; 1 US gallon = 3.78541 litres.
+- The CXF Quantification Methodology v1.0-draft (Aug 2026) is CXF's OWN internal methodology, pending independent expert opinion. Factors (per 1,000 US gallons): collection (CXF-CO) 6.3 tCO2 — ONLY for volumes with a demonstrated uncontrolled-combustion baseline meeting conditions E1-E4 (evidence of non-energy disposal burning, energy-service test, delivery to a re-refinery, one-volume-one-contract); volumes diverted from energy-service burning or from dumping earn 0 GHG credits. Re-refining (CXF-RR): Tier 1 default 0.60 tCO2e, Tier 2 with measured facility data up to ~1.3 — basis is displacement of virgin base-oil production, NOT the old ACR combustion swap; existing facilities credit only production above their 3-year historical maximum (additionality guard). CXF-FC (full chain): NOT OFFERED — it would double count CO/RR; this is public in methodology §8. All prior figures (10.8, 0.63 ACR-basis, 11.16) are withdrawn and reconciled in methodology §9. The ACR Feb 2019 methodology is inactive and ineligible for new projects. US industry speaks in gallons; 1 US gallon = 3.78541 litres.
 - Registries supported: CXF (proprietary), Verra VCS, Gold Standard, ACR, CAR, Plan Vivo.
 - How to join: click "Log in / Sign up" (top right) or go to carbonxfuture.com/portal/ — enter your email, receive a one-time code, complete the short onboarding; the desk reviews within 24-48h. Options: waste oil recycler, corporate buyer, investment fund, trading desk, government entity.
 - Donation program: one-time donations via Stripe (cards, Apple Pay, Google Pay) fund open methodology templates, education on the voluntary carbon market, waste-oil re-refining research and small project grants. No platform fees on donations.
@@ -2076,7 +2076,7 @@ You help users understand:
 
 PLATFORM PAGES you can point users to (use relative links exactly as written):
 - /prices.html — CXF Price Index: weekly price history chart, all desk marks, CSV download.
-- /contracts.html — Standardized contract specs: CXF-CO (collection, interim 2.85 tCO2e/1,000 L), CXF-RR (re-refining, interim 0.167 tCO2e/1,000 L, strict ACR-derived), CXF-FC (quantification under development) — vintages, evidence, settlement.
+- /contracts.html — Standardized contract specs: CXF-CO (collection, 6.3 tCO2/1,000 gal, eligibility-gated E1-E4), CXF-RR (re-refining, Tier 1 0.60 / Tier 2 up to ~1.3 tCO2e/1,000 gal, displacement basis), CXF-FC (not offered) — vintages, evidence, settlement.
 - /buyers.html — For buyers: the 4-step path (browse → RFQ → bilateral settlement → retirement certificate).
 - /registry.html — PUBLIC CXF Registry: every serialized unit batch (serial CXF-B-YYYY-NNNN) with live status (issued/listed/transferred/retired/revoked/split), searchable by anyone — CXF's internal double-issuance controls (cross-program claims are covered by member attestation, not guaranteed). Ownership and prices are private by design.
 - /registry-rules.html — Registry Rules: issuance, transfers, terminal retirement, revocation with public reason, complaints process (desk@carbonxfuture.com, acknowledged in 2 business days).
@@ -2259,9 +2259,9 @@ const L_PER_GAL = 3.78541; // 1 US gallon = 3.78541 litres
 function calcWasteOil() {
   const vol = parseFloat(document.getElementById('calcWoVol').value) || 0;
   const unit = document.getElementById('calcWoUnit').value;
-  const litres = unit === 'gal' ? vol * L_PER_GAL : vol;
+  const gal = unit === 'gal' ? vol : vol / L_PER_GAL;
   const factor = parseFloat(document.getElementById('calcWoScope').value);
-  calcSet('calcWoNum', 'calcWoVal', litres / 1000 * factor, 'cxf-usgulf');
+  calcSet('calcWoNum', 'calcWoVal', gal / 1000 * factor, 'cxf-usgulf');
 }
 
 function calcGreenEnergy() {

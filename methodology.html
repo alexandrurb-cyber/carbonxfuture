@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>The CXF Methodology | CarbonXFuture</title>
-<meta name="description" content="The CXF Methodology: how CarbonXFuture structures, screens and quantifies carbon credits from used engine oil re-refining and collection infrastructure — with transparent status of each module."/>
+<title>The CXF Quantification Methodology v1.0-draft | CarbonXFuture</title>
+<meta name="description" content="The CXF internal quantification methodology for used lubricating oil collection (CXF-CO) and re-refining (CXF-RR): EPA-governed parameters, worked derivations, eligibility rules, monitoring — published in full, pending independent expert opinion."/>
 <link rel="canonical" href="https://www.carbonxfuture.com/methodology.html"/>
 <link rel="icon" href="/favicon.ico" sizes="48x48"/>
 <link rel="apple-touch-icon" href="/apple-touch-icon.png"/>
-<meta property="og:title" content="The CXF Methodology — CarbonXFuture"/>
-<meta property="og:description" content="How CXF credits from waste engine oil are screened, quantified and verified — published transparently, including what is operational and what is still in development."/>
+<meta property="og:title" content="The CXF Quantification Methodology — CarbonXFuture"/>
+<meta property="og:description" content="How CXF credits from used oil are quantified: EPA-governed parameters, full derivations, strict eligibility — published in full, pending independent expert opinion."/>
 <meta property="og:image" content="https://www.carbonxfuture.com/og-banner.png"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
@@ -44,104 +44,132 @@ a{color:var(--forest-light);}
 <div class="topbar"><a href="/">&larr; CarbonXFuture</a></div>
 <div class="wrap">
 
-<div class="eyebrow">CXF Standard · Technical documentation</div>
-<h1>The CXF Methodology</h1>
-<p class="muted">Version 1.0 draft · Published July 2026 · CarbonXFuture Markets, Inc., Fort Lauderdale, Florida</p>
+<div class="eyebrow">CXF Standard · Technical documentation · Module Q (Quantification)</div>
+<h1>The CXF Quantification Methodology</h1>
+<p class="muted">Version 1.0-draft · August 2026 · CarbonXFuture Markets, Inc., Fort Lauderdale, Florida · Status: internal methodology, pending independent expert opinion</p>
 
-<p>The CXF Methodology is CarbonXFuture's framework for originating, screening and quantifying greenhouse-gas emission reductions from <strong>used engine oil recycling</strong> — the most overlooked stream in the circular economy. It is published here in full so that counterparties, buyers and reviewers can see exactly how CXF figures are produced, what is already operational, and what is still under development.</p>
+<div class="notice"><strong>Status and change log.</strong> This document is CarbonXFuture's own internal quantification methodology. It <strong>supersedes and withdraws all previously published interim factors</strong> (CXF-CO 10.8; CXF-RR 0.63 on the ACR combustion-swap basis; the 11.16 energy-basis derivation) — §9 shows the arithmetic of why each was withdrawn. All factors below are <strong>interim pending the signed independent expert opinion</strong> commissioned under the CXF Expert Engagement Brief (August 2026). The expert is free, and expected, to lower, restructure or withdraw any factor; CXF publishes the outcome either way. CXF credits are proprietary platform instruments serialized in the public <a href="/registry.html">CXF Registry</a> under the <a href="/registry-rules.html">CXF Registry Rules</a> — they are not registry credits: not issued by Verra, Gold Standard, ACR or CAR, and always described as such. External registry credits require that registry's own validation, verification and issuance.</div>
 
-<div class="notice"><strong>Transparency note.</strong> CXF is a proprietary framework operated by CarbonXFuture. Its initial parameters were drawn from the American Carbon Registry's <em>Re-Refining Used Lubricating Oils</em> methodology (v1.0, Feb 2019) — <strong>a methodology ACR now lists as inactive and ineligible for new project listings.</strong> CarbonXFuture is developing its own internal CXF methodology, and the quantification factors published below are <strong>interim figures under external GHG/LCA expert review</strong>. Registry-grade offset credits are only created after independent third-party validation, verification and issuance by the applicable registry. Platform estimates produced under this methodology are indicative deal-sizing figures until validated. There are two distinct tracks: <b>(1) CXF platform units</b> — desk-validated activity may support issuance of proprietary, serialized CXF units under the <a href="/registry-rules.html">CXF Registry Rules</a>, recorded in the public <a href="/registry.html">CXF Registry</a>; these are platform instruments, not registry-issued offset credits. <b>(2) External registry credits</b> — a project seeking issuance under ACR, Verra, Gold Standard or another external registry must separately complete that registry's validation, verification and issuance process.</div>
+<h2 id="q1">1. Scope, status and governing principle</h2>
+<p>This module defines how CarbonXFuture Markets, Inc. ("CXF") quantifies the greenhouse-gas outcome of two platform contracts: <strong>CXF-CO</strong> (collection of used lubricating oil under a demonstrated uncontrolled-combustion baseline) and <strong>CXF-RR</strong> (re-refining of used lubricating oil into base oil). It is drafted for consistency with ISO 14064-2 and the GHG Protocol for Project Accounting, and is structured so that a third-party verifier could apply it.</p>
+<p><strong>Governing principle (source hierarchy).</strong> US EPA published factors govern every parameter that increases credited reductions. Where EPA publishes no factor, values are taken from published, critically reviewed LCA literature at the end of the published range that minimizes the credit, with full citation. Non-EPA sources therefore only ever enter on the debit side or at credit-reducing ends of ranges. This rule is what guarantees the absence of internal contradictions.</p>
 
-<h2>Module A — Active contract quantification <span class="status-badge st-active">Operational screening</span></h2>
-<p>Module A covers the two active CXF contract types and governs how CarbonXFuture screens counterparties and models indicative volumes: <strong>A1 — existing collection activity (CXF-CO)</strong>, quantified under the collection counterfactual in §A.2b; and <strong>A2 — re-refining (CXF-RR)</strong>, quantified under the strict displacement accounting in §A.1–A.2. Module B, separately, addresses the creation of <em>new</em> collection infrastructure and remains at concept stage.</p>
-
-<div class="card">
-<h3>A.1 Eligibility screen</h3>
-<ul>
-<li><strong>Location:</strong> project site in North America (US, Canada, Mexico).</li>
-<li><strong>Output quality:</strong> re-refined base oil meets API Standard 1509 (15th Ed.) or equivalent — batch lab certificates required.</li>
-<li><strong>Feedstock integrity:</strong> input is genuinely used lubricating oil (engine, hydraulic, transmission/gear oil); virgin-oil blending disqualifies.</li>
-<li><strong>Licensing:</strong> valid used-oil processor license (in Florida: FDEP used-oil handler/processor registration; equivalents elsewhere).</li>
-<li><strong>Regulatory surplus:</strong> re-refining must not be legally mandated for the operator.</li>
-<li><strong>Operating history:</strong> facilities operating &gt;10 years require a Historic Baseline Production (HBP) adjustment.</li>
-</ul>
-
-<h3>A.2 Quantification workflow</h3>
-<p>Indicative emission reductions per reporting period <em>t</em> follow a four-step calculation:</p>
-<div class="eq">Step 1 — Baseline (BE<sub>t</sub>): gallons of re-refined base oil (− HBP, if applicable) × 0.0402 GJ/L heat content × 20 kgC/GJ × 44/12</div>
-<div class="eq">Step 2 — Project emissions (PE<sub>t</sub>): facility electricity (MWh × regional eGRID factor) + fuels (EIA emission factors)</div>
-<div class="eq">Step 3 — Leakage (LE<sub>t</sub>): baseline heat content (GJ) × 18.867 kgC/GJ — the ACR integrated carbon content of replacement fossil fuels — × 44/12 to convert carbon to CO₂</div>
-<div class="eq">Step 4 — Net reductions: ER<sub>t</sub> = BE<sub>t</sub> − PE<sub>t</sub> − LE<sub>t</sub></div>
-<div class="eq" style="background:var(--forest-pale);">Worked strict result, per 1,000 US gallons of re-refined base oil: BE = 11.16 tCO₂e; LE = 10.53 tCO₂e; ER before project emissions = <b>0.63 tCO₂e per 1,000 gallons</b> (0.167 per 1,000 litres). This strict net figure is the <b>interim CXF-RR factor</b>.</div>
-<p class="muted">Why the net result is small: this accounting assumes the used oil would otherwise have been burned as industrial fuel, displacing other fossil fuels — so the leakage deduction (18.867 kgC/GJ) offsets almost the entire baseline (20 kgC/GJ). ER<sub>t</sub> is an indicative tCO₂e figure. After CXF desk validation it may support issuance of proprietary CXF platform units under the CXF Registry Rules; it becomes a registry-issued credit count only after independent validation, verification and issuance by the applicable external registry.</p>
-
-<h3>A.2b Collection (CXF-CO) — interim factor and its counterfactual</h3>
-<p>The interim collection factor is <b>10.8 tCO₂e per 1,000 US gallons</b> (2.85 per 1,000 litres). It rests on a <b>different counterfactual</b> than A.2: collected volumes are assumed diverted from <em>uncontrolled combustion or improper disposal without any energy displacement</em> — in which case the avoided emissions approach the full combustion emissions of the oil (EPA GHG Emission Factors Hub: 10.21–10.69 tCO₂ per 1,000 gallons for used oil / lubricants). Where the true counterfactual involves energy displacement, the A.2 accounting applies instead. Because the two counterfactuals are mutually exclusive, <b>a given physical volume may be claimed under one contract type only</b>. The evidentiary basis for assigning a counterfactual, and this factor itself, are part of the external expert review; the factor is interim until that review concludes.</p>
-
-<h3>A.3 Monitoring (MRV) requirements</h3>
-<ul>
-<li>Chain-of-custody: origin, volume and collection date of every used-oil load.</li>
-<li>Delivery records to the re-refinery; homogenization evidence; incoming feedstock testing.</li>
-<li>Production records isolating re-refined base oil from co-products; annual yield reporting per site.</li>
-<li>Utility invoices (electricity) and fuel purchase records for project emissions.</li>
-<li>Operating licenses and, where applicable, hazardous-waste handling documentation.</li>
-</ul>
-</div>
-
-<h2>Module B — Collection infrastructure <span class="status-badge st-dev">In development</span></h2>
-<p>A large share of used oil in North America is never collected: it is dumped into drains, soil or general waste. Module B extends crediting upstream, to the <strong>establishment or expansion of collection infrastructure</strong> (collection points, containers, logistics with independent garages, fleets and marinas) in areas with documented below-average collection rates, where collected oil is verifiably delivered to an eligible re-refinery.</p>
-
-<div class="card">
-<h3>B.1 Baseline</h3>
-<p>The documented status-quo collection rate in the project area before intervention, established by a project- or region-specific baseline survey (collection and dumping rates vary significantly by region).</p>
-
-<h3>B.2 Additionality tests</h3>
-<ul>
-<li><strong>Regulatory surplus:</strong> the infrastructure is not mandated by federal, state or local regulation.</li>
-<li><strong>Investment barrier:</strong> without carbon finance, the investment is not commercially viable at prevailing used-oil scrap values.</li>
-<li><strong>Performance standard:</strong> the area's pre-project collection rate is below the regional benchmark.</li>
-</ul>
-
-<h3>B.3 Quantification (illustrative)</h3>
-<div class="eq">BE<sub>collect,t</sub> = (HC<sub>v</sub> × ΔQ<sub>collected,t</sub> × 3.78541 × CC<sub>LO</sub> / 1,000) × (44/12)</div>
-<div class="eq">PE<sub>collect,t</sub> = Σ(D<sub>k,t</sub> × EF<sub>transport</sub>)&nbsp;&nbsp;&nbsp;(collection-route transport emissions)</div>
-<div class="eq">ER<sub>collect,t</sub> = BE<sub>collect,t</sub> − PE<sub>collect,t</sub></div>
-<p class="muted">ΔQ = incremental gallons collected above the baseline volume. Accounted separately from Module A to prevent double-counting. The appropriate emission-factor treatment of avoided dumping is one of the open technical questions under registry review.</p>
-
-<h3>B.4 Monitoring parameters</h3>
-<ul>
-<li>Volume collected per route/collection point (weighbridge or volumetric metering), with date and origin.</li>
-<li>Delivery confirmations cross-referenced with re-refinery intake records.</li>
-<li>Vehicle type, distance and fuel per collection route.</li>
-<li>Baseline collection-rate documentation for the project area.</li>
-</ul>
-</div>
-
-<h2>Verification &amp; issuance path</h2>
-<ul>
-<li>Project proponents register directly with the applicable registry and engage an approved independent validation/verification body (VVB).</li>
-<li>Emission reductions are validated, then verified, before the registry issues credits (1 credit = 1 tCO₂e) to the proponent's account.</li>
-<li>Only issued credits can be transferred, sold or retired — this is where the CarbonXFuture marketplace operates.</li>
-</ul>
-
-<h2>Status &amp; roadmap</h2>
+<h2 id="q2">2. Summary of quantification outcomes</h2>
 <table>
-<thead><tr><th>Component</th><th>Status</th><th>Notes</th></tr></thead>
-<tbody>
-<tr><td>Module A1 — existing collection activity (CXF-CO, §A.2b)</td><td><span class="status-badge st-active" style="margin-left:0;">Active</span></td><td>Applied to licensed collectors with documented chain of custody; interim factor under external expert review</td></tr>
-<tr><td>Module A2 — re-refining quantification (CXF-RR, §A.1–A.2)</td><td><span class="status-badge st-active" style="margin-left:0;">Active</span></td><td>Applied to all re-refining counterparties on the platform; strict ACR-derived interim factor</td></tr>
-<tr><td>CXF internal methodology — own factor derivations</td><td><span class="status-badge st-dev" style="margin-left:0;">In development</span></td><td>External GHG/LCA expert review of the interim factors and counterfactuals; published factors are interim until it concludes</td></tr>
-<tr><td>Module B — collection infrastructure crediting</td><td><span class="status-badge st-dev" style="margin-left:0;">Concept stage</span></td><td>Draft concept note prepared for formal registry methodology development and public stakeholder review</td></tr>
-<tr><td>ICVCM Core Carbon Principles alignment</td><td><span class="status-badge st-dev" style="margin-left:0;">In progress</span></td><td>Alignment assessment planned for future issuance cycles</td></tr>
-</tbody>
+<tr><th>Contract</th><th>Default factor / 1,000 US gal</th><th>Per 1,000 L</th><th>Basis</th><th>Replaces</th></tr>
+<tr><td><b>CXF-CO — Collection</b></td><td><b>6.3 tCO₂</b></td><td>1.66</td><td>Demonstrated uncontrolled combustion avoided; CO₂-only credit; full debits</td><td>10.8 (withdrawn)</td></tr>
+<tr><td><b>CXF-RR — Re-refining, Tier 1</b></td><td><b>0.60 tCO₂e</b></td><td>0.16</td><td>Displacement of virgin base-oil production; default parameters</td><td>0.63 (superseded basis)</td></tr>
+<tr><td><b>CXF-RR — Re-refining, Tier 2</b></td><td>up to ≈1.3 tCO₂e</td><td>up to ≈0.34</td><td>Same, with measured facility data (EPA eGRID + Hub factors)</td><td>—</td></tr>
+<tr><td><b>CXF-FC — Full chain</b></td><td>Not offered</td><td>—</td><td>Any full-chain contract would double count CO/RR (§8)</td><td>Withdrawn (confirmed)</td></tr>
+</table>
+<p class="muted"><strong>Note on direction of change.</strong> CXF-CO falls from 10.8 because the prior factor credited gross combustion emissions with no baseline-uncertainty deduction and no debit for the fate of the collected oil. CXF-RR lands near the prior interim 0.63, but on a different and defensible basis: the inactive ACR combustion-swap framing is replaced by product displacement (§5).</p>
+
+<h2 id="q3">3. Canonical parameter set</h2>
+<p>Every number used anywhere in CXF materials must trace to this table. The three previously co-existing baseline figures (10.21–10.69 EPA band, 10.8 interim factor, 11.16 energy-basis derivation) are hereby reconciled: <strong>10.21 is canonical</strong>; 10.8 and 11.16 are withdrawn (§9).</p>
+<table>
+<tr><th>Parameter</th><th>Value</th><th>Source</th></tr>
+<tr><td>Used oil heat content (HHV)</td><td>0.138 mmBtu/gal</td><td>EPA GHG Emission Factors Hub 2025, Table 1 = 40 CFR 98 Table C-1</td></tr>
+<tr><td>Used oil CO₂ factor</td><td>74.00 kg CO₂/mmBtu → <b>10.21 kg CO₂/gal</b></td><td>EPA Hub 2025, Table 1</td></tr>
+<tr><td>Used oil CH₄ / N₂O</td><td>0.41 g / 0.08 g per gal (petroleum default)</td><td>EPA Hub 2025, Table 1; 40 CFR 98 Table C-2</td></tr>
+<tr><td>GWP set</td><td>AR5 100-yr: CH₄ = 28, N₂O = 265</td><td>EPA Hub 2025 directive</td></tr>
+<tr><td>Grid electricity (Tier 2)</td><td>770.884 lb CO₂e/MWh US avg (or subregion rate)</td><td>EPA eGRID, 2023 data (rel. Jan 2025)</td></tr>
+<tr><td>Freight transport</td><td>0.186 kg CO₂/short ton-mile (med/heavy truck)</td><td>EPA Hub 2025, Table 8</td></tr>
+<tr><td>Used oil density</td><td>0.87 kg/L (conservative low end of 0.87–0.90)</td><td>Literature; ACR's implied 1.0 kg/L rejected as unphysical</td></tr>
+<tr><td>Base-oil yield from re-refining</td><td>62.5% by volume (1 gal → 2.5 qt)</td><td>EPA, Managing/Reusing/Recycling Used Oil; corroborated 63–73% (ifeu/GEIR, Safety-Kleen)</td></tr>
+<tr><td>Virgin base-oil carbon intensity CI_v</td><td>1.2 kg CO₂e/kg (credit-minimizing end)</td><td>ifeu/GEIR 2018 (827–830 kg CO₂e/Mg feed ÷ 0.67 yield ≈ 1.23); 2022 edition and Crystal Clean imply 1.8–1.9</td></tr>
+<tr><td>Re-refined base-oil CI default CI_rr</td><td>0.8 kg CO₂e/kg (credit-minimizing high end)</td><td>Ramboll/Safety-Kleen gate-to-gate 0.6–0.8; ClimeCo/Crystal Clean ISO 14067 cradle-to-gate 0.422</td></tr>
+<tr><td>Volume conversion</td><td>1,000 US gal = 3,785.41 L</td><td>exact</td></tr>
 </table>
 
-<h2>Florida regulatory context</h2>
-<p>Used-oil collectors, transporters and processors in Florida operate under the Florida Department of Environmental Protection (FDEP) used-oil management program and federal RCRA used-oil standards (40 CFR Part 279). Florida-sourced counterparties must provide current FDEP registration as part of the Module A eligibility screen.</p>
+<h2 id="q4">4. CXF-CO — Collection under a demonstrated uncontrolled-combustion baseline <span class="status-badge st-active">Active</span></h2>
+<h3>4.1 Baseline definition and eligibility</h3>
+<p>CXF-CO credits exactly one counterfactual: the collected volume would otherwise have been <strong>burned without providing a useful energy service</strong> (disposal burning, open burning). Two other fates that were previously conflated into the collection factor are excluded:</p>
+<ul>
+<li><strong>Energy-service burning</strong> (e.g., shop space heaters, industrial burners): the heat is real and would be replaced by another fuel. Under EPA factors the plausible replacement fuels (distillate No. 2 at 10.21 kg CO₂/gal-equivalent; residual No. 6 higher) emit as much as or more than used oil per unit of heat, so the net avoidance is approximately zero or negative. <strong>Credit: 0.</strong></li>
+<li><strong>Improper disposal / dumping:</strong> dumped oil does not convert to CO₂ on any crediting-relevant timescale that can be defended with field data; its damages are toxicity and water contamination, not greenhouse gas. <strong>Credit: 0 GHG credits.</strong> CXF may develop a separate non-GHG stewardship instrument for this pathway; it must never be denominated in tCO₂.</li>
+</ul>
+<p><strong>Eligibility conditions (all required):</strong></p>
+<ul>
+<li><strong>E1 — Baseline demonstration:</strong> documentary evidence that the specific source or source region practiced non-energy disposal burning (enforcement records, dated photographic/site evidence, or a desk-accepted regional fate survey), refreshed at least every 2 years.</li>
+<li><strong>E2 — Energy-service test:</strong> an affirmative showing that the baseline burning provided no bought-fuel-displacing heat. If the test fails or is inconclusive, the volume is reclassified to the energy-service case and earns 0.</li>
+<li><strong>E3 — Fate requirement:</strong> weighbridge-ticketed delivery of the collected volume to a re-refining facility (manifest chain). Volumes delivered to the fuel market earn 0 (the combustion is relocated, not avoided).</li>
+<li><strong>E4 — One-volume-one-contract:</strong> a volume claiming CXF-CO cannot also claim CXF-RR, and vice versa (registry-enforced by serial).</li>
+</ul>
+<h3>4.2 Quantification</h3>
+<div class="eq">ER_CO = V × EF_UO × (1 − BUD) − PE_tr − PE_proc</div>
+<ul>
+<li><b>V</b> = eligible volume (1,000 US gal units); <b>EF_UO</b> = 10.21 tCO₂/1,000 gal (EPA, CO₂-only — CH₄ and N₂O are deliberately not credited: conservative).</li>
+<li><b>BUD</b> = baseline-uncertainty deduction, default 0.20. Rationale: baseline demonstration rests on surveys and attestations, not metered data; a 20% haircut is retained until the independent expert rules on evidence-class-specific values.</li>
+<li><b>PE_tr</b> = collection transport debit, default 0.15 tCO₂e/1,000 gal. Derivation: 3,785 L × 0.87 kg/L = 3.63 short tons; 360 km round trip ≈ 224 mi; 3.63 × 224 × 0.186 kg/ton-mile ≈ 0.15 t. The default embeds roughly 1.8× the 100 km haul the ifeu LCAs show to be typical; measured logistics data may replace it.</li>
+<li><b>PE_proc</b> = processing debit for the collected oil's destination, default CI_rr × M_rr = 0.8 kg CO₂e/kg × 2,058 kg = 1.65 tCO₂e/1,000 gal. The displacement benefit of the resulting base oil is NOT added back (it belongs to CXF-RR and would breach E4).</li>
+</ul>
+<h3>4.3 Default factor — worked example, 1,000 US gal</h3>
+<div class="eq">10.21 × (1 − 0.20) = 8.168&nbsp;&nbsp;→&nbsp;&nbsp;8.168 − 0.15 − 1.65 = 6.37&nbsp;&nbsp;→&nbsp;&nbsp;published <b>6.3 tCO₂ / 1,000 gal</b> (1.66 / 1,000 L)</div>
+<p class="muted"><strong>Honest expectation note.</strong> In the mainland US, most collected oil already flows to the fuel market or re-refining; demonstrated disposal-burning baselines are rare. CXF-CO is therefore expected to be a small-volume, high-integrity contract domestically, with most eligible volumes arising in markets where open burning is documented.</p>
 
-<div class="notice"><strong>Disclaimer.</strong> This page describes CarbonXFuture's proprietary CXF framework and is provided for transparency. It is not an offer, not investment advice, and does not represent that any registry has approved, endorsed or issued credits under this framework. Figures produced under this methodology are indicative until independently verified. Questions: <a href="mailto:desk@carbonxfuture.com">desk@carbonxfuture.com</a>.</div>
+<h2 id="q5">5. CXF-RR — Re-refining as displacement of virgin base-oil production <span class="status-badge st-active">Active</span></h2>
+<h3>5.1 Why the ACR combustion-swap framing is abandoned</h3>
+<p>The prior interim factor (0.63 tCO₂e/1,000 gal before project emissions) was the strict result of the ACR 2019 framing: avoided combustion of used oil (20 kgC/GJ) minus replacement-fuel leakage (18.867 kgC/GJ). That framing has three defects: (i) the ACR methodology is inactive and ineligible for new listings; (ii) its margin is a thin difference of two large, uncertain numbers and approaches zero or negative once project emissions are deducted; (iii) restated on EPA factors, the same swap yields ≈0.9 tCO₂/1,000 gal with an unverifiable replacement-fuel mix, and 0 if the replacement is distillate alone. The climate benefit of re-refining that survives scrutiny in every reviewed LCA (ifeu/GEIR 2018 and 2022, API/ERM 2017, ENVIRON 2014, ClimeCo 2025) is instead the <strong>displacement of virgin base-oil production</strong>. CXF-RR is therefore re-founded on displacement. The combustion-swap term and its symmetric leakage debit are both excluded; since the EPA-restated swap margin is non-negative, excluding the pair forgoes credit and is conservative.</p>
+<h3>5.2 Quantification</h3>
+<div class="eq">ER_RR = [ M_rr × (CI_v − CI_rr) − PE_tr ] × (1 − UD)<br/>M_rr = V × 3,785.41 × ρ × Y&nbsp;&nbsp;(kg of re-refined base oil)</div>
+<ul>
+<li><b>ρ</b> = 0.87 kg/L; <b>Y</b> = 0.625 (EPA yield); → M_rr = 2,058 kg per 1,000 gal of feedstock.</li>
+<li><b>CI_v</b> = 1.2 kg CO₂e/kg fixed (credit-minimizing end of published range 1.2–1.9; may only be raised by the independent expert, never by CXF).</li>
+<li><b>Tier 1 (default):</b> CI_rr = 0.8 kg CO₂e/kg from published gate-to-gate LCA of the largest North American re-refiner. Available to any member immediately.</li>
+<li><b>Tier 2 (measured):</b> CI_rr = [Σ electricity × eGRID subregion rate + Σ fuels × EPA Hub factors + purchased hydrogen and process inputs] ÷ M_rr, from 12 months of utility bills and purchase records, desk-audited annually. Floor: Tier 2 CI_rr may not be set below 0.42 kg CO₂e/kg (the best ISO 14067 critically-reviewed cradle-to-gate value published for the sector) without third-party verification of the facility's own LCA.</li>
+<li><b>PE_tr</b> = 0.15 tCO₂e/1,000 gal feedstock transport debit (same derivation as §4.2).</li>
+<li><b>UD</b> = uncertainty deduction, 0.10 (parameters are literature defaults, not measured; halves to 0.05 for Tier 2 volumes with verified data).</li>
+<li><b>HBP additionality guard:</b> for facilities with ≥1 year of operating history, only production above the highest annual base-oil output of the preceding 3 years is creditable. Business-as-usual output of an existing re-refiner is not additional and earns 0. New facilities credit full output. This is stricter than the ACR rule and is intentional.</li>
+</ul>
+<h3>5.3 Default factors — worked example, 1,000 US gal</h3>
+<div class="eq">Tier 1: [2,058 × (1.2 − 0.8)/1000 − 0.15] × 0.90 = [0.824 − 0.15] × 0.90 = 0.606&nbsp;&nbsp;→&nbsp;&nbsp;published <b>0.60 tCO₂e / 1,000 gal</b> (0.16 / 1,000 L)<br/>Tier 2 bound: [2,058 × (1.2 − 0.42)/1000 − 0.15] × 0.95 = [1.606 − 0.15] × 0.95 = 1.38&nbsp;&nbsp;→&nbsp;&nbsp;≤ ≈1.3–1.4 tCO₂e / 1,000 gal</div>
 
-<div class="foot">© 2026 CarbonXFuture Markets, Inc. · <a href="/">Home</a> · <a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a></div>
+<h2 id="q6">6. Leakage</h2>
+<p><strong>CXF-CO:</strong> the eligible baseline is burning without energy service, so no replacement fuel is purchased in the project scenario; market leakage is nil by construction of E2. Diverting oil from the fuel market is handled by E3 paying 0, not by a leakage discount. <strong>CXF-RR:</strong> feedstock bidding-away from the fuel market and the corresponding replacement-fuel purchase is the symmetric pair of the excluded combustion-swap credit; both are excluded together (§5.1), which is conservative because the EPA-restated pair nets positive. Activity-shifting leakage (a member re-labeling existing flows) is controlled by the HBP guard and the registry serial rule.</p>
+
+<h2 id="q7">7. Uncertainty, conservativeness and materiality</h2>
+<ul>
+<li>Credits are CO₂-only on the credit side; debits are full CO₂e (AR5 GWPs). This asymmetry is deliberate and conservative.</li>
+<li>Every range-valued parameter is fixed at its credit-minimizing end (CI_v = 1.2 low; CI_rr = 0.8 high; ρ = 0.87 low; Y = 62.5% low).</li>
+<li>Explicit deductions: BUD 20% (CO), UD 10%/5% (RR). No separate buffer pool is maintained: there is no reversal risk (no carbon storage), and conservativeness is carried in the deductions. If the independent expert prefers a buffer architecture, CXF will adopt it.</li>
+<li>Materiality: any single omitted source &gt;5% of a contract's ER must be quantified or the factor withdrawn. Rounding is always downward to 2 significant figures.</li>
+</ul>
+
+<h2 id="q8">8. CXF-FC (full chain) — not offered <span class="status-badge st-dev">Withdrawn</span></h2>
+<p>A full-chain instrument would credit collection and re-refining of the same physical volume in one contract while CXF-CO and CXF-RR exist for the same nodes, and the CO factor already debits the processing at destination while the RR factor already embeds collected feedstock. Any FC factor would therefore either double count or reduce to the sum of contracts it duplicates. <strong>Recommendation adopted: CXF-FC is not offered.</strong> This section exists so that the decision and its reason are public.</p>
+
+<h2 id="q9">9. Reconciliation of previously published figures</h2>
+<ul>
+<li><strong>10.21–10.69 kg CO₂/gal (EPA band):</strong> 10.21 is Used Oil (0.138 mmBtu/gal × 74.00 kg/mmBtu); 10.69 is Lubricants (0.144 × 74.27). CXF quantifies used oil, so 10.21 is canonical; citing the pair as a band for one substance was a category error.</li>
+<li><strong>11.16 tCO₂e/1,000 gal (energy-basis derivation):</strong> 0.0402 GJ/L × 20 kgC/GJ × 44/12. Two flaws: it combines a net-calorific-value carbon content with figures used as if gross, and 0.0402 GJ/L silently assumes density 1.0 kg/L (IPCC 40.2 MJ/kg × 1.0), overstating per-gallon energy by ≈11–15% against real density 0.87–0.90. Decomposition: 11.16 = 10.21 × (NCV/HHV carbon-intensity mismatch ≈ +4.5%) × (heat-content mismatch ≈ +4.5%). <strong>Withdrawn.</strong></li>
+<li><strong>10.8 tCO₂e/1,000 gal (prior CXF-CO):</strong> sat above its own cited EPA band and carried no deductions. <strong>Withdrawn and replaced by 6.3 under §4.</strong></li>
+<li><strong>0.63 tCO₂e/1,000 gal (prior CXF-RR):</strong> numerically close to the new 0.60 Tier 1 default, but derived from the inactive ACR combustion swap. <strong>Superseded in basis, not merely in value.</strong></li>
+</ul>
+
+<h2 id="q10">10. Monitoring and evidence</h2>
+<table>
+<tr><th>Data item</th><th>Instrument</th><th>Frequency</th></tr>
+<tr><td>Collected / re-refined volumes</td><td>Weighbridge tickets, manifests, production records</td><td>Per delivery; monthly member report</td></tr>
+<tr><td>CXF-CO baseline demonstration (E1/E2)</td><td>Enforcement records, site evidence, regional fate survey</td><td>At onboarding; refresh ≤ 2 years</td></tr>
+<tr><td>Fate of collected oil (E3)</td><td>Delivery manifest chain to re-refiner</td><td>Per delivery</td></tr>
+<tr><td>Tier 2 energy data</td><td>Utility bills, fuel and hydrogen purchase records</td><td>12-month rolling; annual desk audit</td></tr>
+<tr><td>HBP baseline</td><td>Audited production history, preceding 3 years</td><td>At onboarding; annually</td></tr>
+<tr><td>Serial uniqueness (E4)</td><td>CXF registry</td><td>Continuous</td></tr>
+</table>
+
+<h2 id="q11">11. Claim exclusivity</h2>
+<p>No volume credited under CXF may simultaneously support any other carbon claim: no LCFS/RFS or similar regulated-program pathway, no registry credit, and no product-level marketing claim by the re-refiner that monetizes the same reduction (e.g., a low-carbon base-oil claim sold to blenders). Members attest annually; breach voids the serials. Already-issued credits affected by any future factor reduction follow the registry's retroactivity rule: recalculation at the corrected factor with cancellation of the difference — the same standard CXF applied to itself in August 2026.</p>
+
+<h2 id="q12">12. Literature basis</h2>
+<p class="muted">Primary sources verified at document level during preparation (August 2026): EPA GHG Emission Factors Hub 2025 and 40 CFR Part 98 Tables C-1/C-2; EPA eGRID (2023 data); EPA AP-42 §1.11 Waste Oil Combustion; EPA Managing, Reusing, and Recycling Used Oil; 2006 IPCC Guidelines Vol. 2 Ch. 1 (Tables 1.2–1.4); ACR Methodology for Re-Refining Used Lubricating Oils v1.0 (Feb 2019, inactive); ifeu/GEIR LCA of Waste Oil Regeneration (2018 corrected; 2022 update); ERM for API, Life Cycle Assessment of Used Oil Management (2017); US DOE Used Oil Management and Beneficial Reuse Options, Report to Congress (2020); US DOE Used Oil Re-refining Study (2006); Grice et al., ACS Sustainable Chem. Eng. (2013/14, abstract-verified); Safety-Kleen/Ramboll KLEEN+ LCA (2021/22, company disclosure); Crystal Clean/ClimeCo ISO 14067 LCA (2025, company disclosure); Boughton &amp; Horvath, Environ. Sci. Technol. 38(2) 2004 (abstract-verified); Kuczenski et al., Resour. Conserv. Recycl. 93 (2014). Where only abstracts or company disclosures were accessible, the values taken were placed on the credit-minimizing side and are flagged for the independent expert.</p>
+
+<h2 id="q13">13. Version and governance</h2>
+<p>v1.0-draft, August 2026, authored by the CXF methodology desk. This document supersedes the previously published §A.1–A.2b interim factors on this page. Changes require: (i) a written derivation, (ii) desk sign-off, (iii) publication of the change log. The pending independent expert engagement (Tasks 1–5 of the August 2026 brief) reviews this module; its opinion is published unedited, favorable or not.</p>
+
+<h2 id="module-b">Module B — New collection infrastructure <span class="status-badge st-dev">Concept stage</span></h2>
+<p>Separately from Module Q, CXF maintains a concept note for crediting the <strong>establishment or expansion of collection infrastructure</strong> (collection points, containers, logistics for independent garages, fleets and marinas) in areas with documented below-average collection rates. No Module B factor is published and no Module B credits are offered. Any greenhouse-gas treatment of avoided dumping under Module B is subordinated to §4.1 of this module: dumping earns 0 GHG credits, so any Module B instrument for that pathway would be a non-GHG stewardship instrument, never denominated in tCO₂.</p>
+
+<div class="foot">© 2026 CarbonXFuture Markets, Inc. · <a href="/">Home</a> · <a href="/contracts.html">Contract specifications</a> · <a href="/registry.html">CXF Registry</a> · <a href="/registry-rules.html">Registry Rules</a> · <a href="/verify.html">Verify a certificate</a> · <a href="/faq.html">FAQ</a> · <a href="/terms.html">Terms</a></div>
 </div>
 </body>
 </html>

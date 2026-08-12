@@ -73,8 +73,8 @@ a{color:var(--forest-light);}
     <div><label>Galones por mes</label><input type="number" id="litros" min="0" placeholder="ej. 26000" oninput="calc()"/></div>
     <div><label>Actividad</label>
       <select id="actividad" onchange="calc()">
-        <option value="2.85">Solo recolección — 10,8 tCO₂e / 1.000 gal</option>
-        <option value="0.167">Re-refinación (derivado estricto ACR, provisional) — 0,63 tCO₂e / 1.000 gal</option>
+        <option value="6.3">Recolección (elegibilidad estricta) — 6,3 tCO₂e / 1.000 gal</option>
+        <option value="0.60">Re-refinación Tier 1 — 0,60 tCO₂e / 1.000 gal</option>
       </select></div>
   </div>
   <div class="calc-result">Créditos indicativos: <b id="resultado">—</b> tCO₂e/mes <span style="font-size:12px;color:var(--slate-400);">(sujeto a validación del desk · 1 galón = 3,785 litros)</span></div>
@@ -111,9 +111,9 @@ a{color:var(--forest-light);}
 <script>
 function calc(){
   const gal = parseFloat(document.getElementById('litros').value) || 0;
-  const litros = gal * 3.78541; // 1 galón US = 3,78541 litros
   const f = parseFloat(document.getElementById('actividad').value);
-  document.getElementById('resultado').textContent = gal > 0 ? (litros/1000*f).toLocaleString('es-US', {maximumFractionDigits: (litros/1000*f) < 10 ? 2 : 1}) : '—';
+  const t = gal/1000*f;
+  document.getElementById('resultado').textContent = gal > 0 ? t.toLocaleString('es-US', {maximumFractionDigits: t < 10 ? 2 : 1}) : '—';
 }
 </script>
 </body>
