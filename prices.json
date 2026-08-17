@@ -2,7 +2,7 @@
   "lastUpdated": "2026-08-17",
   "source": "CarbonXFuture trading desk",
   "prices": {
-    "cxf-usgulf": 21.2,
+    "cxf-usgulf": 21.9,
     "verra-redd": 18.4,
     "gold-solar": 22.1,
     "acr-car": 15.2,
@@ -17,14 +17,14 @@
       "value": 82,
       "unit": "EUR/t",
       "asof": "2026-08-04",
-      "source": "Public market reporting (EEX/ICE levels as reported); carried forward 2026-08-17 — no numeric level verifiable this run"
+      "source": "Public market reporting (EEX/ICE levels as reported); carried forward 2026-08-10 — no numeric level verifiable this run"
     },
     "accu": {
       "label": "ACCU — Australia",
       "value": 26.6,
       "unit": "USD/t",
       "asof": "2026-08-04",
-      "source": "Carbon Pulse AU market coverage (A$38.25 spot × ~0.695 AUD/USD); carried forward 2026-08-17 — no numeric level verifiable this run"
+      "source": "Carbon Pulse AU market coverage (A$38.25 spot × ~0.695 AUD/USD); carried forward 2026-08-10 — no numeric level verifiable this run"
     }
   }
 }
