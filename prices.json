@@ -2,7 +2,7 @@
   "lastUpdated": "2026-08-31",
   "source": "CarbonXFuture trading desk",
   "prices": {
-    "cxf-usgulf": 21.5,
+    "cxf-usgulf": 21.7,
     "verra-redd": 18.4,
     "gold-solar": 22.1,
     "acr-car": 15.2,
@@ -17,14 +17,14 @@
       "value": 82,
       "unit": "EUR/t",
       "asof": "2026-08-04",
-      "source": "Public market reporting (EEX/ICE levels as reported); carried forward 2026-08-31 — no numeric level verifiable this run. Direction confirmed: Carbon Pulse reported a 0.2% weekly gain and rangebound trade on 28 Aug 2026."
+      "source": "Public market reporting (EEX/ICE levels as reported); carried forward 2026-08-24 — no numeric level verifiable this run"
     },
     "accu": {
       "label": "ACCU — Australia",
-      "value": 27.14,
+      "value": 26.6,
       "unit": "USD/t",
-      "asof": "2026-08-18",
-      "source": "Tasman Environmental Markets ACCU commentary, 18 Aug 2026 (generic ACCU quoted around A$37.90; HIR ACCUs traded A$39.30, an 18-month high) converted at AUD/USD 0.71619 (Xe currency table, 30 Aug 2026). Verified 2026-08-31."
+      "asof": "2026-08-04",
+      "source": "Carbon Pulse AU market coverage (A$38.25 spot × ~0.695 AUD/USD); carried forward 2026-08-24 — no numeric level verifiable this run"
     }
   }
 }
