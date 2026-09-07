@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-09-03",
+  "lastUpdated": "2026-09-07",
   "source": "CarbonXFuture trading desk",
   "prices": {
     "cxf-usgulf": 21.5,
@@ -14,17 +14,17 @@
   "benchmarks": {
     "eua": {
       "label": "EUA — EU ETS (Dec-26)",
-      "value": 82,
+      "value": 83,
       "unit": "EUR/t",
-      "asof": "2026-08-04",
-      "source": "Public market reporting (EEX/ICE levels as reported); carried forward 2026-08-24 — no numeric level verifiable this run"
+      "asof": "2026-09-04",
+      "source": "Carbon Pulse Euro Markets, 4 Sep 2026: EUAs ended the week 1.8% higher at six-week highs, with robust bid support at €82.00 and later €83.00 (support level quoted; exact settlement not shown on the free page). Verified 2026-09-07."
     },
     "accu": {
       "label": "ACCU — Australia",
-      "value": 26.6,
+      "value": 27.3,
       "unit": "USD/t",
-      "asof": "2026-08-04",
-      "source": "Carbon Pulse AU market coverage (A$38.25 spot × ~0.695 AUD/USD); carried forward 2026-08-24 — no numeric level verifiable this run"
+      "asof": "2026-08-18",
+      "source": "Tasman Environmental Markets ACCU commentary, 18 Aug 2026 (generic ACCU quoted around A$37.90; HIR ACCUs traded A$39.30) — still the latest ACCU edition on the page; A$ level carried forward 2026-09-07 — no newer numeric level verifiable this run. FX refreshed: AUD/USD 0.72027 (Xe currency table, 6 Sep 2026)."
     }
   }
 }
