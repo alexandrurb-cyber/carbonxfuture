@@ -43,6 +43,7 @@ tr:last-child td{border-bottom:none;}
 .pill.retired{background:var(--forest);color:#fff;}
 .pill.revoked{background:#FBEAEA;color:#A33;}
 .pill.split{background:#EFEFEA;color:#4A4A45;}
+.attr{display:inline-block;font-size:10px;font-weight:600;padding:2px 8px;border-radius:100px;background:#EAF2EC;color:#1A4A2E;margin:1px 3px 1px 0;white-space:nowrap;}
 .muted{color:var(--slate-400);font-size:12px;}
 .empty{display:none;text-align:center;padding:3rem;color:var(--slate-400);}
 .note{margin-top:2rem;font-size:12px;color:var(--slate-400);max-width:840px;line-height:1.7;}
@@ -62,7 +63,7 @@ button.dl:hover{background:var(--forest-light);}
 
 <div class="eyebrow">CXF Registry</div>
 <h1>The CXF Program registry</h1>
-<p class="sub">The CXF Program turns desk-validated used-oil collection and re-refining activity into serialized platform credits under the published <a href="/methodology.html">CXF Quantification Methodology</a>. This page is the program's public record: every serialized CXF unit batch, with its live status. This registry implements CXF's internal double-issuance controls: each validated activity report supports at most one batch, every serial is unique, statuses are singular, and anyone — including your auditor — can check them here without an account. Members additionally attest that the same activity has not been claimed under another carbon program. Ownership and commercial terms are private by design; see the <a href="/registry-rules.html">Registry Rules</a>.</p>
+<p class="sub">The CXF Program turns desk-validated used-oil collection and re-refining activity into serialized platform credits under the published <a href="/methodology.html">CXF Quantification Methodology</a>. This page is the program's public record: every serialized CXF unit batch, with its live status — and, uniquely, the documented physical gallons behind the credits: every CXF credit traces to weighed, desk-validated volumes. This registry implements CXF's internal double-issuance controls: each validated activity report supports at most one batch, every serial is unique, statuses are singular, and anyone — including your auditor — can check them here without an account. Members additionally attest that the same activity has not been claimed under another carbon program. Ownership and commercial terms are private by design; see the <a href="/registry-rules.html">Registry Rules</a>.</p>
 
 <div class="statbar" id="statbar"></div>
 
@@ -72,6 +73,7 @@ button.dl:hover{background:var(--forest-light);}
   <button class="tab" data-tab="transfers" onclick="setTab(this)" role="tab">Transfers</button>
   <button class="tab" data-tab="retirements" onclick="setTab(this)" role="tab">Retirements</button>
   <button class="tab" data-tab="revocations" onclick="setTab(this)" role="tab">Revocations</button>
+  <button class="tab" data-tab="byproject" onclick="setTab(this)" role="tab">By project</button>
 </div>
 <div class="controls">
   <input id="q" aria-label="Search serial, project label or vintage" placeholder="Search serial, project label or vintage…" oninput="render()"/>
@@ -88,7 +90,7 @@ button.dl:hover{background:var(--forest-light);}
 
 <div class="table-wrap">
 <table>
-<thead><tr><th>Serial</th><th>Project</th><th>Contract</th><th>Vintage</th><th>Quantity (tCO₂e)</th><th>Status</th><th>Issued</th><th>Certificate</th></tr></thead>
+<thead id="thead"><tr><th>Serial</th><th>Project</th><th>Contract</th><th>Vintage</th><th>Quantity (tCO₂e)</th><th>Attributes</th><th>Status</th><th>Issued</th><th>Certificate</th></tr></thead>
 <tbody id="tbody"></tbody>
 </table>
 <div class="empty" id="empty">No batches in this view yet — issuance status is public here from the first batch onward.</div>
@@ -106,9 +108,13 @@ const esc = s => String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').repl
 let UNITS = [];
 let CERTS = {};
 let TAB = 'all';
-const TAB_GROUPS = { all: null, issuances: ['issued','listed','split'], transfers: ['transferred'], retirements: ['retired'], revocations: ['revoked'] };
+const TAB_GROUPS = { all: null, issuances: ['issued','listed','split'], transfers: ['transferred'], retirements: ['retired'], revocations: ['revoked'], byproject: null };
 
 async function load(){
+  try {
+    const sr = await fetch(SB + '/rest/v1/rpc/public_stats', { method: 'POST', headers: { apikey: KEY, 'Content-Type': 'application/json' }, body: '{}' });
+    if (sr.ok) { const s = await sr.json(); if (typeof s.issued_gallons === 'number') window.__gallons = s.issued_gallons; }
+  } catch(e) {}
   try {
     const r = await fetch(SB + '/rest/v1/registry_public?select=*&order=issued_at.desc', { headers: { apikey: KEY } });
     UNITS = r.ok ? await r.json() : [];
@@ -125,7 +131,8 @@ async function load(){
     stat('Units issued (tCO₂e)', sum(['issued','listed','transferred','retired']).toLocaleString('en-US',{maximumFractionDigits:0})) +
     stat('Active (tCO₂e)', sum(['issued','listed','transferred']).toLocaleString('en-US',{maximumFractionDigits:0})) +
     stat('Retired (tCO₂e)', sum(['retired']).toLocaleString('en-US',{maximumFractionDigits:0})) +
-    stat('Revoked (tCO₂e)', sum(['revoked']).toLocaleString('en-US',{maximumFractionDigits:0}));
+    stat('Revoked (tCO₂e)', sum(['revoked']).toLocaleString('en-US',{maximumFractionDigits:0})) +
+    stat('Documented gallons behind credits', (window.__gallons ?? 0).toLocaleString('en-US'));
   render();
 }
 
@@ -135,7 +142,7 @@ function setTab(btn){
   render();
 }
 function exportCSV(){
-  const head = ['serial','project_label','contract_code','vintage','quantity_tco2e','status','status_note','issued_at','certificate_serial','retirement_beneficiary'];
+  const head = ['serial','project_label','contract_code','vintage','quantity_tco2e','attributes','status','status_note','issued_at','certificate_serial','retirement_beneficiary'];
   const lines = [head.join(',')].concat(UNITS.map(u => head.map(k => {
     let v = k === 'retirement_beneficiary' ? (u.certificate_serial && CERTS[u.certificate_serial] ? CERTS[u.certificate_serial].buyer_display : '') : (u[k] ?? '');
     v = String(v).replace(/"/g,'""');
@@ -147,11 +154,41 @@ function exportCSV(){
   a.download = 'cxf-registry-' + new Date().toISOString().slice(0,10) + '.csv';
   a.click();
 }
+function attrPills(u){
+  const base = u.contract_code === 'CXF-CO' ? ['E1–E4 evidence'] : u.contract_code === 'CXF-RR' ? ['Displacement basis'] : [];
+  const extra = String(u.attributes || '').split(',').map(s => s.trim()).filter(Boolean);
+  const all = base.concat(extra);
+  return all.length ? all.map(a => '<span class="attr">' + esc(a) + '</span>').join('') : '—';
+}
+function renderByProject(q, cf, vf){
+  document.getElementById('thead').innerHTML = '<tr><th>Project</th><th>Batches</th><th>Issued (tCO₂e)</th><th>Active (tCO₂e)</th><th>Retired (tCO₂e)</th><th>Vintages</th></tr>';
+  const groups = {};
+  UNITS.filter(u =>
+    (cf === 'all' || u.contract_code === cf) &&
+    (vf === 'all' || u.vintage === vf) &&
+    (!q || (u.serial + ' ' + u.project_label + ' ' + u.vintage).toLowerCase().includes(q))
+  ).forEach(u => {
+    const g = groups[u.project_label] = groups[u.project_label] || { n: 0, issued: 0, active: 0, retired: 0, vints: new Set() };
+    g.n++; if (u.vintage) g.vints.add(u.vintage);
+    const qty = Number(u.quantity_tco2e);
+    if (['issued','listed','transferred','retired'].includes(u.status)) g.issued += qty;
+    if (['issued','listed','transferred'].includes(u.status)) g.active += qty;
+    if (u.status === 'retired') g.retired += qty;
+  });
+  const keys = Object.keys(groups).sort();
+  document.getElementById('tbody').innerHTML = keys.map(k => {
+    const g = groups[k];
+    return '<tr><td><b>' + esc(k) + '</b></td><td>' + g.n + '</td><td>' + g.issued.toLocaleString() + '</td><td>' + g.active.toLocaleString() + '</td><td>' + g.retired.toLocaleString() + '</td><td class="muted">' + esc([...g.vints].sort().join(', ') || '—') + '</td></tr>';
+  }).join('');
+  document.getElementById('empty').style.display = keys.length ? 'none' : 'block';
+}
 function render(){
   const q = document.getElementById('q').value.trim().toLowerCase();
   const grp = TAB_GROUPS[TAB];
   const cf = document.getElementById('contractFilter').value;
   const vf = document.getElementById('vintageFilter').value;
+  if (TAB === 'byproject') { renderByProject(q, cf, vf); return; }
+  document.getElementById('thead').innerHTML = '<tr><th>Serial</th><th>Project</th><th>Contract</th><th>Vintage</th><th>Quantity (tCO₂e)</th><th>Attributes</th><th>Status</th><th>Issued</th><th>Certificate</th></tr>';
   const rows = UNITS.filter(u =>
     (!grp || grp.includes(u.status)) &&
     (cf === 'all' || u.contract_code === cf) &&
@@ -164,6 +201,7 @@ function render(){
       <td>${esc(u.contract_code)}</td>
       <td>${esc(u.vintage || '—')}</td>
       <td>${Number(u.quantity_tco2e).toLocaleString()}</td>
+      <td>${attrPills(u)}</td>
       <td><span class="pill ${esc(u.status)}">${esc(u.status)}</span></td>
       <td class="muted">${String(u.issued_at).slice(0,10)}</td>
       <td>${u.certificate_serial ? '<a href="/certificate.html?serial=' + encodeURIComponent(u.certificate_serial) + '">' + esc(u.certificate_serial) + '</a>' : '—'}</td>
