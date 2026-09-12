@@ -170,7 +170,25 @@ function render(){
     </tr>`).join('');
   document.getElementById('empty').style.display = rows.length ? 'none' : 'block';
 }
-load();
+// Deep links: /registry.html?serial=CXF-B-2026-0001 or ?tab=retirements&contract=CXF-RR&vintage=2026-05
+(function(){
+  const p = new URLSearchParams(location.search);
+  if (p.get('serial')) { document.getElementById('q').value = p.get('serial'); }
+  const t = p.get('tab');
+  if (t && TAB_GROUPS.hasOwnProperty(t)) {
+    TAB = t;
+    document.querySelectorAll('.tab').forEach(b => b.classList.toggle('active', b.dataset.tab === t));
+  }
+  window.__deepContract = p.get('contract'); window.__deepVintage = p.get('vintage');
+})();
+load().then(() => {
+  if (window.__deepContract) { document.getElementById('contractFilter').value = window.__deepContract; }
+  if (window.__deepVintage) {
+    const vf = document.getElementById('vintageFilter');
+    if ([...vf.options].some(o => o.value === window.__deepVintage)) vf.value = window.__deepVintage;
+  }
+  render();
+});
 </script>
 </body>
 </html>
