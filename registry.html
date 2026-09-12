@@ -25,7 +25,7 @@ h1{font-family:'Playfair Display',serif;font-size:clamp(1.8rem,4vw,2.6rem);font-
 .sub{max-width:680px;color:var(--slate-600);margin-bottom:2rem;}
 .statbar{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:2rem;}
 .stat{border:0.5px solid var(--slate-100);border-radius:12px;padding:0.9rem 1.1rem;background:var(--slate-50);}
-.stat .v{font-size:1.4rem;font-weight:600;color:var(--forest);}
+.stat .v{font-size:1.6rem;font-weight:600;color:var(--forest);}
 .stat .k{font-size:10.5px;text-transform:uppercase;letter-spacing:0.5px;color:var(--slate-400);}
 .controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1rem;align-items:center;}
 input,select{border:0.5px solid var(--slate-200);border-radius:8px;padding:9px 13px;font-size:13.5px;font-family:'Inter',sans-serif;outline:none;}
@@ -49,6 +49,11 @@ tr:last-child td{border-bottom:none;}
 .foot{margin-top:3.5rem;padding-top:1.5rem;border-top:0.5px solid var(--slate-100);font-size:12.5px;color:var(--slate-400);}
 .foot a{color:var(--forest-light);}
 a{color:var(--forest-light);}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem;}
+.tab{font-size:12.5px;padding:7px 16px;border-radius:100px;border:0.5px solid var(--slate-200);background:none;color:var(--slate-600);cursor:pointer;font-family:'Inter',sans-serif;}
+.tab.active{background:var(--forest);color:#fff;border-color:var(--forest);}
+button.dl{background:var(--forest);color:#fff;border:none;border-radius:8px;padding:9px 18px;font-size:13px;font-family:'Inter',sans-serif;cursor:pointer;white-space:nowrap;}
+button.dl:hover{background:var(--forest-light);}
 </style>
 </head>
 <body>
@@ -56,22 +61,29 @@ a{color:var(--forest-light);}
 <div class="wrap">
 
 <div class="eyebrow">CXF Registry</div>
-<h1>Public unit registry</h1>
-<p class="sub">Every serialized CXF unit batch, with its live status. This registry implements CXF's internal double-issuance controls: each validated activity report supports at most one batch, every serial is unique, statuses are singular, and anyone — including your auditor — can check them here without an account. Members additionally attest that the same activity has not been claimed under another carbon program. Ownership and commercial terms are private by design; see the <a href="/registry-rules.html">Registry Rules</a>.</p>
+<h1>The CXF Program registry</h1>
+<p class="sub">The CXF Program turns desk-validated used-oil collection and re-refining activity into serialized platform credits under the published <a href="/methodology.html">CXF Quantification Methodology</a>. This page is the program's public record: every serialized CXF unit batch, with its live status. This registry implements CXF's internal double-issuance controls: each validated activity report supports at most one batch, every serial is unique, statuses are singular, and anyone — including your auditor — can check them here without an account. Members additionally attest that the same activity has not been claimed under another carbon program. Ownership and commercial terms are private by design; see the <a href="/registry-rules.html">Registry Rules</a>.</p>
 
 <div class="statbar" id="statbar"></div>
 
+<div class="tabs" id="tabs" role="tablist">
+  <button class="tab active" data-tab="all" onclick="setTab(this)" role="tab">All</button>
+  <button class="tab" data-tab="issuances" onclick="setTab(this)" role="tab">Issuances</button>
+  <button class="tab" data-tab="transfers" onclick="setTab(this)" role="tab">Transfers</button>
+  <button class="tab" data-tab="retirements" onclick="setTab(this)" role="tab">Retirements</button>
+  <button class="tab" data-tab="revocations" onclick="setTab(this)" role="tab">Revocations</button>
+</div>
 <div class="controls">
-  <input id="q" placeholder="Search serial, project label or vintage…" oninput="render()"/>
-  <select id="statusFilter" onchange="render()">
-    <option value="all">All statuses</option>
-    <option value="issued">Issued</option>
-    <option value="listed">Listed</option>
-    <option value="transferred">Transferred</option>
-    <option value="retired">Retired</option>
-    <option value="revoked">Revoked</option>
-    <option value="split">Split</option>
+  <input id="q" aria-label="Search serial, project label or vintage" placeholder="Search serial, project label or vintage…" oninput="render()"/>
+  <select id="contractFilter" aria-label="Filter by contract" onchange="render()">
+    <option value="all">All contracts</option>
+    <option value="CXF-CO">CXF-CO · Collection</option>
+    <option value="CXF-RR">CXF-RR · Re-refining</option>
   </select>
+  <select id="vintageFilter" aria-label="Filter by vintage" onchange="render()">
+    <option value="all">All vintages</option>
+  </select>
+  <button class="dl" onclick="exportCSV()">Export CSV</button>
 </div>
 
 <div class="table-wrap">
@@ -79,10 +91,10 @@ a{color:var(--forest-light);}
 <thead><tr><th>Serial</th><th>Project</th><th>Contract</th><th>Vintage</th><th>Quantity (tCO₂e)</th><th>Status</th><th>Issued</th><th>Certificate</th></tr></thead>
 <tbody id="tbody"></tbody>
 </table>
-<div class="empty" id="empty">No batches match this filter.</div>
+<div class="empty" id="empty">No batches in this view yet — issuance status is public here from the first batch onward.</div>
 </div>
 
-<p class="note"><b>About this registry.</b> CXF units are proprietary, desk-validated platform instruments of CarbonXFuture Markets, Inc. — they are not registry credits issued by Verra, Gold Standard, ACR or CAR. Batches are issued only from desk-validated activity reports with documentary evidence; serials are unique and never reused; retirement links to a numbered public certificate verifiable at <a href="/verify.html">/verify</a>; revocations remain visible with a public reason — including revocation of a previously retired batch if its evidence is later found materially false. For partial transfers or retirements, a batch is split into child batches (serial suffix ‑A, ‑B, …) whose quantities always sum to the parent; the parent remains visible with status "split". Some project labels are generic at the member's request — the underlying operator identity and evidence are held privately by the desk and available to counterparties in diligence. Issuance, transfer, retirement and revocation are governed by the <a href="/registry-rules.html">CXF Registry Rules</a>.</p>
+<p class="note"><b>About this registry.</b> CXF units are proprietary, desk-validated platform instruments of CarbonXFuture Markets, Inc. — they are not registry credits issued by Verra, Gold Standard, ACR or CAR. Batches are issued only from desk-validated activity reports with documentary evidence; serials are unique and never reused; retirement links to a numbered public certificate verifiable at <a href="/verify.html">/verify</a>; revocations remain visible with a public reason — including revocation of a previously retired batch if its evidence is later found materially false. For partial transfers or retirements, a batch is split into child batches (serial suffix ‑A, ‑B, …) whose quantities always sum to the parent; the parent remains visible with status "split". Some project labels are generic at the member's request — the underlying operator identity and evidence are held privately by the desk and available to counterparties in diligence. Retired batches display the retirement beneficiary exactly as it appears on the public certificate (retiring parties may elect "Confidential"). <b>No buffer pool is maintained:</b> CXF credits carry no reversal risk (no carbon storage), and conservativeness is carried in explicit quantification deductions — see <a href="/methodology.html#q7">Methodology §7</a>. Issuance, transfer, retirement and revocation are governed by the <a href="/registry-rules.html">CXF Registry Rules</a>.</p>
 
 <div class="foot">© 2026 CarbonXFuture Markets, Inc. · <a href="/">Home</a> · <a href="/registry-rules.html">Registry Rules</a> · <a href="/verify.html">Verify a certificate</a> · <a href="/contracts.html">Contract specifications</a> · <a href="/methodology.html">Methodology</a></div>
 </div>
@@ -92,12 +104,20 @@ const SB = 'https://zohskwbavtzvecqziklq.supabase.co';
 const KEY = 'sb_publishable_K-4sl6hEk75fByleZEZcfA_f_Zha9aI';
 const esc = s => String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 let UNITS = [];
+let CERTS = {};
+let TAB = 'all';
+const TAB_GROUPS = { all: null, issuances: ['issued','listed','split'], transfers: ['transferred'], retirements: ['retired'], revocations: ['revoked'] };
 
 async function load(){
   try {
     const r = await fetch(SB + '/rest/v1/registry_public?select=*&order=issued_at.desc', { headers: { apikey: KEY } });
     UNITS = r.ok ? await r.json() : [];
+    const rc = await fetch(SB + '/rest/v1/certificates?select=serial,buyer_display,status', { headers: { apikey: KEY } });
+    if (rc.ok) (await rc.json()).forEach(c => { CERTS[c.serial] = c; });
   } catch(e) { UNITS = []; }
+  const vints = [...new Set(UNITS.map(u => u.vintage).filter(Boolean))].sort().reverse();
+  const vf = document.getElementById('vintageFilter');
+  vints.forEach(v => { const o = document.createElement('option'); o.value = v; o.textContent = v; vf.appendChild(o); });
   const sum = st => UNITS.filter(u => st.includes(u.status)).reduce((s,u) => s + Number(u.quantity_tco2e), 0);
   const stat = (k,v) => `<div class="stat"><div class="v">${v}</div><div class="k">${k}</div></div>`;
   document.getElementById('statbar').innerHTML =
@@ -109,16 +129,38 @@ async function load(){
   render();
 }
 
+function setTab(btn){
+  TAB = btn.dataset.tab;
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t === btn));
+  render();
+}
+function exportCSV(){
+  const head = ['serial','project_label','contract_code','vintage','quantity_tco2e','status','status_note','issued_at','certificate_serial','retirement_beneficiary'];
+  const lines = [head.join(',')].concat(UNITS.map(u => head.map(k => {
+    let v = k === 'retirement_beneficiary' ? (u.certificate_serial && CERTS[u.certificate_serial] ? CERTS[u.certificate_serial].buyer_display : '') : (u[k] ?? '');
+    v = String(v).replace(/"/g,'""');
+    return /[",\n]/.test(v) ? '"' + v + '"' : v;
+  }).join(',')));
+  const blob = new Blob([lines.join('\n')], { type: 'text/csv' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'cxf-registry-' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
+}
 function render(){
   const q = document.getElementById('q').value.trim().toLowerCase();
-  const st = document.getElementById('statusFilter').value;
+  const grp = TAB_GROUPS[TAB];
+  const cf = document.getElementById('contractFilter').value;
+  const vf = document.getElementById('vintageFilter').value;
   const rows = UNITS.filter(u =>
-    (st === 'all' || u.status === st) &&
+    (!grp || grp.includes(u.status)) &&
+    (cf === 'all' || u.contract_code === cf) &&
+    (vf === 'all' || u.vintage === vf) &&
     (!q || (u.serial + ' ' + u.project_label + ' ' + u.vintage).toLowerCase().includes(q)));
   document.getElementById('tbody').innerHTML = rows.map(u => `
     <tr>
       <td><b>${esc(u.serial)}</b></td>
-      <td>${esc(u.project_label)}${u.status_note ? '<div class="muted">' + esc(u.status_note) + '</div>' : ''}</td>
+      <td>${esc(u.project_label)}${u.status_note ? '<div class="muted">' + esc(u.status_note) + '</div>' : ''}${u.status === 'retired' && u.certificate_serial && CERTS[u.certificate_serial] ? '<div class="muted">Retired for: ' + esc(CERTS[u.certificate_serial].buyer_display) + '</div>' : ''}</td>
       <td>${esc(u.contract_code)}</td>
       <td>${esc(u.vintage || '—')}</td>
       <td>${Number(u.quantity_tco2e).toLocaleString()}</td>
