@@ -203,6 +203,7 @@ async function notifyMember(type, to, data) {
         </select>
         <input id="ruVintage" placeholder="Vintage (e.g. 2026-07)" style="padding:8px;border:0.5px solid var(--slate-200);border-radius:7px;font-family:'Inter',sans-serif;font-size:12.5px;"/>
         <input id="ruQty" type="number" min="0.1" step="0.1" placeholder="Quantity (tCO₂e)" style="padding:8px;border:0.5px solid var(--slate-200);border-radius:7px;font-family:'Inter',sans-serif;font-size:12.5px;"/>
+        <input id="ruAttrs" placeholder="Public attributes, optional (e.g. US-origin, Tier 2 measured data)" style="padding:8px;border:0.5px solid var(--slate-200);border-radius:7px;font-family:'Inter',sans-serif;font-size:12.5px;"/>
       </div>
       <button class="act ok" onclick="issueUnits()">Issue batch</button>
       <div id="registryList" class="muted" style="margin-top:1rem;">Loading…</div>
@@ -454,10 +455,11 @@ async function issueUnits(){
   if (dup && dup.length) return alert('Report already backs batch ' + dup[0].serial + ' — one report can back only one batch.');
   const serial = await nextBatchSerial();
   if (!confirm('Issue ' + serial + ' — ' + quantity_tco2e.toLocaleString() + ' tCO₂e (' + contract_code + ', ' + (vintage || 'no vintage') + ') for "' + project_label + '"?\n\nBacked by validated report ' + (rpt ? rpt.period : report_id) + '. Serial, label, vintage, quantity and status become PUBLIC on /registry.html.')) return;
-  let { error } = await db.from('registry_units').insert({ serial, member_id, project_label, contract_code, vintage, quantity_tco2e, report_id });
+  const attributes = (document.getElementById('ruAttrs') ? document.getElementById('ruAttrs').value.trim() : '');
+  let { error } = await db.from('registry_units').insert({ serial, member_id, project_label, contract_code, vintage, quantity_tco2e, report_id, attributes });
   if (error && /load failed|failed to fetch|network/i.test(error.message)) {
     await new Promise(r => setTimeout(r, 1200));
-    ({ error } = await db.from('registry_units').insert({ serial, member_id, project_label, contract_code, vintage, quantity_tco2e, report_id }));
+    ({ error } = await db.from('registry_units').insert({ serial, member_id, project_label, contract_code, vintage, quantity_tco2e, report_id, attributes }));
   }
   if (error) return alert('Error: ' + error.message + (error.message.includes('registry_units') ? ' — did you run schema-registry.sql?' : ''));
   audit('units_issued', serial + ' · ' + quantity_tco2e + ' tCO₂e · ' + project_label + ' · report ' + report_id);
@@ -466,7 +468,7 @@ async function issueUnits(){
     name: m.contact_name, company: m.company, serial, code: contract_code,
     vintage, qty: quantity_tco2e.toLocaleString(), label: project_label
   });
-  ['ruLabel','ruVintage','ruQty'].forEach(i => document.getElementById(i).value = '');
+  ['ruLabel','ruVintage','ruQty','ruAttrs'].forEach(i => { const el = document.getElementById(i); if (el) el.value = ''; });
   document.getElementById('ruReport').innerHTML = '<option value="">— validated report (required) —</option>';
   loadIssuableReports();
   if (confirm('Issued ' + serial + ' — now public at /registry.html. The member was emailed their Statement of Issuance link.\n\nOpen the printable Statement of Issuance now?'))
@@ -570,7 +572,7 @@ async function splitUnits(id){
   const children = parts.map((q, i) => ({
     serial: u.serial + '-' + letters[i], member_id: u.member_id, project_label: u.project_label,
     contract_code: u.contract_code, vintage: u.vintage, quantity_tco2e: q, report_id: u.report_id,
-    status: 'issued', status_note: 'Child of ' + u.serial
+    attributes: u.attributes || '', status: 'issued', status_note: 'Child of ' + u.serial
   }));
   const names = children.map(c => c.serial.slice(-1) + ' = ' + c.quantity_tco2e.toLocaleString()).join(', ');
   if (!confirm('Split ' + u.serial + ' into ' + children.length + ' child batches (' + names + ' tCO₂e)?\n\nThe parent becomes status "split" (public); children appear as newly issued batches.')) return;
