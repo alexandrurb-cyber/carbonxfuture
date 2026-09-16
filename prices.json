@@ -14,17 +14,17 @@
   "benchmarks": {
     "eua": {
       "label": "EUA — EU ETS (Dec-26)",
-      "value": 83,
+      "value": 85.5,
       "unit": "EUR/t",
-      "asof": "2026-09-04",
-      "source": "Carbon Pulse Euro Markets, 4 Sep 2026: EUAs ended the week 1.8% higher at six-week highs, with robust bid support at €82.00 and later €83.00 (support level quoted; exact settlement not shown on the free page). Verified 2026-09-07."
+      "asof": "2026-09-11",
+      "source": "Trading Economics EU Carbon Permits (CFD tracking the benchmark contract): EUR 85.52 close on 11 Sep 2026, -0.35% on the day. Carbon Pulse Euro Markets, 11 Sep 2026: EUAs recorded a fourth weekly gain in a row despite snapping a five-day winning streak. Verified 2026-09-14."
     },
     "accu": {
       "label": "ACCU — Australia",
-      "value": 27.3,
+      "value": 27.07,
       "unit": "USD/t",
       "asof": "2026-08-18",
-      "source": "Tasman Environmental Markets ACCU commentary, 18 Aug 2026 (generic ACCU quoted around A$37.90; HIR ACCUs traded A$39.30) — still the latest ACCU edition on the page; A$ level carried forward 2026-09-07 — no newer numeric level verifiable this run. FX refreshed: AUD/USD 0.72027 (Xe currency table, 6 Sep 2026)."
+      "source": "Tasman Environmental Markets ACCU commentary, 18 Aug 2026 (generic ACCU quoted around A$37.90; HIR ACCUs traded A$39.30) — still the latest ACCU edition on the page. Carbon Pulse AU Market, 14 Sep 2026, reports the ACCU price slipped last week but shows no level on the free page. A$ level carried forward 2026-09-14 — no numeric level verifiable this run. FX refreshed: AUD/USD 0.71419 (Trading Economics, 14 Sep 2026)."
     }
   }
 }
