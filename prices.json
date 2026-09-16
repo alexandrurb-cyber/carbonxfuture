@@ -26,5 +26,19 @@
       "asof": "2026-08-18",
       "source": "Tasman Environmental Markets ACCU commentary, 18 Aug 2026 (generic ACCU quoted around A$37.90; HIR ACCUs traded A$39.30) — still the latest ACCU edition on the page. Carbon Pulse AU Market, 14 Sep 2026, reports the ACCU price slipped last week but shows no level on the free page. A$ level carried forward 2026-09-14 — no numeric level verifiable this run. FX refreshed: AUD/USD 0.71419 (Trading Economics, 14 Sep 2026)."
     }
+  },
+  "feedstock": {
+    "vgo-usgc": {
+      "label": "VGO — US Gulf Coast (CIF barge)",
+      "value": null,
+      "unit": "USD/bbl",
+      "basis": "Desk-observed indicative, assessed with reference to front-month ICE Brent. Not a Platts/Argus assessment."
+    },
+    "umo-usgulf": {
+      "label": "UMO — US Gulf (pay-for-oil)",
+      "value": null,
+      "unit": "USD/gal",
+      "basis": "Desk-observed indicative, pay-for-oil basis at generator door. Not a Platts/Argus assessment."
+    }
   }
 }

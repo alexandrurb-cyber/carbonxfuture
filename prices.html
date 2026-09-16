@@ -87,6 +87,12 @@ tr:last-child td{border-bottom:none;}
 <p class="sub" style="margin-bottom:1rem;">What CXF credits add on top of the physical value of used oil, at current desk marks and the <b>CXF Methodology v1.0-draft</b> factors (pending independent expert opinion; CXF-CO is eligibility-gated and CXF-FC is not offered). This is the number that turns collection volumes into a second revenue line.</p>
 <div class="cards" id="upliftCards"></div>
 
+<div id="feedstockSection" style="display:none;">
+<h2>Feedstock desk marks — physical</h2>
+<p class="sub" style="margin-bottom:1rem;">Weekly desk-observed indicative marks for the physical feedstocks behind the CXF market: vacuum gasoil (the refinery value of used oil) and used motor oil itself. These are <b>CarbonXFuture desk assessments under the published <a href="/index-methodology.html">index methodology</a> — not Platts, Argus or OPIS prices</b>, which are the industry's subscription benchmarks. VGO is assessed with reference to front-month ICE Brent; UMO on a pay-for-oil basis at the generator door, US Gulf.</p>
+<div class="cards" id="feedstockCards"></div>
+</div>
+
 <div id="benchSection" style="display:none;">
 <h2>Compliance market benchmarks</h2>
 <p class="sub" style="margin-bottom:1rem;">Where regulated carbon markets trade — context for CXF desk marks. Levels are desk-observed weekly from public market reporting, with the as-of date shown.</p>
@@ -262,6 +268,18 @@ function sparkline(points, color) {
 }
 (async function loadEIA(){
   try {
+    try {
+      const pj = await (await fetch('/prices.json', {cache:'no-store'})).json();
+      const fs = Object.values(pj.feedstock || {}).filter(f => typeof f.value === 'number' && isFinite(f.value));
+      if (fs.length) {
+        document.getElementById('feedstockSection').style.display = 'block';
+        document.getElementById('feedstockCards').innerHTML = fs.map(f => `
+          <div class="pcard"><div class="k">${f.label}</div>
+            <div class="v">$${Number(f.value).toLocaleString('en-US', {minimumFractionDigits: f.unit === 'USD/gal' ? 2 : 2, maximumFractionDigits: 2})}<span style="font-size:0.85rem;color:var(--slate-400);font-weight:400;"> ${f.unit.replace('USD','')}</span></div>
+            <div class="d">${f.basis} · as of ${pj.lastUpdated}</div>
+          </div>`).join('');
+      }
+    } catch(e) {}
     const r = await fetch('/api/eia');
     if (!r.ok) return; // key not configured yet or upstream down — section stays hidden
     const d = await r.json();
