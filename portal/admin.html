@@ -1178,10 +1178,19 @@ async function loadPricesCard(){
         <div><label style="${lab}">source note</label>
           <input data-bk="${b}" data-bf="source" value="${esc(bm.source ?? '')}" style="${inp}"/></div>`; }).join('') +
       '</div>' +
+      '<div style="margin-top:12px;padding-top:10px;border-top:0.5px solid var(--slate-100);"><div style="font-size:10.5px;text-transform:uppercase;letter-spacing:0.5px;color:var(--slate-400);margin-bottom:6px;">Feedstock desk marks (physical) — optional, leave empty = not published</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">' +
+      Object.entries(p.feedstock || FEEDSTOCK_DEFAULTS).map(([k,f]) =>
+        `<div><label style="${lab}">${esc(f.label)} (${esc(f.unit)})</label>
+         <input data-fk="${esc(k)}" type="number" step="0.01" min="0" value="${f.value ?? ''}" style="${inp}"/></div>`).join('') +
+      '</div></div>' +
       `<div style="margin-top:10px;max-width:220px;"><label style="${lab}">lastUpdated (today = marks refreshed)</label>
         <input id="prLastUpdated" type="date" value="${localToday()}" style="${inp}"/></div>`;
   } catch(e) { el.textContent = 'Could not load current prices.json — ' + e.message; }
 }
+const FEEDSTOCK_DEFAULTS = {
+  'vgo-usgc': { label: 'VGO — US Gulf Coast (CIF barge)', value: null, unit: 'USD/bbl', basis: 'Desk-observed indicative, assessed with reference to front-month ICE Brent. Not a Platts/Argus assessment.' },
+  'umo-usgulf': { label: 'UMO — US Gulf (pay-for-oil)', value: null, unit: 'USD/gal', basis: 'Desk-observed indicative, pay-for-oil basis at generator door. Not a Platts/Argus assessment.' }
+};
 function buildPricesJson(){
   if (!PRICES_CUR) return null;
   const out = JSON.parse(JSON.stringify(PRICES_CUR));
@@ -1192,6 +1201,13 @@ function buildPricesJson(){
     if (!out.benchmarks) out.benchmarks = {};
     if (!out.benchmarks[b]) out.benchmarks[b] = {};
     out.benchmarks[b][f] = f === 'value' ? Number(i.value) : i.value;
+  });
+  if (!out.feedstock) out.feedstock = JSON.parse(JSON.stringify(FEEDSTOCK_DEFAULTS));
+  document.querySelectorAll('#pricesForm [data-fk]').forEach(i => {
+    const k = i.dataset.fk;
+    if (!out.feedstock[k]) out.feedstock[k] = JSON.parse(JSON.stringify(FEEDSTOCK_DEFAULTS[k] || {}));
+    const v = i.value.trim();
+    out.feedstock[k].value = v === '' ? null : Number(v);
   });
   return JSON.stringify(out, null, 2) + '\n';
 }
