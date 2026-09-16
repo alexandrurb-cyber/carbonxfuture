@@ -6,6 +6,7 @@
 
 const SERIES = {
   wti:       { id: 'PET.RWTC.D',                          label: 'WTI Crude (Cushing spot)',   unit: '$/bbl' },
+  brent:     { id: 'PET.RBRTE.D',                         label: 'Brent Crude (Europe spot)',  unit: '$/bbl' },
   ulsd_nyh:  { id: 'PET.EER_EPD2DXL0_PF4_Y35NY_DPG.D',    label: 'ULSD Diesel (NY Harbor)',    unit: '$/gal' },
   ulsd_gulf: { id: 'PET.EER_EPD2DXL0_PF4_RGC_DPG.D',      label: 'ULSD Diesel (US Gulf Coast)',unit: '$/gal' }
 };
