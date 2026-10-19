@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-09-28",
+  "lastUpdated": "2026-10-19",
   "source": "CarbonXFuture trading desk",
   "prices": {
     "cxf-usgulf": 21.5,
@@ -14,17 +14,17 @@
   "benchmarks": {
     "eua": {
       "label": "EUA — EU ETS (Dec-26)",
-      "value": 86.8,
+      "value": 85.41,
       "unit": "EUR/t",
-      "asof": "2026-09-25",
-      "source": "Trading Economics EU Carbon Permits (CFD tracking the benchmark contract): EUR 86.78 on 25 Sep 2026, -0.21% on the day (previous 86.96); page last updated 28 Sep 2026. Carbon Pulse Euro Markets, 25 Sep 2026: EUAs ended Friday 0.3% lower and posted a 0.1% weekly decline. Verified 2026-09-28."
+      "asof": "2026-10-16",
+      "source": "Trading Economics EU Carbon Permits (CFD tracking the benchmark contract): EUR 85.41 on 16 Oct 2026, -0.50% on the day (-0.43); page last updated 19 Oct 2026. Verified 2026-10-19."
     },
     "accu": {
       "label": "ACCU — Australia",
-      "value": 26.99,
+      "value": 26.54,
       "unit": "USD/t",
-      "asof": "2026-09-23",
-      "source": "CORE Markets market prices page: generic ACCU spot last close A$38.40 (+0.0%), prices last updated end of day 23 Sep 2026 — numeric A$ level verified this run. FX: AUD/USD 0.70274 (Trading Economics currency table, 28 Sep 2026). Verified 2026-09-28."
+      "asof": "2026-10-15",
+      "source": "CORE Markets market prices page: generic ACCU spot last close A$38.10, end of day 15 Oct 2026. FX: AUD/USD 0.69664 (Trading Economics currencies, dated 18 Oct 2026). A$38.10 x 0.69664 = US$26.54. Verified 2026-10-19."
     }
   },
   "feedstock": {
